@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import Login from "./pages/Login";
+import {useAuth} from "./contexts/AuthContext";
+import Dashboard from "./pages/Dashboard";
+import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
+import Profile from "./pages/Profile";
 
-function App() {
+export default function App() {
+  const { user } = useAuth();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React With Me
-        </a>
-      </header>
-    </div>
+      <Router>
+          <Routes>
+              {/* /login route'u her durumda erişilebilir olmalı */}
+              <Route path="/login" element={<Login />} />
+
+              {user ? (
+                  <>
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/profile" element={<Profile />} />
+                      {/* Tanımlanmamış herhangi bir route'a giderse dashboard'a yönlendir */}
+                      <Route path="*" element={<Navigate to="/dashboard" />} />
+                  </>
+              ) : (
+                  <Route path="*" element={<Navigate to="/login" />} />
+              )}
+          </Routes>
+      </Router>
   );
 }
-
-export default App;
