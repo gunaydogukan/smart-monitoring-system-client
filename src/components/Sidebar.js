@@ -98,7 +98,7 @@ export default function Sidebar() {
                                 <FaBuilding className="dropdown-icon" /> Kurum Ekle
                             </li>
                         )}
-                        <li onClick={() => navigate('/adres')}>
+                        <li onClick={() => navigate('/address')}>
                             <FaMicrochip className="dropdown-icon" /> Sensör Ekle
                         </li>
                     </ul>
