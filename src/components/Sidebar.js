@@ -9,7 +9,7 @@ export default function Sidebar() {
     const navigate = useNavigate();
     const [isUsersOpen, setIsUsersOpen] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false); // Gece/Gündüz modu durumu
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     // Yerel depolama ile modu kaydet
     useEffect(() => {
@@ -20,78 +20,97 @@ export default function Sidebar() {
     const toggleMode = () => {
         setIsDarkMode((prevMode) => {
             const newMode = !prevMode;
-            localStorage.setItem("darkMode", newMode); // Modu yerel depolamada güncelle
+            localStorage.setItem("darkMode", newMode);
             return newMode;
         });
     };
+
+    // Manager ve Personal ekleme sayfasına yönlendirme
+    const handleNavigateToRegister = (role) => {
+        navigate('/register', { state: { role } });
+    };
+
+    // Kullanıcı rolü
+    const userRole = user?.role || 'guest'; // Varsayılan olarak 'guest'
 
     return (
         <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
             <div className="menu-group">
                 <div className="menu" onClick={() => navigate("/dashboard")}>
-                    <FaHome className="menu-icon"/>
+                    <FaHome className="menu-icon" />
                     <span>Anasayfa</span>
                 </div>
 
                 <div className="menu" onClick={() => navigate("/profile")}>
-                    <FaUser className="menu-icon"/>
+                    <FaUser className="menu-icon" />
                     <span>Profilim</span>
                 </div>
 
                 <div className="menu" onClick={() => navigate("/sensors")}>
-                    <FaMicrochip className="menu-icon"/>
+                    <FaMicrochip className="menu-icon" />
                     <span>Sensörler</span>
                 </div>
 
-                <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
-                    <FaUser className="menu-icon"/>
-                    <span>Kullanıcılar</span>
-                </div>
-                {isUsersOpen && (
+                {/* Kullanıcılar Menüsü */}
+                {userRole !== 'personal' && (
+                    <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
+                        <FaUser className="menu-icon" />
+                        <span>Kullanıcılar</span>
+                    </div>
+                )}
+                {isUsersOpen && userRole !== 'personal' && (
                     <ul className="dropdown">
-                        <li onClick={() => navigate('/admin/users')}>
-                            <FaUser className="dropdown-icon"/> Adminler
-                        </li>
+                        {userRole === 'administrator' && (
+                            <li onClick={() => navigate('/admin/users')}>
+                                <FaUser className="dropdown-icon" /> Managers
+                            </li>
+                        )}
                         <li onClick={() => navigate('/users')}>
-                            <FaUser className="dropdown-icon"/> Kullanıcılar
+                            <FaUser className="dropdown-icon" /> Personals
                         </li>
                     </ul>
                 )}
+
                 <div className="menu" onClick={() => navigate("/organisations")}>
-                    <FaBuilding className="menu-icon"/>
+                    <FaBuilding className="menu-icon" />
                     <span>Kurumlar</span>
                 </div>
 
-                <div className={`menu ${isAddOpen ? 'open' : ''}`} onClick={() => setIsAddOpen(!isAddOpen)}>
-                    <FaPlus className="menu-icon"/>
-                    <span>Ekle</span>
-                </div>
-
-                {isAddOpen && (
+                {/* Ekle Menüsü */}
+                {userRole !== 'personal' && (
+                    <div className={`menu ${isAddOpen ? 'open' : ''}`} onClick={() => setIsAddOpen(!isAddOpen)}>
+                        <FaPlus className="menu-icon" />
+                        <span>Ekle</span>
+                    </div>
+                )}
+                {isAddOpen && userRole !== 'personal' && (
                     <ul className="dropdown">
-                        <li onClick={() => navigate('/manager/dashboard/adminadd/2')}>
-                            <FaUser className="dropdown-icon"/> Admin Ekle
+                        {userRole === 'administrator' && (
+                            <li onClick={() => handleNavigateToRegister('manager')}>
+                                <FaUser className="dropdown-icon" /> Manager Ekle
+                            </li>
+                        )}
+                        <li onClick={() => handleNavigateToRegister('personal')}>
+                            <FaUser className="dropdown-icon" /> Personal Ekle
                         </li>
-                        <li onClick={() => navigate('/add-user')}>
-                            <FaUser className="dropdown-icon"/> Kullanıcı Ekle
-                        </li>
-                        <li onClick={() => navigate('/add-organisation')}>
-                            <FaBuilding className="dropdown-icon"/> Kurum Ekle
-                        </li>
+                        {userRole === 'administrator' && (
+                            <li onClick={() => navigate('/add-organisation')}>
+                                <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                            </li>
+                        )}
                         <li onClick={() => navigate('/adres')}>
-                            <FaMicrochip className="dropdown-icon"/> Sensör Ekle
+                            <FaMicrochip className="dropdown-icon" /> Sensör Ekle
                         </li>
                     </ul>
                 )}
 
                 <div className="logout" onClick={logout}>
-                    <FaSignOutAlt className="menu-icon"/>
+                    <FaSignOutAlt className="menu-icon" />
                     <span>Çıkış</span>
                 </div>
 
-                {/* Gece/Gündüz Modu Toggle Butonu */}
                 <button className="toggle-mode" onClick={toggleMode}>
-                    {isDarkMode ? <FaSun/> : <FaMoon/>}
+                    {isDarkMode ? <FaSun /> : <FaMoon />}
                 </button>
             </div>
         </div>
