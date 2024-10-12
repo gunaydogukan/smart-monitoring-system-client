@@ -11,9 +11,9 @@ export const useAuth = () => {
     if (!context) {
         throw new Error("useAuth must be used within AuthProvider");
     }
+    //console.log(context);
     return context;
 };
-
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
