@@ -167,7 +167,7 @@ export default function Address() {
                     <div style={{ marginTop: '10px' }}>
                         <label>İlçe: </label>
                         <input
-                            type="text"
+                            type="textgir"
                             value={searchDistrict}
                             onChange={(e) => setSearchDistrict(e.target.value)}
                             placeholder="İlçe Ara"
