@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
 import Address from "./pages/Address";
+import Register from "./components/Register";
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -19,7 +20,8 @@ export default function App() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/profile" element={<Profile />} />
-                        <Route path="/adres" element={<Address />} />
+                        <Route path="/address" element={<Address />} />
+                        <Route path="/register" element={<Register />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>
                 ) : (

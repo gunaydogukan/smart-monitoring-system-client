@@ -121,9 +121,7 @@ export default function Address() {
                     body: JSON.stringify(addressData),
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+
 
                 console.log('Adres başarıyla eklendi');
                 navigate('/next');
