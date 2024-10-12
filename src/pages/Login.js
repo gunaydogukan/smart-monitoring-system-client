@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
-import {useAuth} from "../contexts/AuthContext";
-import {useNavigate} from "react-router-dom";
-
+import { useAuth } from '../contexts/AuthContext'; // AuthContext'ten login fonksiyonunu alıyoruz
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(''); // Hata durumunu saklıyoruz
 
-    const { login } = useAuth();
+    const { login, loading } = useAuth(); // login fonksiyonunu ve loading durumunu alıyoruz
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(email, password);
-            console.log("login useauth")
-            console.log(email);
-            console.log(password);
-            navigate('/dashboard');
+            await login(email, password); // login işlemi
+            console.log('Giriş başarılı!');
+            navigate('/dashboard'); // Başarılı girişte yönlendir
         } catch (error) {
-            alert("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.");
+            setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'); // Hata durumunu göster
         }
     };
+
+    if (loading) {
+        return <div>Yükleniyor...</div>; // Yüklenme durumunda gösterilecek ekran
+    }
 
     return (
         <div style={styles.container}>
@@ -36,6 +38,7 @@ export default function Login() {
                 <div style={styles.rightSection}>
                     <form onSubmit={handleSubmit} style={styles.form}>
                         <h2 style={styles.formTitle}>Giriş Yap</h2>
+                        {error && <p style={{ color: 'red' }}>{error}</p>}
                         <input
                             type="email"
                             placeholder="Email"
@@ -56,7 +59,7 @@ export default function Login() {
                             Giriş Yap
                         </button>
                         <p style={styles.footerText}>
-                            Şifremi unutuum <a href="/signup" style={styles.link}>Şifremi sıfırla</a>
+                            Şifremi unuttum <a href="/reset-password" style={styles.link}>Şifremi sıfırla</a>
                         </p>
                     </form>
                 </div>
@@ -71,15 +74,15 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        backgroundColor: '#f0f1f3', // Yumuşak gri arka plan
+        backgroundColor: '#f0f1f3',
         fontFamily: 'Arial, sans-serif',
     },
     content: {
         display: 'flex',
-        flexDirection: 'row', // Dikey değil yatay hizalama
-        width: '60%', // Responsive genişlik
+        flexDirection: 'row',
+        width: '60%',
         maxWidth: '1300px',
-        height: '70vh', // Yüksekliği artırdık
+        height: '70vh',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
         borderRadius: '20px',
         overflow: 'hidden',
@@ -116,15 +119,15 @@ const styles = {
         padding: '40px',
     },
     form: {
-        width: '100%', // Responsive genişlik
+        width: '100%',
         maxWidth: '450px',
         display: 'flex',
-        flexDirection: 'column', // Dikey hizalama
-        justifyContent: 'center', // Merkeze hizalama
+        flexDirection: 'column',
+        justifyContent: 'center',
         backgroundColor: '#fff',
         borderRadius: '10px',
         boxShadow: '0 5px 15px rgba(0, 0, 0, 0.1)',
-        padding: '20px', // İçerideki alan
+        padding: '20px',
     },
     formTitle: {
         textAlign: 'center',
@@ -149,11 +152,7 @@ const styles = {
         fontSize: '18px',
         cursor: 'pointer',
         transition: 'transform 0.2s, box-shadow 0.2s',
-        marginTop: '15px', // Buton ile input arasına mesafe ekledik
-    },
-    buttonHover: {
-        transform: 'scale(1.05)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)',
+        marginTop: '15px',
     },
     footerText: {
         marginTop: '10px',
@@ -166,4 +165,3 @@ const styles = {
         fontWeight: 'bold',
     },
 };
-
