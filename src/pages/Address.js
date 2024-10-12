@@ -4,27 +4,50 @@ import Layout from "../layouts/Layout";
 
 export default function Address() {
     const [provinces, setProvinces] = useState([]);
+    const [filteredProvinces, setFilteredProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
+    const [filteredDistricts, setFilteredDistricts] = useState([]);
     const [neighborhoods, setNeighborhoods] = useState([]);
+    const [filteredNeighborhoods, setFilteredNeighborhoods] = useState([]);
+
+    const [searchProvince, setSearchProvince] = useState('');
+    const [searchDistrict, setSearchDistrict] = useState('');
+    const [searchNeighborhood, setSearchNeighborhood] = useState('');
+
     const [selectedProvinceId, setSelectedProvinceId] = useState('');
     const [selectedDistrictId, setSelectedDistrictId] = useState('');
     const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState('');
     const [village, setVillage] = useState('');
-    const [cityName, setCityName] = useState('');
-    const [districtName, setDistrictName] = useState('');
 
     const navigate = useNavigate();
 
-    // İller (Provinces) Verisini Getirme
+    const isFormValid = useCallback(() => {
+        return (
+            selectedProvinceId &&
+            searchProvince &&
+            selectedDistrictId &&
+            searchDistrict &&
+            selectedNeighborhoodId &&
+            searchNeighborhood &&
+            village.trim() !== ''
+        );
+    }, [
+        selectedProvinceId,
+        searchProvince,
+        selectedDistrictId,
+        searchDistrict,
+        selectedNeighborhoodId,
+        searchNeighborhood,
+        village,
+    ]);
+
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
                 const response = await fetch('http://turkiyeapi.dev/api/v1/provinces');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
                 const data = await response.json();
                 setProvinces(data.data || []);
+                setFilteredProvinces(data.data || []);
             } catch (error) {
                 console.error('İller çekilirken hata:', error);
             }
@@ -32,104 +55,90 @@ export default function Address() {
         fetchProvinces();
     }, []);
 
-    // İlçeleri (Districts) Getirme
     useEffect(() => {
         if (selectedProvinceId) {
-            const province = provinces.find(p => p.id === parseInt(selectedProvinceId));
-            setCityName(province ? province.name : '');
-
             const fetchDistricts = async () => {
                 try {
                     const response = await fetch(
                         `http://turkiyeapi.dev/api/v1/districts?provinceId=${selectedProvinceId}`
                     );
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
                     const data = await response.json();
                     setDistricts(data.data || []);
+                    setFilteredDistricts(data.data || []);
                 } catch (error) {
                     console.error('İlçeler çekilirken hata:', error);
                 }
             };
             fetchDistricts();
         }
-    }, [selectedProvinceId, provinces]);
+    }, [selectedProvinceId]);
 
-    // Mahalleleri (Neighborhoods) Getirme
     useEffect(() => {
         if (selectedDistrictId) {
-            const district = districts.find(d => d.id === parseInt(selectedDistrictId));
-            setDistrictName(district ? district.name : '');
-
             const fetchNeighborhoods = async () => {
                 try {
                     const response = await fetch(
                         `http://turkiyeapi.dev/api/v1/neighborhoods?districtId=${selectedDistrictId}`
                     );
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
                     const data = await response.json();
                     setNeighborhoods(data.data || []);
+                    setFilteredNeighborhoods(data.data || []);
                 } catch (error) {
                     console.error('Mahalleler çekilirken hata:', error);
                 }
             };
             fetchNeighborhoods();
         }
-    }, [selectedDistrictId, districts]);
+    }, [selectedDistrictId]);
 
-    // Form Submit İşlemi
-    const handleSubmit = useCallback(async (e) => {
-        e.preventDefault();
+    const handleSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            const addressData = {
+                plate: parseInt(selectedProvinceId),
+                city: searchProvince,
+                districts: [
+                    {
+                        district: searchDistrict,
+                        neighborhoods: [
+                            {
+                                neighborhood: searchNeighborhood,
+                                villages: [village],
+                            },
+                        ],
+                    },
+                ],
+            };
 
-        const neighborhood = neighborhoods.find(n => n.id === parseInt(selectedNeighborhoodId));
-        const neighborhoodName = neighborhood ? neighborhood.name : '';
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(addressData),
+                });
 
-        const addressData = {
-            plate: parseInt(selectedProvinceId),
-            city: cityName,
-            districts: [
-                {
-                    district: districtName,
-                    neighborhoods: [
-                        {
-                            neighborhood: neighborhoodName,
-                            villages: [village],
-                        }
-                    ],
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            ],
-        };
-        console.log("Gönderilen veri:", addressData);
 
-        try {
-            const token = localStorage.getItem('token');
-            console.log("Token:", token);
-            const response = await fetch('http://localhost:5000/api/address', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(addressData),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                console.log('Adres başarıyla eklendi');
+                navigate('/next');
+            } catch (error) {
+                console.error('Adres ekleme hatası:', error);
             }
+        },
+        [selectedProvinceId, searchProvince, selectedDistrictId, searchDistrict, selectedNeighborhoodId, searchNeighborhood, village, navigate]
+    );
 
-            const result = await response.json();
-            console.log('Adres başarıyla eklendi:', result);
-
-            navigate('/next', {
-                state: { selectedProvinceId, selectedDistrictId, selectedNeighborhoodId, village },
-            });
-        } catch (error) {
-            console.error('Adres ekleme hatası:', error);
-        }
-    }, [cityName, districtName, navigate, neighborhoods, selectedDistrictId, selectedNeighborhoodId, selectedProvinceId, village]);
+    const handleSelect = (setter, setSearchValue, options, selectedId) => {
+        const selectedOption = options.find((option) => option.id === parseInt(selectedId));
+        setter(selectedId);
+        setSearchValue(selectedOption ? selectedOption.name : '');
+    };
 
     return (
         <Layout>
@@ -138,13 +147,21 @@ export default function Address() {
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label>İl: </label>
+                        <input
+                            type="text"
+                            value={searchProvince}
+                            onChange={(e) => setSearchProvince(e.target.value)}
+                            placeholder="İl Ara"
+                        />
                         <select
                             value={selectedProvinceId}
-                            onChange={(e) => setSelectedProvinceId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelect(setSelectedProvinceId, setSearchProvince, provinces, e.target.value)
+                            }
                             required
                         >
                             <option value="">İl Seç</option>
-                            {provinces.map((province) => (
+                            {filteredProvinces.map((province) => (
                                 <option key={province.id} value={province.id}>
                                     {province.name}
                                 </option>
@@ -154,14 +171,22 @@ export default function Address() {
 
                     <div style={{ marginTop: '10px' }}>
                         <label>İlçe: </label>
+                        <input
+                            type="text"
+                            value={searchDistrict}
+                            onChange={(e) => setSearchDistrict(e.target.value)}
+                            placeholder="İlçe Ara"
+                            disabled={!selectedProvinceId}
+                        />
                         <select
                             value={selectedDistrictId}
-                            onChange={(e) => setSelectedDistrictId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelect(setSelectedDistrictId, setSearchDistrict, districts, e.target.value)
+                            }
                             required
-                            disabled={!selectedProvinceId}
                         >
                             <option value="">İlçe Seç</option>
-                            {districts.map((district) => (
+                            {filteredDistricts.map((district) => (
                                 <option key={district.id} value={district.id}>
                                     {district.name}
                                 </option>
@@ -171,14 +196,22 @@ export default function Address() {
 
                     <div style={{ marginTop: '10px' }}>
                         <label>Mahalle: </label>
+                        <input
+                            type="text"
+                            value={searchNeighborhood}
+                            onChange={(e) => setSearchNeighborhood(e.target.value)}
+                            placeholder="Mahalle Ara"
+                            disabled={!selectedDistrictId}
+                        />
                         <select
                             value={selectedNeighborhoodId}
-                            onChange={(e) => setSelectedNeighborhoodId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelect(setSelectedNeighborhoodId, setSearchNeighborhood, neighborhoods, e.target.value)
+                            }
                             required
-                            disabled={!selectedDistrictId}
                         >
                             <option value="">Mahalle Seç</option>
-                            {neighborhoods.map((neighborhood) => (
+                            {filteredNeighborhoods.map((neighborhood) => (
                                 <option key={neighborhood.id} value={neighborhood.id}>
                                     {neighborhood.name}
                                 </option>
@@ -196,7 +229,7 @@ export default function Address() {
                         />
                     </div>
 
-                    <button type="submit" style={{ marginTop: '20px' }}>
+                    <button type="submit" style={{ marginTop: '20px' }} disabled={!isFormValid()}>
                         İleri
                     </button>
                 </form>
