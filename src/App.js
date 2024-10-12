@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Address from "./pages/Address";
 import Register from "./components/Register";
 import SensorForm  from "./pages/SensorForm";
+import CompanyAdd from "./components/CompanyAdd";
 export default function App() {
     const { user, loading } = useAuth();
 
@@ -23,6 +24,7 @@ export default function App() {
                         <Route path="/address" element={<Address />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/sensorform" element={<SensorForm />} />
+                        <Route path="/CompanyAdd" element={<CompanyAdd />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>
                 ) : (
