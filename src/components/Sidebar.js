@@ -71,16 +71,16 @@ export default function Sidebar() {
                 {isAddOpen && (
                     <ul className="dropdown">
                         <li onClick={() => navigate('/manager/dashboard/adminadd/2')}>
-                            <FaUser className="dropdown-icon" /> Admin Ekle
+                            <FaUser className="dropdown-icon"/> Admin Ekle
                         </li>
                         <li onClick={() => navigate('/add-user')}>
-                            <FaUser className="dropdown-icon" /> Kullanıcı Ekle
+                            <FaUser className="dropdown-icon"/> Kullanıcı Ekle
                         </li>
                         <li onClick={() => navigate('/add-organisation')}>
-                            <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                            <FaBuilding className="dropdown-icon"/> Kurum Ekle
                         </li>
-                        <li onClick={() => navigate('/sensor-dashboard')}>
-                            <FaMicrochip className="dropdown-icon" /> Sensör Ekle
+                        <li onClick={() => navigate('/adres')}>
+                            <FaMicrochip className="dropdown-icon"/> Sensör Ekle
                         </li>
                     </ul>
                 )}
