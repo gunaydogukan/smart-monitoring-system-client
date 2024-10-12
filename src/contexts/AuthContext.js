@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
+//import {useNavigate} from "react-router-dom";
+
+
 const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
@@ -8,13 +11,16 @@ export const useAuth = () => {
     if (!context) {
         throw new Error("useAuth must be used within AuthProvider");
     }
+    console.log(context);
     return context;
 };
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+
     const [loading, setLoading] = useState(true); // Yüklenme durumu
+
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
