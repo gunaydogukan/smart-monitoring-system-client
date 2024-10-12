@@ -1,79 +1,79 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
 
 const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error('useAuth must be used within AuthProvider');
+        throw new Error("useAuth must be used within AuthProvider");
     }
     return context;
-}
+};
 
-export const AuthProvider = ( { children } ) => {
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-
+    const [loading, setLoading] = useState(true); // Yüklenme durumu
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
 
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
+        if (storedUser && storedToken) {
+            axios
+                .get("http://localhost:5000/api/verifyToken", {
+                    headers: { Authorization: `Bearer ${storedToken}` },
+                })
+                .then((response) => {
+                    if (response.data.valid) {
+                        setUser(JSON.parse(storedUser));
+                        setToken(storedToken);
+                    } else {
+                        logout();
+                    }
+                })
+                .catch(() => logout())
+                .finally(() => setLoading(false)); // Yüklenme bitti
+        } else {
+            setLoading(false); // Kullanıcı yoksa yüklenme bitti
         }
     }, []);
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/login', {
-                email,
-                password
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then((response) => {
-                    if (response.data.success && response.data.token) {
-                        const { token, user } = response.data;
+            const response = await axios.post(
+                "http://localhost:5000/api/login",
+                { email, password },
+                { headers: { "Content-Type": "application/json" } }
+            );
 
-                        localStorage.setItem('token', token);
-                        localStorage.setItem('user', JSON.stringify(user));
+            if (response.data.success) {
+                const { token, user } = response.data;
 
-                        setToken(token);
-                        setUser(user);
-                        console.log("Giriş başarılı!");
+                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("token", token);
 
-                    }
-                });
+                setUser(user);
+                setToken(token);
+                console.log("Giriş başarılı!");
+            }
         } catch (error) {
-            console.error("Giriş Hatası: ", error);
+            console.error("Giriş hatası:", error);
             throw error;
         }
-    }
+    };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUser(null);
         setToken(null);
-    }
+    };
 
     return (
-        <AuthContext.Provider value={{
-            login,
-            logout,
-            user,
-            token
-        }}
-        >
+        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
-}
-
-
+};
