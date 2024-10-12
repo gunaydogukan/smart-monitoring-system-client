@@ -144,7 +144,7 @@ export default function Adres() {
                         type="text"
                         value={village}
                         onChange={(e) => setVillage(e.target.value)}
-                        placeholder="Köy"
+                        placeholder="deneme"
                     />
                 </div>
 
