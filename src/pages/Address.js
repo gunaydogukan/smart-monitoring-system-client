@@ -21,25 +21,10 @@ export default function Address() {
 
     const navigate = useNavigate();
 
-    const isFormValid = useCallback(() => {
-        return (
-            selectedProvinceId &&
-            searchProvince &&
-            selectedDistrictId &&
-            searchDistrict &&
-            selectedNeighborhoodId &&
-            searchNeighborhood &&
-            village.trim() !== ''
+    const filterOptions = (options, searchValue) =>
+        options.filter((option) =>
+            option.name.toLowerCase().startsWith(searchValue.toLowerCase())
         );
-    }, [
-        selectedProvinceId,
-        searchProvince,
-        selectedDistrictId,
-        searchDistrict,
-        selectedNeighborhoodId,
-        searchNeighborhood,
-        village,
-    ]);
 
     useEffect(() => {
         const fetchProvinces = async () => {
@@ -91,52 +76,71 @@ export default function Address() {
         }
     }, [selectedDistrictId]);
 
-    const handleSubmit = useCallback(
-        async (e) => {
-            e.preventDefault();
-            const addressData = {
-                plate: parseInt(selectedProvinceId),
-                city: searchProvince,
-                districts: [
-                    {
-                        district: searchDistrict,
-                        neighborhoods: [
-                            {
-                                neighborhood: searchNeighborhood,
-                                villages: [village],
-                            },
-                        ],
-                    },
-                ],
-            };
+    useEffect(() => {
+        setFilteredProvinces(filterOptions(provinces, searchProvince));
+    }, [searchProvince, provinces]);
 
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/api/address', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(addressData),
-                });
+    useEffect(() => {
+        setFilteredDistricts(filterOptions(districts, searchDistrict));
+    }, [searchDistrict, districts]);
 
+    useEffect(() => {
+        setFilteredNeighborhoods(filterOptions(neighborhoods, searchNeighborhood));
+    }, [searchNeighborhood, neighborhoods]);
 
-
-                console.log('Adres başarıyla eklendi');
-                navigate('/next');
-            } catch (error) {
-                console.error('Adres ekleme hatası:', error);
-            }
-        },
-        [selectedProvinceId, searchProvince, selectedDistrictId, searchDistrict, selectedNeighborhoodId, searchNeighborhood, village, navigate]
-    );
-
-    const handleSelect = (setter, setSearchValue, options, selectedId) => {
-        const selectedOption = options.find((option) => option.id === parseInt(selectedId));
-        setter(selectedId);
-        setSearchValue(selectedOption ? selectedOption.name : '');
+    const handleSelectChange = (setId, setSearch, list, id) => {
+        setId(id);
+        const selectedItem = list.find((item) => item.id === parseInt(id));
+        setSearch(selectedItem ? selectedItem.name : '');
     };
+
+    const handleSubmit = useCallback(async (e) => {
+        e.preventDefault();
+        const addressData = {
+            plate: parseInt(selectedProvinceId),
+            city: searchProvince,
+            districts: [
+                {
+                    district: searchDistrict,
+                    neighborhoods: [
+                        {
+                            neighborhood: searchNeighborhood,
+                            villages: [village],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(addressData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            console.log('Adres başarıyla eklendi:', result);
+
+            if (!result.villageId) {
+                alert('Köy ID alınamadı. Lütfen tekrar deneyin.');
+                return;
+            }
+            navigate('/sensorform', { state: {  villageId: result.villageId,villageName: village}});
+
+        } catch (error) {
+            console.error('Adres ekleme hatası:', error);
+        }
+    }, [selectedProvinceId, searchProvince, searchDistrict, searchNeighborhood, village, navigate]);
 
     return (
         <Layout>
@@ -154,7 +158,12 @@ export default function Address() {
                         <select
                             value={selectedProvinceId}
                             onChange={(e) =>
-                                handleSelect(setSelectedProvinceId, setSearchProvince, provinces, e.target.value)
+                                handleSelectChange(
+                                    setSelectedProvinceId,
+                                    setSearchProvince,
+                                    provinces,
+                                    e.target.value
+                                )
                             }
                             required
                         >
@@ -174,12 +183,16 @@ export default function Address() {
                             value={searchDistrict}
                             onChange={(e) => setSearchDistrict(e.target.value)}
                             placeholder="İlçe Ara"
-                            disabled={!selectedProvinceId}
                         />
                         <select
                             value={selectedDistrictId}
                             onChange={(e) =>
-                                handleSelect(setSelectedDistrictId, setSearchDistrict, districts, e.target.value)
+                                handleSelectChange(
+                                    setSelectedDistrictId,
+                                    setSearchDistrict,
+                                    districts,
+                                    e.target.value
+                                )
                             }
                             required
                         >
@@ -199,12 +212,16 @@ export default function Address() {
                             value={searchNeighborhood}
                             onChange={(e) => setSearchNeighborhood(e.target.value)}
                             placeholder="Mahalle Ara"
-                            disabled={!selectedDistrictId}
                         />
                         <select
                             value={selectedNeighborhoodId}
                             onChange={(e) =>
-                                handleSelect(setSelectedNeighborhoodId, setSearchNeighborhood, neighborhoods, e.target.value)
+                                handleSelectChange(
+                                    setSelectedNeighborhoodId,
+                                    setSearchNeighborhood,
+                                    neighborhoods,
+                                    e.target.value
+                                )
                             }
                             required
                         >
@@ -227,7 +244,16 @@ export default function Address() {
                         />
                     </div>
 
-                    <button type="submit" style={{ marginTop: '20px' }} disabled={!isFormValid()}>
+                    <button
+                        type="submit"
+                        style={{ marginTop: '20px' }}
+                        disabled={
+                            !selectedProvinceId ||
+                            !selectedDistrictId ||
+                            !selectedNeighborhoodId ||
+                            !village.trim()
+                        }
+                    >
                         İleri
                     </button>
                 </form>
