@@ -89,13 +89,12 @@ export default function Address() {
         setFilteredDistricts(filterOptions(districts, searchDistrict));
     }, [searchDistrict, districts]);
 
-<<<<<<< HEAD
 
-=======
+
+
     useEffect(() => {
         setFilteredNeighborhoods(filterOptions(neighborhoods, searchNeighborhood));
     }, [searchNeighborhood, neighborhoods]);
->>>>>>> 904fa51 (adres ekleme filter eklendi)
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
