@@ -30,6 +30,12 @@ export default function Sidebar() {
         navigate('/register', { state: { role } });
     };
 
+    // Kurum ekleme sayfasına yönlendirme
+    const handleNavigateToCompanyAdd = () => {
+        navigate('/CompanyAdd'); // Doğru rota tanımlandı
+    };
+
+
     // Kullanıcı rolü
     const userRole = user?.role || 'guest'; // Varsayılan olarak 'guest'
 
@@ -94,10 +100,11 @@ export default function Sidebar() {
                             <FaUser className="dropdown-icon" /> Personal Ekle
                         </li>
                         {userRole === 'administrator' && (
-                            <li onClick={() => navigate('/add-organisation')}>
-                                <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                            <li onClick={() => handleNavigateToCompanyAdd('administrator')}>
+                            <FaBuilding className="dropdown-icon" /> Kurum Ekle
                             </li>
                         )}
+
                         <li onClick={() => navigate('/address')}>
                             <FaMicrochip className="dropdown-icon" /> Sensör Ekle
                         </li>
