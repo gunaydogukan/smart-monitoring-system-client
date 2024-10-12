@@ -21,7 +21,7 @@ export default function Address() {
 
     const navigate = useNavigate();
     //fonksyon
-    // İl, ilçe ve mahalle filtreleme fonksiyonları
+    // İl, ilçe ve mahalle filtreleme fonksiyonlarıas
     const filterOptions = (options, searchValue) =>
         options.filter((option) =>
             option.name.toLowerCase().startsWith(searchValue.toLowerCase())
