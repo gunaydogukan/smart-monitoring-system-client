@@ -20,14 +20,12 @@ export default function Address() {
     const [village, setVillage] = useState('');
 
     const navigate = useNavigate();
-    //fonksyon
-    // İl, ilçe ve mahalle filtreleme fonksiyonlarıas
+
     const filterOptions = (options, searchValue) =>
         options.filter((option) =>
             option.name.toLowerCase().startsWith(searchValue.toLowerCase())
         );
 
-    // İller Verisini Getirme
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
@@ -42,7 +40,6 @@ export default function Address() {
         fetchProvinces();
     }, []);
 
-    // İlçeleri Getirme
     useEffect(() => {
         if (selectedProvinceId) {
             const fetchDistricts = async () => {
@@ -61,7 +58,6 @@ export default function Address() {
         }
     }, [selectedProvinceId]);
 
-    // Mahalleleri Getirme
     useEffect(() => {
         if (selectedDistrictId) {
             const fetchNeighborhoods = async () => {
@@ -80,7 +76,6 @@ export default function Address() {
         }
     }, [selectedDistrictId]);
 
-    // Arama değiştikçe filtreleme işlemleri
     useEffect(() => {
         setFilteredProvinces(filterOptions(provinces, searchProvince));
     }, [searchProvince, provinces]);
@@ -89,12 +84,15 @@ export default function Address() {
         setFilteredDistricts(filterOptions(districts, searchDistrict));
     }, [searchDistrict, districts]);
 
-
-
-
     useEffect(() => {
         setFilteredNeighborhoods(filterOptions(neighborhoods, searchNeighborhood));
     }, [searchNeighborhood, neighborhoods]);
+
+    const handleSelectChange = (setId, setSearch, list, id) => {
+        setId(id);
+        const selectedItem = list.find((item) => item.id === parseInt(id));
+        setSearch(selectedItem ? selectedItem.name : '');
+    };
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
@@ -134,7 +132,7 @@ export default function Address() {
         } catch (error) {
             console.error('Adres ekleme hatası:', error);
         }
-    }, [selectedProvinceId, searchProvince, selectedDistrictId, searchDistrict, selectedNeighborhoodId, searchNeighborhood, village, navigate]);
+    }, [selectedProvinceId, searchProvince, searchDistrict, searchNeighborhood, village, navigate]);
 
     return (
         <Layout>
@@ -151,7 +149,14 @@ export default function Address() {
                         />
                         <select
                             value={selectedProvinceId}
-                            onChange={(e) => setSelectedProvinceId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelectChange(
+                                    setSelectedProvinceId,
+                                    setSearchProvince,
+                                    provinces,
+                                    e.target.value
+                                )
+                            }
                             required
                         >
                             <option value="">İl Seç</option>
@@ -166,14 +171,21 @@ export default function Address() {
                     <div style={{ marginTop: '10px' }}>
                         <label>İlçe: </label>
                         <input
-                            type="textgir"
+                            type="text"
                             value={searchDistrict}
                             onChange={(e) => setSearchDistrict(e.target.value)}
                             placeholder="İlçe Ara"
                         />
                         <select
                             value={selectedDistrictId}
-                            onChange={(e) => setSelectedDistrictId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelectChange(
+                                    setSelectedDistrictId,
+                                    setSearchDistrict,
+                                    districts,
+                                    e.target.value
+                                )
+                            }
                             required
                         >
                             <option value="">İlçe Seç</option>
@@ -195,7 +207,14 @@ export default function Address() {
                         />
                         <select
                             value={selectedNeighborhoodId}
-                            onChange={(e) => setSelectedNeighborhoodId(e.target.value)}
+                            onChange={(e) =>
+                                handleSelectChange(
+                                    setSelectedNeighborhoodId,
+                                    setSearchNeighborhood,
+                                    neighborhoods,
+                                    e.target.value
+                                )
+                            }
                             required
                         >
                             <option value="">Mahalle Seç</option>
@@ -217,7 +236,16 @@ export default function Address() {
                         />
                     </div>
 
-                    <button type="submit" style={{ marginTop: '20px' }} disabled={!selectedProvinceId || !selectedDistrictId || !selectedNeighborhoodId || !village.trim()}>
+                    <button
+                        type="submit"
+                        style={{ marginTop: '20px' }}
+                        disabled={
+                            !selectedProvinceId ||
+                            !selectedDistrictId ||
+                            !selectedNeighborhoodId ||
+                            !village.trim()
+                        }
+                    >
                         İleri
                     </button>
                 </form>
