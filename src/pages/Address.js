@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 
-export default function Adres() {
+export default function Address() {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [neighborhoods, setNeighborhoods] = useState([]);
@@ -10,77 +10,126 @@ export default function Adres() {
     const [selectedDistrictId, setSelectedDistrictId] = useState('');
     const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState('');
     const [village, setVillage] = useState('');
+    const [cityName, setCityName] = useState('');
+    const [districtName, setDistrictName] = useState('');
 
     const navigate = useNavigate();
 
     // İller (Provinces) Verisini Getirme
     useEffect(() => {
-        fetch('http://turkiyeapi.dev/api/v1/provinces')
-            .then((response) => {
+        const fetchProvinces = async () => {
+            try {
+                const response = await fetch('http://turkiyeapi.dev/api/v1/provinces');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
-            })
-            .then((data) => {
-                if (Array.isArray(data.data)) {
-                    setProvinces(data.data); // Veriyi doğru şekilde ayarlıyoruz.
-                } else {
-                    console.error('Beklenen formatta veri gelmedi.');
-                }
-            })
-            .catch((error) => console.error('İller çekilirken hata:', error));
+                const data = await response.json();
+                setProvinces(data.data || []);
+            } catch (error) {
+                console.error('İller çekilirken hata:', error);
+            }
+        };
+        fetchProvinces();
     }, []);
 
     // İlçeleri (Districts) Getirme
     useEffect(() => {
         if (selectedProvinceId) {
-            fetch(`http://turkiyeapi.dev/api/v1/districts?provinceId=${selectedProvinceId}`)
-                .then((response) => {
+            const province = provinces.find(p => p.id === parseInt(selectedProvinceId));
+            setCityName(province ? province.name : '');
+
+            const fetchDistricts = async () => {
+                try {
+                    const response = await fetch(
+                        `http://turkiyeapi.dev/api/v1/districts?provinceId=${selectedProvinceId}`
+                    );
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
-                })
-                .then((data) => {
-                    if (Array.isArray(data.data)) {
-                        setDistricts(data.data);
-                    } else {
-                        console.error('Beklenen formatta veri gelmedi.');
-                    }
-                })
-                .catch((error) => console.error('İlçeler çekilirken hata:', error));
+                    const data = await response.json();
+                    setDistricts(data.data || []);
+                } catch (error) {
+                    console.error('İlçeler çekilirken hata:', error);
+                }
+            };
+            fetchDistricts();
         }
-    }, [selectedProvinceId]);
+    }, [selectedProvinceId, provinces]);
 
     // Mahalleleri (Neighborhoods) Getirme
     useEffect(() => {
         if (selectedDistrictId) {
-            fetch(`http://turkiyeapi.dev/api/v1/neighborhoods?districtId=${selectedDistrictId}`)
-                .then((response) => {
+            const district = districts.find(d => d.id === parseInt(selectedDistrictId));
+            setDistrictName(district ? district.name : '');
+
+            const fetchNeighborhoods = async () => {
+                try {
+                    const response = await fetch(
+                        `http://turkiyeapi.dev/api/v1/neighborhoods?districtId=${selectedDistrictId}`
+                    );
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
-                })
-                .then((data) => {
-                    if (Array.isArray(data.data)) {
-                        setNeighborhoods(data.data);
-                    } else {
-                        console.error('Beklenen formatta veri gelmedi.');
-                    }
-                })
-                .catch((error) => console.error('Mahalleler çekilirken hata:', error));
+                    const data = await response.json();
+                    setNeighborhoods(data.data || []);
+                } catch (error) {
+                    console.error('Mahalleler çekilirken hata:', error);
+                }
+            };
+            fetchNeighborhoods();
         }
-    }, [selectedDistrictId]);
+    }, [selectedDistrictId, districts]);
 
     // Form Submit İşlemi
-    const handleSubmit = (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        navigate('/next', {
-            state: { selectedProvinceId, selectedDistrictId, selectedNeighborhoodId, village },
-        });
-    };
+
+        const neighborhood = neighborhoods.find(n => n.id === parseInt(selectedNeighborhoodId));
+        const neighborhoodName = neighborhood ? neighborhood.name : '';
+
+        const addressData = {
+            plate: parseInt(selectedProvinceId),
+            city: cityName,
+            districts: [
+                {
+                    district: districtName,
+                    neighborhoods: [
+                        {
+                            neighborhood: neighborhoodName,
+                            villages: [village],
+                        }
+                    ],
+                }
+            ],
+        };
+        console.log("Gönderilen veri:", addressData);
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log("Token:", token);
+            const response = await fetch('http://localhost:5000/api/address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(addressData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Adres başarıyla eklendi:', result);
+
+            navigate('/next', {
+                state: { selectedProvinceId, selectedDistrictId, selectedNeighborhoodId, village },
+            });
+        } catch (error) {
+            console.error('Adres ekleme hatası:', error);
+        }
+    }, [cityName, districtName, navigate, neighborhoods, selectedDistrictId, selectedNeighborhoodId, selectedProvinceId, village]);
 
     return (
         <Layout>
