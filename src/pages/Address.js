@@ -20,27 +20,14 @@ export default function Address() {
     const [village, setVillage] = useState('');
 
     const navigate = useNavigate();
-
-    const isFormValid = useCallback(() => {
-        return (
-            selectedProvinceId &&
-            searchProvince &&
-            selectedDistrictId &&
-            searchDistrict &&
-            selectedNeighborhoodId &&
-            searchNeighborhood &&
-            village.trim() !== ''
+    //fonksyon
+    // İl, ilçe ve mahalle filtreleme fonksiyonlarıas
+    const filterOptions = (options, searchValue) =>
+        options.filter((option) =>
+            option.name.toLowerCase().startsWith(searchValue.toLowerCase())
         );
-    }, [
-        selectedProvinceId,
-        searchProvince,
-        selectedDistrictId,
-        searchDistrict,
-        selectedNeighborhoodId,
-        searchNeighborhood,
-        village,
-    ]);
 
+    // İller Verisini Getirme
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
@@ -55,6 +42,7 @@ export default function Address() {
         fetchProvinces();
     }, []);
 
+    // İlçeleri Getirme
     useEffect(() => {
         if (selectedProvinceId) {
             const fetchDistricts = async () => {
@@ -73,6 +61,7 @@ export default function Address() {
         }
     }, [selectedProvinceId]);
 
+    // Mahalleleri Getirme
     useEffect(() => {
         if (selectedDistrictId) {
             const fetchNeighborhoods = async () => {
@@ -91,52 +80,61 @@ export default function Address() {
         }
     }, [selectedDistrictId]);
 
-    const handleSubmit = useCallback(
-        async (e) => {
-            e.preventDefault();
-            const addressData = {
-                plate: parseInt(selectedProvinceId),
-                city: searchProvince,
-                districts: [
-                    {
-                        district: searchDistrict,
-                        neighborhoods: [
-                            {
-                                neighborhood: searchNeighborhood,
-                                villages: [village],
-                            },
-                        ],
-                    },
-                ],
-            };
+    // Arama değiştikçe filtreleme işlemleri
+    useEffect(() => {
+        setFilteredProvinces(filterOptions(provinces, searchProvince));
+    }, [searchProvince, provinces]);
 
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/api/address', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(addressData),
-                });
+    useEffect(() => {
+        setFilteredDistricts(filterOptions(districts, searchDistrict));
+    }, [searchDistrict, districts]);
 
 
 
-                console.log('Adres başarıyla eklendi');
-                navigate('/next');
-            } catch (error) {
-                console.error('Adres ekleme hatası:', error);
+
+    useEffect(() => {
+        setFilteredNeighborhoods(filterOptions(neighborhoods, searchNeighborhood));
+    }, [searchNeighborhood, neighborhoods]);
+
+    const handleSubmit = useCallback(async (e) => {
+        e.preventDefault();
+        const addressData = {
+            plate: parseInt(selectedProvinceId),
+            city: searchProvince,
+            districts: [
+                {
+                    district: searchDistrict,
+                    neighborhoods: [
+                        {
+                            neighborhood: searchNeighborhood,
+                            villages: [village],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(addressData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        },
-        [selectedProvinceId, searchProvince, selectedDistrictId, searchDistrict, selectedNeighborhoodId, searchNeighborhood, village, navigate]
-    );
 
-    const handleSelect = (setter, setSearchValue, options, selectedId) => {
-        const selectedOption = options.find((option) => option.id === parseInt(selectedId));
-        setter(selectedId);
-        setSearchValue(selectedOption ? selectedOption.name : '');
-    };
+            console.log('Adres başarıyla eklendi');
+            navigate('/next');
+        } catch (error) {
+            console.error('Adres ekleme hatası:', error);
+        }
+    }, [selectedProvinceId, searchProvince, selectedDistrictId, searchDistrict, selectedNeighborhoodId, searchNeighborhood, village, navigate]);
 
     return (
         <Layout>
@@ -153,9 +151,7 @@ export default function Address() {
                         />
                         <select
                             value={selectedProvinceId}
-                            onChange={(e) =>
-                                handleSelect(setSelectedProvinceId, setSearchProvince, provinces, e.target.value)
-                            }
+                            onChange={(e) => setSelectedProvinceId(e.target.value)}
                             required
                         >
                             <option value="">İl Seç</option>
@@ -170,17 +166,14 @@ export default function Address() {
                     <div style={{ marginTop: '10px' }}>
                         <label>İlçe: </label>
                         <input
-                            type="text"
+                            type="textgir"
                             value={searchDistrict}
                             onChange={(e) => setSearchDistrict(e.target.value)}
                             placeholder="İlçe Ara"
-                            disabled={!selectedProvinceId}
                         />
                         <select
                             value={selectedDistrictId}
-                            onChange={(e) =>
-                                handleSelect(setSelectedDistrictId, setSearchDistrict, districts, e.target.value)
-                            }
+                            onChange={(e) => setSelectedDistrictId(e.target.value)}
                             required
                         >
                             <option value="">İlçe Seç</option>
@@ -199,13 +192,10 @@ export default function Address() {
                             value={searchNeighborhood}
                             onChange={(e) => setSearchNeighborhood(e.target.value)}
                             placeholder="Mahalle Ara"
-                            disabled={!selectedDistrictId}
                         />
                         <select
                             value={selectedNeighborhoodId}
-                            onChange={(e) =>
-                                handleSelect(setSelectedNeighborhoodId, setSearchNeighborhood, neighborhoods, e.target.value)
-                            }
+                            onChange={(e) => setSelectedNeighborhoodId(e.target.value)}
                             required
                         >
                             <option value="">Mahalle Seç</option>
@@ -227,7 +217,7 @@ export default function Address() {
                         />
                     </div>
 
-                    <button type="submit" style={{ marginTop: '20px' }} disabled={!isFormValid()}>
+                    <button type="submit" style={{ marginTop: '20px' }} disabled={!selectedProvinceId || !selectedDistrictId || !selectedNeighborhoodId || !village.trim()}>
                         İleri
                     </button>
                 </form>
