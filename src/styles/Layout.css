@@ -1,0 +1,14 @@
+/* Layout - Ana Yapı */
+.layout {
+    display: flex; /* Sidebar ve içerik yan yana */
+    height: 100vh; /* Sayfa yüksekliği */
+}
+
+/* İçerik Alanı */
+.content {
+    flex: 1; /* Kalan alanı doldur */
+    padding: 20px; /* İçerik alanına iç boşluk ekle */
+    background-color: white; /* Arka plan rengi */
+    overflow-y: auto; /* İçerik taşarsa dikey kaydırma */
+    box-sizing: border-box; /* Kutunun boyutunu düzgün hesapla */
+}
