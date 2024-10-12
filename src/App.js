@@ -3,6 +3,7 @@ import { useAuth } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import Profile from "./pages/Profile";
+import Adres from './components/Adres';
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -18,6 +19,7 @@ export default function App() {
                     <>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/profile" element={<Profile />} />
+                        <Route path="/sensor-dashboard" element={<Adres />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>
                 ) : (
