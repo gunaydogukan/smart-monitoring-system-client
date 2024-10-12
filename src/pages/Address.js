@@ -127,8 +127,16 @@ export default function Address() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            console.log('Adres başarıyla eklendi');
-            navigate('/next');
+            const result = await response.json();
+
+            console.log('Adres başarıyla eklendi:', result);
+
+            if (!result.villageId) {
+                alert('Köy ID alınamadı. Lütfen tekrar deneyin.');
+                return;
+            }
+            navigate('/sensorform', { state: {  villageId: result.villageId,villageName: village}});
+
         } catch (error) {
             console.error('Adres ekleme hatası:', error);
         }
