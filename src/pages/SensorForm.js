@@ -12,34 +12,63 @@ export default function SensorForm() {
     const [lng, setLng] = useState('');
     const [def, setDef] = useState('');
     const [typeId, setTypeId] = useState('');
+    const [companyCode, setCompanyCode] = useState('');
+    const [managerId, setManagerId] = useState('');
     const [types, setTypes] = useState([]);
+    const [companies, setCompanies] = useState([]);
+    const [managers, setManagers] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Tipleri backend'den al
+    // Backend'den verileri alma
     useEffect(() => {
-        const fetchTypes = async () => {
+        const fetchData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/api/type', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
+                const headers = {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' // JSON content type ekledik
+                };
+
+                const urls = [
+                    'http://localhost:5000/api/type',
+                    'http://localhost:5000/api/companies',
+                    'http://localhost:5000/api/users'
+                ];
+
+                // Promise.all ile tüm istekleri paralel olarak başlatıyoruz
+                const responses = await Promise.all(
+                    urls.map((url) => fetch(url, { headers }))
+                );
+
+                // Her bir isteğin durumunu kontrol et
+                responses.forEach((response) => {
+                    if (!response.ok) {
+                        throw new Error('Veriler alınırken hata oluştu!');
+                    }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                // Tek seferde tüm json body'leri okuyalım
+                const [typesData, companiesData, usersData] = await Promise.all(
+                    responses.map((response) => response.json())
+                );
 
-                const data = await response.json();
-                setTypes(data);
+                setTypes(typesData);
+                setCompanies(companiesData);
+
+                // Sadece 'manager' rolündeki kullanıcıları filtrele
+                const managerList = usersData.filter((user) => user.role === 'manager');
+                setManagers(managerList);
+
             } catch (error) {
-                console.error('Tipler alınırken hata:', error);
+                console.error('Veri alınırken hata:', error);
+                setError('Veri alınırken hata oluştu. Lütfen tekrar deneyin.');
             }
         };
 
-        fetchTypes(); // useEffect içinde çağırıyoruz
+        fetchData();
     }, []);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,8 +88,10 @@ export default function SensorForm() {
                     lat: parseFloat(lat),
                     lng: parseFloat(lng),
                     def,
-                    type_id: parseInt(typeId),  // Burada type_id gönderiyoruz
+                    type_id: parseInt(typeId),
                     village_id: parseInt(villageId),
+                    company_code: companyCode,
+                    manager_id: parseInt(managerId),
                 }),
             });
 
@@ -83,6 +114,38 @@ export default function SensorForm() {
             <div style={{ padding: '20px' }}>
                 <h1>Yeni Sensör Ekle</h1>
                 <form onSubmit={handleSubmit}>
+                    <div>
+                        <label>Company: </label>
+                        <select
+                            value={companyCode}
+                            onChange={(e) => setCompanyCode(e.target.value)}
+                            required
+                        >
+                            <option value="">Şirket Seç</option>
+                            {companies.map((company) => (
+                                <option key={company.id} value={company.code}>
+                                    {company.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Manager: </label>
+                        <select
+                            value={managerId}
+                            onChange={(e) => setManagerId(e.target.value)}
+                            required
+                        >
+                            <option value="">Yönetici Seç</option>
+                            {managers.map((manager) => (
+                                <option key={manager.id} value={manager.id}>
+                                    {manager.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <div>
                         <label>Data Kodu: </label>
                         <input
