@@ -61,7 +61,7 @@ export default function Sidebar() {
                     <span>Profilim</span>
                 </div>
 
-                <div className="menu" onClick={() => goTo("/sensorshow")}>
+                <div className="menu" onClick={() => goTo("/sensors")}>
                     <FaMicrochip className="menu-icon"/>
                     <span>Sensörler</span>
                 </div>

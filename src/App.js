@@ -26,7 +26,7 @@ export default function App() {
                         <Route path="/address" element={<Address />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/sensorform" element={<SensorForm />} />
-                        <Route path="/sensorshow" element={<SensorShow />} /> {/* SensorShow rotası */}
+                        <Route path="/sensors" element={<SensorShow />} /> {/* SensorShow rotası */}
                         <Route path="/CompanyAdd" element={<CompanyAdd />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>
