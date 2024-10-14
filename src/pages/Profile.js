@@ -82,7 +82,9 @@ export default function Profile() {
                                 </div>
                                 <div style={styles.infoRow}>
                                     <strong>Kurum Kodu:</strong>
+
                                     <p>{profileData.companyCode || 'Kurum kodu bulunamadı'}</p>
+
                                 </div>
                             </>
                         )}
