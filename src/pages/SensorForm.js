@@ -40,7 +40,7 @@ export default function SensorForm() {
                 const responses = await Promise.all(
                     urls.map((url) => fetch(url, { headers }))
                 );
-
+                console.log(responses);
                 // Her bir isteğin durumunu kontrol et
                 responses.forEach((response) => {
                     if (!response.ok) {
