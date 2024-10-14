@@ -14,14 +14,21 @@ export default function Profile() {
         const fetchProfileData = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/profile', {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                    },
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                if (!response.ok) throw new Error('Profil bilgisi alınırken hata oluştu.');
+                console.log('Response Headers:', response); // Yanıtı incele
+
+                if (!response.ok) {
+                    throw new Error('Profil bilgisi alınırken hata oluştu.');
+                }
 
                 const data = await response.json();
+                console.log('Dönen Kullanıcı Bilgileri:', data); // Kullanıcı verisini kontrol et
                 setProfileData(data);
             } catch (error) {
                 console.error('Profil bilgisi hatası:', error);
@@ -38,8 +45,6 @@ export default function Profile() {
     if (error) return <div>{error}</div>;
 
     const isAdministrator = profileData.role === 'administrator';
-    const companyName = profileData.company?.name || 'Kurum bulunamadı';
-    const companyCode = profileData.company?.code || 'Kurum kodu bulunamadı';
 
     return (
         <Layout>
@@ -73,11 +78,13 @@ export default function Profile() {
                             <>
                                 <div style={styles.infoRow}>
                                     <FaBuilding style={styles.icon} />
-                                    <p>{companyName}</p>
+                                    <p>{profileData.companyName || 'Kurum bulunamadı'}</p>
                                 </div>
                                 <div style={styles.infoRow}>
                                     <strong>Kurum Kodu:</strong>
-                                    <p>{profileData.companyCode}</p>
+
+                                    <p>{profileData.companyCode || 'Kurum kodu bulunamadı'}</p>
+
                                 </div>
                             </>
                         )}
