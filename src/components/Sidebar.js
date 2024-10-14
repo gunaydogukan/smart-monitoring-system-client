@@ -40,7 +40,7 @@ export default function Sidebar() {
     };
 
     // Sayfa yönlendirme yardımcı fonksiyonu
-    const goTo = (path) => navigate(path);
+    const goTo = (path, state = {}) => navigate(path, { state });
 
     // Logout sonrası yönlendirme
     const handleLogout = () => {
@@ -106,13 +106,13 @@ export default function Sidebar() {
                         </div>
                         {isAddOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => goTo('/register', {state: {role: 'manager'}})}>
+                                <li onClick={() => goTo('/register',  {role: 'manager'})}>
                                     <FaUser className="dropdown-icon"/> Manager Ekle
                                 </li>
                                 <li onClick={() => goTo('/CompanyAdd')}>
                                     <FaBuilding className="dropdown-icon"/> Kurum Ekle
                                 </li>
-                                <li onClick={() => goTo('/register', {state: {role: 'personal'}})}>
+                                <li onClick={() => goTo('/register',  {role: 'personal'})}>
                                     <FaUser className="dropdown-icon"/> Personal Ekle
                                 </li>
                                 <li onClick={() => goTo('/address')}>
