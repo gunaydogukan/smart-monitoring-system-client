@@ -34,7 +34,7 @@ export default function SensorShow() {
                 },
             });
 
-            if (!response.ok) throw new Error('Veriler alınamadı!');
+            //if (!response.ok) throw new Error('Veriler alınamadı!');
 
             const { allCompanies = [], managers = [], personals = [], sensors = [], sensorOwners = [] } = await response.json();
 
