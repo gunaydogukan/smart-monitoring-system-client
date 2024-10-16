@@ -15,6 +15,8 @@ export default function SensorShow() {
     const [filteredPersonals, setFilteredPersonals] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
 
+    const [userCompany, setUserCompany] = useState(''); // Manager'ın şirketi
+    const [userManagerName, setUserManagerName] = useState(''); // Manager'ın adı
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
@@ -23,6 +25,8 @@ export default function SensorShow() {
     useEffect(() => {
         if (user.role === 'administrator') {
             fetchAdminData();
+        }else if(user.role ==='manager'){
+            fetchManagerData();
         }
     }, [user.id]);
 
@@ -45,6 +49,44 @@ export default function SensorShow() {
             setSensorOwners(sensorOwners);
             setFilteredSensors(sensors);
             setFilteredManagers(managers);
+            setFilteredPersonals(personals);
+        } catch (error) {
+            console.error('Veri çekme hatası:', error);
+            toast.error('Veriler alınırken bir hata oluştu.');
+        }
+    };
+
+    const fetchManagerData = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/user-sensors`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            if (!response.ok) throw new Error('Veriler alınamadı!');
+
+            const {
+                manager,
+                company,
+                personals = [],
+                managerSensors = [],
+                personalSensors = []
+            } = await response.json();
+            //BACKDE COMPANYCODE VE NAME ALINACAK...
+            console.log(manager, manager.companyCode, personals, managerSensors, personalSensors);
+
+            // Manager bilgilerini ve şirket bilgisini set et
+            setUserManagerName(`${manager.name} ${manager.lastname}`);
+            setUserCompany(manager.companyCode);// Şirket de tekil olduğu için diziye alıyoruz
+
+            // Manager'e bağlı personelleri ve sensörleri set et
+            setPersonals(personals);
+            setSensors(managerSensors);
+            console.log(personalSensors[0].sensors);
+            setSensorOwners(personalSensors[0].sensors);
+            // Başlangıçta tüm sensörleri göster
+            setFilteredSensors(managerSensors);
             setFilteredPersonals(personals);
         } catch (error) {
             console.error('Veri çekme hatası:', error);
@@ -75,12 +117,28 @@ export default function SensorShow() {
             setFilteredPersonals(filterPersonal);
         }
         else if (activeFilter === 'personal' && selectedPersonal) {
+
             console.log("personeldeyim");
-            const filterOwner = sensorOwners.filter(owner => owner.sensor_owner === parseInt(selectedPersonal));
+            console.log("seçilen personel = "+selectedPersonal);
+            console.log("perosnal id =" +selectedPersonal);
+            let filteredSensors;
+            const sensorOwnerIds = sensorOwners.map(owner => owner.id);
 
-            const relatedSensorIds = filterOwner.map(owner => parseInt(owner.sensor_id));
-            const filteredSensors = sensors.filter(sensor => relatedSensorIds.includes(parseInt(sensor.id)));
+            console.log(sensorOwnerIds);
 
+            if(user.role==="manager"){
+                console.log("manager if içi");
+                filteredSensors = sensors.filter(sensor =>
+                    sensorOwnerIds.includes(sensor.id) // Sensor id'si sensorOwnerIds'de varsa filtrele
+                );
+
+            }else{
+                const filterOwner = sensorOwners.filter(owner => owner.sensor_owner === parseInt(selectedPersonal));
+                const relatedSensorIds = filterOwner.map(owner => parseInt(owner.sensor_id));
+                filteredSensors = sensors.filter(sensor => relatedSensorIds.includes(parseInt(sensor.id)));
+            }
+            console.log(sensors);
+            console.log(filteredSensors);
             setFilteredSensors(filteredSensors);
         }
         else {
@@ -115,8 +173,11 @@ export default function SensorShow() {
 
 // Personel seçildiğinde ilgili filtreleme yapılır
     const handlePersonalChange = (personalId) => {
+        console.log("değişime girdim")
         if (!personalId) {
-            setActiveFilter('manager'); // Manager seviyesine geri dön
+            setSelectedPersonal('');
+            console.log("ifin içi")
+            setActiveFilter('manager');// Manager seviyesine geri dön
         } else {
             setSelectedPersonal(personalId);
             setActiveFilter('personal'); // Aktif filtreyi personal yap
@@ -130,6 +191,7 @@ export default function SensorShow() {
                 <ToastContainer />
                 <h2>Sensör Listesi</h2>
 
+                {/* Admin Görünümü */}
                 {user.role === 'administrator' && (
                     <div style={styles.filters}>
                         <select value={selectedCompany} onChange={(e) => handleCompanyChange(e.target.value)}>
@@ -161,6 +223,28 @@ export default function SensorShow() {
                     </div>
                 )}
 
+                {/* Manager Görünümü */}
+                {user.role === 'manager' && (
+                    <>
+                        <div style={styles.info}>
+                            <p><strong>Şirket:</strong> {userCompany}</p>
+                            <p><strong>Manager:</strong> {userManagerName}</p>
+                        </div>
+
+                        <div style={styles.filters}>
+                            <select value={selectedPersonal} onChange={(e) => handlePersonalChange(e.target.value)}>
+                                <option value="">Tüm Personeller</option>
+                                {filteredPersonals.map(personal => (
+                                    <option key={personal.id} value={personal.id}>
+                                        {personal.name} {personal.lastname}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </>
+                )}
+
+                {/* Sensör Listesi */}
                 {filteredSensors.length > 0 ? (
                     <ul style={styles.list}>
                         {filteredSensors.map(sensor => (

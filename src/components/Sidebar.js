@@ -99,10 +99,12 @@ export default function Sidebar() {
                         </div>
                         {isAddOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => goTo('/register', { state: { role: 'manager' } })}>
+                                <li onClick={() => navigate('/register', {state: {role: 'manager'}})}>
                                     <FaUser className="dropdown-icon"/> Manager Ekle
                                 </li>
-
+                                <li onClick={() => navigate('/register', {state: {role: 'personal'}})}>
+                                    <FaUser className="dropdown-icon"/> Personal Ekle
+                                </li>
                                 {/* Manager rolünde "Kurum Ekle" gösterilmesin */}
                                 {!isManager && (
                                     <li onClick={() => goTo('/CompanyAdd')}>
@@ -110,9 +112,7 @@ export default function Sidebar() {
                                     </li>
                                 )}
 
-                                <li onClick={() => goTo('/register', { state: { role: 'personal' } })}>
-                                    <FaUser className="dropdown-icon"/> Personal Ekle
-                                </li>
+
                                 <li onClick={() => goTo('/address')}>
                                     <FaMicrochip className="dropdown-icon"/> Sensör Ekle
                                 </li>
