@@ -113,12 +113,14 @@ export default function Address() {
         };
 
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token'); // Token kontrolü
+            console.log('Gönderilen token:', token); // Token çıktısını kontrol et
+
             const response = await fetch('http://localhost:5000/api/address', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`, // Bearer token ekleniyor
                 },
                 body: JSON.stringify(addressData),
             });
@@ -128,15 +130,14 @@ export default function Address() {
             }
 
             const result = await response.json();
-
             console.log('Adres başarıyla eklendi:', result);
 
             if (!result.villageId) {
                 alert('Köy ID alınamadı. Lütfen tekrar deneyin.');
                 return;
             }
-            navigate('/sensorform', { state: {  villageId: result.villageId,villageName: village}});
 
+            navigate('/sensorform', { state: { villageId: result.villageId, villageName: village } });
         } catch (error) {
             console.error('Adres ekleme hatası:', error);
         }
