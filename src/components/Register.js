@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from "../layouts/Layout";
-import { toast, ToastContainer } from 'react-toastify'; // Toastify import
-import 'react-toastify/dist/ReactToastify.css'; // CSS dosyası
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -16,10 +15,10 @@ export default function Register() {
     });
 
     const [companies, setCompanies] = useState([]);
-    const { user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Role'ü location'dan çekiyoruz
     const role = location.state?.role || 'user';
 
     useEffect(() => {
@@ -54,8 +53,6 @@ export default function Register() {
 
         try {
             const payload = { ...formData, role };
-            console.log("Gönderilen payload:", payload);
-
             const response = await fetch('http://localhost:5000/api/register', {
                 method: 'POST',
                 headers: {
@@ -67,8 +64,8 @@ export default function Register() {
 
             const data = await response.json();
             if (response.ok) {
-                toast.success('Kayıt başarılı!', { autoClose: 3000 }); // Başarı bildirimi
-                setTimeout(() => navigate('/dashboard'), 3000); // 3 saniye sonra yönlendirme
+                toast.success('Kayıt başarılı!', { autoClose: 3000 });
+                setTimeout(() => navigate('/dashboard'), 3000);
             } else {
                 toast.error(data.error || 'Kayıt başarısız. Lütfen tekrar deneyin.');
             }
@@ -80,7 +77,7 @@ export default function Register() {
 
     return (
         <Layout>
-            <ToastContainer /> {/* Toastify Container */}
+            <ToastContainer />
             <form onSubmit={handleSubmit} style={styles.form}>
                 <h2 style={styles.formTitle}>
                     {role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
