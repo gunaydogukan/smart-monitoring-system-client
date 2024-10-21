@@ -8,6 +8,7 @@ import SensorForm from "./pages/SensorForm";
 import SensorShow from "./components/SensorShow"; // SensorShow bileşeni import edildi
 import CompanyAdd from "./components/CompanyAdd";
 import RoleBasedRedirect from './components/RoleBasedRedirect';
+import DisplayMap from './components/DisplayMap';
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
                         <Route path="/register" element={<Register />} />
                         <Route path="/sensorform" element={<SensorForm />} />
                         <Route path="/sensors" element={<RoleBasedRedirect />} /> {/* SensorShow rotası */}
+                        <Route path="/map" element={<DisplayMap />} />
                         <Route path="/CompanyAdd" element={<CompanyAdd />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>

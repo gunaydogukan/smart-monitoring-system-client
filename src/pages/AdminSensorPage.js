@@ -71,16 +71,17 @@ export default function AdminPage({ role }) {
         const filteredSensors =sensors.filter(sensor=>sensor.company_code===companyCode);
         const filteredPersonals = personals.filter(personal=>personal.companyCode===companyCode);
 
+        //setSelectedCompany(companyCode); kullanılabilir
         setFilteredManagers(filtered);
         setFilteredSensors(filteredSensors);
         setFilteredPersonals(filteredPersonals);
-
         setSensorForCompany(filteredSensors); //filtrenen company sensorlerini ayrı bir şekilde tutuyoruz
 
         if(!companyCode){
             setFilteredSensors(sensors); //company'seçimi giderse tekrar tüm sensörleri göster
             setFilteredManagers(managers);
             setFilteredPersonals(personals);
+            return;
         }
     };
 
@@ -100,18 +101,23 @@ export default function AdminPage({ role }) {
 
         if(!managerId){
             setFilteredSensors(sensorForCompany);
+            return;
         }
 
     };
 
     // Personel bazlı sensörleri filtreleme
     const filterSensorsByPersonal = (personalId) => {
+        if(!personalId){
+            return filterSensorsByManager(selectedManager);
+        }
+
         const filteredOwner = sensorOwners.filter(owner =>owner.sensor_owner === parseInt(personalId));
         const sensorIds = filteredOwner.map(owner => owner.sensor_id);
         const filteredSensors = sensors.filter(sensor => sensorIds.includes(sensor.id));
+
         setFilteredSensors(filteredSensors);
     };
-
 
 
     return (
