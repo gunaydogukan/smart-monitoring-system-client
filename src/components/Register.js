@@ -19,8 +19,8 @@ export default function Register() {
     const location = useLocation();
 
     // Role'ü location'dan çekiyoruz
-    const role = location.state?.role || 'user';
-
+    const role = location.state?.role;
+    console.log(role);
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -82,6 +82,7 @@ export default function Register() {
                 <h2 style={styles.formTitle}>
                     {role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
                 </h2>
+                {/* Form alanları */}
                 <input
                     type="text"
                     name="name"
@@ -146,6 +147,7 @@ export default function Register() {
             </form>
         </Layout>
     );
+
 }
 
 const styles = {
