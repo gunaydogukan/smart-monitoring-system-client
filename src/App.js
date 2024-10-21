@@ -7,7 +7,11 @@ import Register from "./components/Register";
 import SensorForm from "./pages/SensorForm";
 import CompanyAdd from "./components/CompanyAdd";
 import RoleBasedRedirect from './components/RoleBasedRedirect';
+
+import DisplayMap from './components/DisplayMap';
+
 import CompanyList from './pages/CompanyList';
+
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 
 export default function App() {
@@ -30,7 +34,9 @@ export default function App() {
                         <Route path="/register-personal" element={<Register />} />
                         <Route path="/add-sensor" element={<SensorForm />} />
                         <Route path="/sensors" element={<RoleBasedRedirect />} /> {/* SensorShow rotası */}
+                        <Route path="/map" element={<DisplayMap />} />
                         <Route path="/add-company" element={<CompanyAdd />} />
+
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </>
                 ) : (
