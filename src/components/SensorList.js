@@ -1,8 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Yönlendirme için import
-import DisplayMap from './DisplayMap'; // DisplayMap bileşenini import ediyoruz
 
-export default function SensorList({ sensors }) {
+export default function SensorList({ sensors = [] }) { // Varsayılan olarak boş dizi ayarlandı
     const navigate = useNavigate(); // Yönlendirme işlevi
 
     const handleViewOnMap = (sensor) => {
