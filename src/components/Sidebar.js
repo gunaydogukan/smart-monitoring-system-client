@@ -19,7 +19,7 @@ export default function Sidebar() {
     }, [user, navigate]);
 
     const isPersonal = user?.role === 'personal';
-    const isManager = user?.role === 'manager'; // Manager rolünü kontrol et
+ //   const isManager = user?.role === 'manager'; // Manager rolünü kontrol et
 
     useEffect(() => {
         const mode = localStorage.getItem("darkMode") === "true";
@@ -97,27 +97,39 @@ export default function Sidebar() {
                             <FaPlus className="menu-icon"/>
                             <span>Ekle</span>
                         </div>
-                        {isAddOpen && (
+                        {!isPersonal && (
                             <ul className="dropdown">
-                                {/* Manager rolünde "Manager Ekle" gösterilmesin */}
-                                {!isManager && (
-                                    <li onClick={() => navigate('/register-manager')}>
+                                {/* Sadece administrator rolü "Manager Ekle" seçeneğini görebilsin */}
+                                {user?.role === 'administrator' && (
+                                    <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
                                         <FaUser className="dropdown-icon"/> Manager Ekle
                                     </li>
                                 )}
-                                <li onClick={() => navigate('/register-personal')}>
-                                    <FaUser className="dropdown-icon"/> Personal Ekle
-                                </li>
-                                {!isManager && (
+
+                                {/* Personal Ekle - Sadece manager ve administrator için */}
+                                {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
+                                        <FaUser className="dropdown-icon"/> Personal Ekle
+                                    </li>
+                                )}
+
+                                {/* Sadece administrator rolü "Kurum Ekle" seçeneğini görebilsin */}
+                                {user?.role === 'administrator' && (
                                     <li onClick={() => goTo('/add-company')}>
                                         <FaBuilding className="dropdown-icon"/> Kurum Ekle
                                     </li>
                                 )}
-                                <li onClick={() => goTo('/add-address')}>
-                                    <FaMicrochip className="dropdown-icon"/> Sensör Ekle
-                                </li>
+
+                                {/* Sensör Ekle - Sadece manager ve administrator için */}
+                                {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    <li onClick={() => goTo('/add-address')}>
+                                        <FaMicrochip className="dropdown-icon"/> Sensör Ekle
+                                    </li>
+                                )}
                             </ul>
                         )}
+
+
                     </>
                 )}
 
