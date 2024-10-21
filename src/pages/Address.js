@@ -137,7 +137,7 @@ export default function Address() {
                 return;
             }
 
-            navigate('/sensorform', { state: { villageId: result.villageId, villageName: village } });
+            navigate('/add-sensor', { state: { villageId: result.villageId, villageName: village } });
         } catch (error) {
             console.error('Adres ekleme hatası:', error);
         }
