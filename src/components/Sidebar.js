@@ -83,7 +83,7 @@ export default function Sidebar() {
                     </>
                 )}
 
-                <div className="menu" onClick={() => goTo("/organisations")}>
+                <div className="menu" onClick={() => goTo("/companies")}>
                     <FaBuilding className="menu-icon"/>
                     <span>Kurumlar</span>
                 </div>
@@ -99,21 +99,21 @@ export default function Sidebar() {
                         </div>
                         {isAddOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => navigate('/register', {state: {role: 'manager'}})}>
-                                    <FaUser className="dropdown-icon"/> Manager Ekle
-                                </li>
-                                <li onClick={() => navigate('/register', {state: {role: 'personal'}})}>
+                                {/* Manager rolünde "Manager Ekle" gösterilmesin */}
+                                {!isManager && (
+                                    <li onClick={() => navigate('/register-manager')}>
+                                        <FaUser className="dropdown-icon"/> Manager Ekle
+                                    </li>
+                                )}
+                                <li onClick={() => navigate('/register-personal')}>
                                     <FaUser className="dropdown-icon"/> Personal Ekle
                                 </li>
-                                {/* Manager rolünde "Kurum Ekle" gösterilmesin */}
                                 {!isManager && (
-                                    <li onClick={() => goTo('/CompanyAdd')}>
+                                    <li onClick={() => goTo('/add-company')}>
                                         <FaBuilding className="dropdown-icon"/> Kurum Ekle
                                     </li>
                                 )}
-
-
-                                <li onClick={() => goTo('/address')}>
+                                <li onClick={() => goTo('/add-address')}>
                                     <FaMicrochip className="dropdown-icon"/> Sensör Ekle
                                 </li>
                             </ul>

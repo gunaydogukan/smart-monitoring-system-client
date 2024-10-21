@@ -6,61 +6,50 @@ export default function CompanyAdd() {
     const [formData, setFormData] = useState({
         name: '',
         code: '',
-        city_id: '',
+        plate: '',    // Seçilen şehrin id'si
+        city: '',     // Seçilen şehrin adı
     });
 
-    const [cities, setCities] = useState([]);
+    const [provinces, setProvinces] = useState([]);  // API'den gelecek şehir bilgileri
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    // Şehirleri backend'den çekme
+    // Şehirleri dış API'den çekme
     useEffect(() => {
-        let isMounted = true; // Bileşenin mount olup olmadığını kontrol etmek için flag
-
-        const fetchCities = async () => {
+        const fetchProvinces = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) throw new Error('Token eksik.');
-
-                const response = await fetch('http://localhost:5000/api/cities', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Şehirleri yüklerken hata: ${response.statusText}`);
-                }
-
+                const response = await fetch('https://turkiyeapi.dev/api/v1/provinces');
                 const data = await response.json();
-                if (isMounted) setCities(data);
-                console.log(data);
+                setProvinces(data.data || []);  // Gelen şehir verisini kaydediyoruz
             } catch (error) {
-                console.error('Şehirleri çekerken hata:', error);
-                if (isMounted) setError('Şehirleri yüklerken bir hata oluştu.');
+                console.error('İller çekilirken hata:', error);
+                setError('Şehirler yüklenirken bir hata oluştu.');
             } finally {
-                if (isMounted) setLoading(false);
+                setLoading(false);
             }
         };
-
-        fetchCities();
-
-        return () => {
-            isMounted = false; // Bileşen unmount olduğunda flag'i false yap
-        };
+        fetchProvinces();
     }, []);
-
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Şehir seçimi yapıldığında, şehir plakası (id) ve adı ile birlikte formData'ya kaydediyoruz
+    const handleCityChange = (e) => {
+        const selectedCity = provinces.find(province => province.id === parseInt(e.target.value)); // `id` alanını kullanıyoruz
+        setFormData({
+            ...formData,
+            plate: selectedCity.id,  // Şehir id'si
+            city: selectedCity.name, // Şehir adı
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // İşlemi başlatırken butonu devre dışı bırak
+        setIsSubmitting(true);
 
         try {
             const response = await fetch('http://localhost:5000/api/companies', {
@@ -69,7 +58,7 @@ export default function CompanyAdd() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(formData),  // Backend'e formData gönderiliyor
             });
 
             const data = await response.json();
@@ -84,12 +73,12 @@ export default function CompanyAdd() {
             console.error('Kurum eklenirken hata:', error);
             alert(error.message);
         } finally {
-            setIsSubmitting(false); // İşlem tamamlandığında butonu aktif hale getir
+            setIsSubmitting(false);
         }
     };
 
     if (loading) {
-        return <div>Şehirler yükleniyor...</div>; // Yüklenme durumu
+        return <div>Şehirler yükleniyor...</div>;
     }
 
     return (
@@ -115,21 +104,22 @@ export default function CompanyAdd() {
                     required
                     style={styles.input}
                 />
+
+                {/* Şehir Seçimi Dropdown */}
                 <select
-                    name="city_id"
-                    value={formData.city_id}
-                    onChange={handleChange}
+                    name="plate"
+                    value={formData.plate}
+                    onChange={handleCityChange}  // handleCityChange fonksiyonu şehir seçimini işliyor
                     required
                     style={styles.input}
                 >
                     <option value="">Şehir Seçin</option>
-                    {cities.map((city) => (
-                        <option key={city.id} value={city.id}>
-                            {city.city} {/* city.name yerine city.city */}
+                    {provinces.map((province) => (
+                        <option key={province.id} value={province.id}>
+                            {province.name} ({province.id}) {/* Şehir adı ve id'si (plate) */}
                         </option>
                     ))}
                 </select>
-
 
                 <button
                     type="submit"

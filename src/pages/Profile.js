@@ -21,17 +21,13 @@ export default function Profile() {
                     }
                 });
 
-                console.log('Response Headers:', response); // Yanıtı incele
-
                 if (!response.ok) {
                     throw new Error('Profil bilgisi alınırken hata oluştu.');
                 }
 
                 const data = await response.json();
-                console.log('Dönen Kullanıcı Bilgileri:', data); // Kullanıcı verisini kontrol et
                 setProfileData(data);
             } catch (error) {
-                console.error('Profil bilgisi hatası:', error);
                 setError('Bilgiler alınırken hata oluştu.');
             } finally {
                 setLoading(false);
@@ -82,9 +78,7 @@ export default function Profile() {
                                 </div>
                                 <div style={styles.infoRow}>
                                     <strong>Kurum Kodu:</strong>
-
                                     <p>{profileData.companyCode || 'Kurum kodu bulunamadı'}</p>
-
                                 </div>
                             </>
                         )}
