@@ -1,36 +1,59 @@
 import React from 'react';
 
-export default function SensorsDropdowns({ role, companies = [], managers = [], personals = [], onChange }) {
+export default function SensorsDropdowns({
+                                             role,
+                                             companies = [],
+                                             managers = [],
+                                             personals = [],
+                                             selectedCompany,
+                                             selectedManager,
+                                             selectedPersonal,
+                                             onChange
+                                         }) {
     return (
         <div style={styles.container}>
+            {/* Şirketler Dropdown (Sadece administrator görebilir) */}
             {role === 'administrator' && (
-                <>
-                    {/* Şirketler Dropdown */}
-                    <select style={styles.dropdown} onChange={(e) => onChange('company', e.target.value)}>
-                        <option value="">Tüm Şirketler</option>
-                        {companies.map(company => (
-                            <option key={company.code} value={company.code}>
-                                {company.name} - {company.code}
-                            </option>
-                        ))}
-                    </select>
-
-                    {/* Managerlar Dropdown */}
-                    <select style={styles.dropdown} onChange={(e) => onChange('manager', e.target.value)}>
-                        <option value="">Tüm Managerlar</option>
-                        {managers.map(manager => (
-                            <option key={manager.id} value={manager.id}>
-                                {manager.name} {manager.lastname}
-                            </option>
-                        ))}
-                    </select>
-                </>
+                <select
+                    style={styles.dropdown}
+                    onChange={(e) => onChange('company', e.target.value)}
+                    value={selectedCompany}
+                >
+                    <option value="">Tüm Şirketler</option>
+                    {companies.map((company) => (
+                        <option key={company.code} value={company.code}>
+                            {company.name} - {company.code}
+                        </option>
+                    ))}
+                </select>
             )}
 
-            {/* Personeller Dropdown (Hem admin hem de manager görebilir) */}
-            <select style={styles.dropdown} onChange={(e) => onChange('personal', e.target.value)}>
+            {/* Managerlar Dropdown (Sadece administrator görebilir ve şirket seçilmeden kilitli) */}
+            {role === 'administrator' && (
+                <select
+                    style={styles.dropdown}
+                    value={selectedManager}
+                    onChange={(e) => onChange('manager', e.target.value)}
+                    disabled={!selectedCompany}  // Şirket seçilmezse manager kilitli
+                >
+                    <option value="">Tüm Managerlar</option>
+                    {managers.map((manager) => (
+                        <option key={manager.id} value={manager.id}>
+                            {manager.name} {manager.lastname}
+                        </option>
+                    ))}
+                </select>
+            )}
+
+            {/* Personeller Dropdown (Hem administrator hem de manager için aktif) */}
+            <select
+                style={styles.dropdown}
+                value={selectedPersonal}
+                onChange={(e) => onChange('personal', e.target.value)}
+                disabled={role === 'administrator' && !selectedManager}  // Admin ise manager seçilmeden personel kilitli
+            >
                 <option value="">Tüm Personeller</option>
-                {personals.map(personal => (
+                {personals.map((personal) => (
                     <option key={personal.id} value={personal.id}>
                         {personal.name} {personal.lastname}
                     </option>
@@ -58,8 +81,5 @@ const styles = {
         cursor: 'pointer',
         outline: 'none',
         minWidth: '200px',
-    },
-    dropdownHover: {
-        borderColor: '#4CAF50',
     },
 };
