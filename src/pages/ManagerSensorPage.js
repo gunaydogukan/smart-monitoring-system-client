@@ -9,8 +9,7 @@ export default function ManagerPage({ role }) {
     const [selectedPersonal, setSelectedPersonal] = useState('');
 
     useEffect(() => {
-        // Manager sensörlerini fetch et
-        fetchManagerSensors();
+        fetchManagerSensors();  // Sayfa ilk yüklendiğinde verileri çekiyoruz
     }, []);
 
     const fetchManagerSensors = async () => {
@@ -35,19 +34,19 @@ export default function ManagerPage({ role }) {
         }
     };
 
-    // Personel bazlı sensörleri filtreleme
     const filterSensorsByPersonal = (personalId) => {
         if (personalId) {
+            // Personelin sensörlerini bul
             const personalSensorData = managerData.personalSensors.find(p => p.personalId === parseInt(personalId));
-            setFilteredSensors(personalSensorData ? personalSensorData.sensors : []);
+            setFilteredSensors(personalSensorData ? personalSensorData.sensors : []);  // Sensörleri ayarla
         } else {
-            // Eğer personel seçimi iptal edilirse, manager sensörlerini tekrar göster
+            // Personel seçimi iptal edilirse, manager sensörlerini göster
             setFilteredSensors(managerData.managerSensors);
         }
     };
 
     if (!managerData) {
-        return <p>Veriler yükleniyor...</p>;
+        return <p>Veriler yükleniyor...</p>;  // Veri yüklenene kadar
     }
 
     return (
@@ -57,14 +56,15 @@ export default function ManagerPage({ role }) {
                 <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
                 <p>Şirket Kodu: {managerData.manager.companyCode}</p>
 
-                {/* Personeller dropdown */}
+                {/* Personeller Dropdown */}
                 <SensorsDropdowns
-                    role={role}
-                    personals={managerData.personals}
+                    role={role}  // Manager rolü
+                    personals={managerData.personals}  // Personelleri gönder
+                    selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
                 />
 
-                {/* Sensör listesi */}
+                {/* Sensör Listesi */}
                 <SensorList sensors={filteredSensors} />
             </div>
         </Layout>
