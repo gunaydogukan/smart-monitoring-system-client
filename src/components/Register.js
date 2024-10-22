@@ -12,15 +12,18 @@ export default function Register() {
         password: '',
         phone: '',
         companyCode: '',
+        creator_id: '', // Seçilen manager'in id'si burada tutulacak (sadece personal için)
     });
 
     const [companies, setCompanies] = useState([]);
+    const [managers, setManagers] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState(''); // Seçilen kurum
     const navigate = useNavigate();
     const location = useLocation();
 
     // Role'ü location'dan çekiyoruz
     const role = location.state?.role;
-    console.log(role);
+
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -39,6 +42,31 @@ export default function Register() {
         fetchCompanies();
     }, []);
 
+    const handleCompanyChange = async (e) => {
+        const companyCode = e.target.value;
+        setSelectedCompany(companyCode);
+        setFormData({ ...formData, companyCode });
+
+        if (companyCode && role === 'personal') { // Eğer personal ekleniyorsa managerları getir
+            try {
+                const response = await fetch('http://localhost:5000/api/users', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
+                const data = await response.json();
+
+                // Manager rolüne sahip ve seçilen kuruma ait kullanıcıları filtrele
+                const filteredManagers = data.filter(user => user.role === 'manager' && user.companyCode === companyCode);
+                setManagers(filteredManagers); // Filtrelenmiş manager'ları ayarla
+            } catch (error) {
+                console.error('Manager listesi alınırken hata:', error);
+            }
+        } else {
+            setManagers([]); // Manager listesi boşaltılır
+        }
+    };
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -48,7 +76,6 @@ export default function Register() {
 
         if (role === 'administrator') {
             alert('Administrator ekleyemezsiniz!');
-            console.log("deneme")
             return;
         }
 
@@ -128,10 +155,12 @@ export default function Register() {
                     onChange={handleChange}
                     style={styles.input}
                 />
+
+                {/* Kurum seçimi */}
                 <select
                     name="companyCode"
                     value={formData.companyCode}
-                    onChange={handleChange}
+                    onChange={handleCompanyChange}
                     required
                     style={styles.input}
                 >
@@ -142,13 +171,32 @@ export default function Register() {
                         </option>
                     ))}
                 </select>
+
+                {/* Manager seçimi sadece personal ekleniyorsa görünsün */}
+                {role === 'personal' && (
+                    <select
+                        name="creator_id"  // Seçilen manager'in id'si
+                        value={formData.creator_id}
+                        onChange={handleChange}
+                        required
+                        disabled={!selectedCompany}  // Kurum seçilmeden kilitli olacak
+                        style={styles.input}
+                    >
+                        <option value="">Manager Seçin</option>
+                        {managers.map((manager) => (
+                            <option key={manager.id} value={manager.id}>
+                                {manager.name} {manager.lastname}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
                 <button type="submit" style={styles.button}>
                     {role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
                 </button>
             </form>
         </Layout>
     );
-
 }
 
 const styles = {

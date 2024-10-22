@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import SensorsDropdowns from '../components/SensorsDropdowns';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
-
+import {
+    filterManagersByCompany,
+    filterPersonalsByManager,
+    filterSensorsByCompany,
+    filterSensorsByManager,
+    filterSensorsByPersonal
+} from '../services/FilterService'; // Servisi import ettik
 
 export default function AdminPage({ role }) {
     const [companies, setCompanies] = useState([]);
@@ -19,7 +25,7 @@ export default function AdminPage({ role }) {
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
 
-    const [sensorForCompany, setSensorForCompany] = useState([]); ////ayrı bir usestate değişkende tutuyorum cunku admin seçimi iptal olursa tekrar company sensörleri kaybolmasın
+    const [sensorForCompany, setSensorForCompany] = useState([]);
 
     useEffect(() => {
         fetchAdminData();
@@ -40,99 +46,83 @@ export default function AdminPage({ role }) {
             setSensors(sensors);
             setSensorOwners(sensorOwners);
 
-            // Başlangıçta tüm verileri göster
-            setFilteredManagers(managers);
-            setFilteredPersonals(personals);
-            setFilteredSensors(sensors);
+            setFilteredSensors(sensors); // Başlangıçta tüm sensörler gösterilsin
         } catch (error) {
             console.error('Veri çekme hatası:', error);
         }
     };
 
     const handleDropdownChange = (type, value) => {
-
         if (type === 'company') {
             setSelectedCompany(value);
-            filterManagersByCompany(value);
+
+            if (!value) {
+                setFilteredManagers([]);
+                setFilteredPersonals([]);
+                setFilteredSensors(sensors);
+                setSelectedManager('');
+                setSelectedPersonal('');
+                return;
+            }
+
+            const filteredManagers = filterManagersByCompany(managers, value);
+            setFilteredManagers(filteredManagers);
+
+            const filteredSensors = filterSensorsByCompany(sensors, value);
+            setFilteredSensors(filteredSensors);
+            setSensorForCompany(filteredSensors);
+
+            setSelectedManager(''); // Manager ve personal sıfırlanacak
+            setFilteredPersonals([]);
         } else if (type === 'manager') {
             setSelectedManager(value);
-            filterPersonalsByManager(value);
-            filterSensorsByManager(value);
 
+            if (!value) {
+                setFilteredPersonals([]);
+                setFilteredSensors(sensorForCompany); // Şirketin sensörlerine geri dön
+                setSelectedPersonal('');
+                return;
+            }
+
+            const filteredPersonals = filterPersonalsByManager(personals, value);
+            setFilteredPersonals(filteredPersonals);
+
+            const filteredSensors = filterSensorsByManager(sensors, sensorOwners, value);
+            setFilteredSensors(filteredSensors);
         } else if (type === 'personal') {
             setSelectedPersonal(value);
-            filterSensorsByPersonal(value);
+
+            if (!value) {
+                if (selectedManager) {
+                    const filteredSensors = filterSensorsByManager(sensors, sensorOwners, selectedManager);
+                    setFilteredSensors(filteredSensors);
+                } else {
+                    setFilteredSensors(sensorForCompany); // Şirket sensörlerine geri dön
+                }
+                return;
+            }
+
+            const filteredSensors = filterSensorsByPersonal(sensors, sensorOwners, value);
+            setFilteredSensors(filteredSensors);
         }
     };
-
-    // Şirket bazlı manager'ları filtreleme
-    const filterManagersByCompany = (companyCode) => {
-        const filtered = managers.filter(manager => manager.companyCode === companyCode);
-        const filteredSensors =sensors.filter(sensor=>sensor.company_code===companyCode);
-        const filteredPersonals = personals.filter(personal=>personal.companyCode===companyCode);
-
-        //setSelectedCompany(companyCode); kullanılabilir
-        setFilteredManagers(filtered);
-        setFilteredSensors(filteredSensors);
-        setFilteredPersonals(filteredPersonals);
-        setSensorForCompany(filteredSensors); //filtrenen company sensorlerini ayrı bir şekilde tutuyoruz
-
-        if(!companyCode){
-            setFilteredSensors(sensors); //company'seçimi giderse tekrar tüm sensörleri göster
-            setFilteredManagers(managers);
-            setFilteredPersonals(personals);
-            return;
-        }
-    };
-
-    // Manager bazlı personel ve sensörleri filtreleme
-    const filterPersonalsByManager = (managerId) => {
-        const filtered = personals.filter(personal => personal.creator_id === parseInt(managerId));
-
-        setFilteredPersonals(filtered);
-    };
-
-    const filterSensorsByManager = (managerId) => {
-        const filteredOwner = sensorOwners.filter(owner =>owner.sensor_owner === parseInt(managerId));
-        const sensorIds = filteredOwner.map(owner => owner.sensor_id);
-        const filteredSensors = sensors.filter(sensor => sensorIds.includes(sensor.id));
-
-        setFilteredSensors(filteredSensors);
-
-        if(!managerId){
-            setFilteredSensors(sensorForCompany);
-            return;
-        }
-
-    };
-
-    // Personel bazlı sensörleri filtreleme
-    const filterSensorsByPersonal = (personalId) => {
-        if(!personalId){
-            return filterSensorsByManager(selectedManager);
-        }
-
-        const filteredOwner = sensorOwners.filter(owner =>owner.sensor_owner === parseInt(personalId));
-        const sensorIds = filteredOwner.map(owner => owner.sensor_id);
-        const filteredSensors = sensors.filter(sensor => sensorIds.includes(sensor.id));
-
-        setFilteredSensors(filteredSensors);
-    };
-
 
     return (
         <Layout>
-        <div>
-            <h2>Admin Paneli</h2>
-            <SensorsDropdowns
-                role={role}
-                companies={companies}
-                managers={filteredManagers}
-                personals={filteredPersonals}
-                onChange={handleDropdownChange}
-            />
-            <SensorList sensors={filteredSensors} />
-        </div>
+            <div>
+                <h2>Admin Paneli</h2>
+                <SensorsDropdowns
+                    role={role}
+                    companies={companies}
+                    managers={filteredManagers}
+                    personals={filteredPersonals}
+                    selectedCompany={selectedCompany}
+                    selectedManager={selectedManager}
+                    selectedPersonal={selectedPersonal}
+                    onChange={handleDropdownChange}
+                />
+                <SensorList sensors={filteredSensors} />
+            </div>
         </Layout>
     );
 }
