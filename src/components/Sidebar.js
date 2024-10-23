@@ -4,142 +4,105 @@ import {
     FaPlus, FaSignOutAlt, FaSun, FaMoon
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // React Router'dan navigate al
+import { useTheme } from "../contexts/ThemeContext"; // Tema bağlamını kullan
 import '../styles/Sidebar.css'; // CSS dosyasını dahil et
 
 export default function Sidebar() {
     const { user, logout } = useAuth();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Yönlendirme fonksiyonunu çağır
+    const { isDarkMode, toggleDarkMode } = useTheme(); // Tema bağlamından dark mode durumunu al
+
     const [isUsersOpen, setIsUsersOpen] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
         if (!user) navigate('/login'); // Kullanıcı giriş yapmamışsa login sayfasına yönlendirme
     }, [user, navigate]);
 
     const isPersonal = user?.role === 'personal';
- //   const isManager = user?.role === 'manager'; // Manager rolünü kontrol et
 
-    useEffect(() => {
-        const mode = localStorage.getItem("darkMode") === "true";
-        setIsDarkMode(mode);
-        document.body.classList.toggle('dark-mode', mode);
-    }, []);
-
-    const toggleMode = () => {
-        setIsDarkMode((prevMode) => {
-            const newMode = !prevMode;
-            localStorage.setItem("darkMode", newMode);
-            document.body.classList.toggle('dark-mode', newMode);
-            return newMode;
-        });
-    };
-
-    const goTo = (path) => navigate(path);
-
-    const handleLogout = () => {
-        logout();
-        goTo('/login');
-    };
+    if (!user) return null; // Kullanıcı çıkış yaptıysa sidebar'ı göstermiyoruz
 
     return (
         <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
             <div className="menu-group">
-                <div className="menu" onClick={() => goTo("/dashboard")}>
-                    <FaHome className="menu-icon"/>
+                <div className="menu" onClick={() => navigate("/dashboard")}>
+                    <FaHome className="menu-icon" />
                     <span>Anasayfa</span>
                 </div>
-
-                <div className="menu" onClick={() => goTo("/profile")}>
-                    <FaUser className="menu-icon"/>
+                <div className="menu" onClick={() => navigate("/profile")}>
+                    <FaUser className="menu-icon" />
                     <span>Profilim</span>
                 </div>
-
-                <div className="menu" onClick={() => goTo("/sensors")}>
-                    <FaMicrochip className="menu-icon"/>
+                <div className="menu" onClick={() => navigate("/sensors")}>
+                    <FaMicrochip className="menu-icon" />
                     <span>Sensörler</span>
                 </div>
-
                 {!isPersonal && (
                     <>
-                        <div
-                            className={`menu ${isUsersOpen ? 'open' : ''}`}
-                            onClick={() => setIsUsersOpen(!isUsersOpen)}
-                        >
-                            <FaUser className="menu-icon"/>
+                        <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
+                            <FaUser className="menu-icon" />
                             <span>Kullanıcılar</span>
                         </div>
                         {isUsersOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => goTo('/admin/users')}>
-                                    <FaUser className="dropdown-icon"/> Managers
+                                <li onClick={() => {
+                                    console.log('Navigating to managers');
+                                    navigate('/users/managers');
+                                }}>
+                                    <FaUser className="dropdown-icon" /> Managers
                                 </li>
-                                <li onClick={() => goTo('/users')}>
-                                    <FaUser className="dropdown-icon"/> Personals
+                                <li onClick={() => {
+                                    console.log('Navigating to personals');
+                                    navigate('/users/personals');
+                                }}>
+                                    <FaUser className="dropdown-icon" /> Personals
                                 </li>
                             </ul>
                         )}
                     </>
                 )}
-
-                <div className="menu" onClick={() => goTo("/companies")}>
-                    <FaBuilding className="menu-icon"/>
+                <div className="menu" onClick={() => navigate("/companies")}>
+                    <FaBuilding className="menu-icon" />
                     <span>Kurumlar</span>
                 </div>
-
                 {!isPersonal && (
                     <>
-                        <div
-                            className={`menu ${isAddOpen ? 'open' : ''}`}
-                            onClick={() => setIsAddOpen(!isAddOpen)}
-                        >
-                            <FaPlus className="menu-icon"/>
+                        <div className={`menu ${isAddOpen ? 'open' : ''}`} onClick={() => setIsAddOpen(!isAddOpen)}>
+                            <FaPlus className="menu-icon" />
                             <span>Ekle</span>
                         </div>
-                        {!isPersonal && (
-                            <ul className="dropdown">
-                                {/* Sadece administrator rolü "Manager Ekle" seçeneğini görebilsin */}
-                                {user?.role === 'administrator' && (
-                                    <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
-                                        <FaUser className="dropdown-icon"/> Manager Ekle
-                                    </li>
-                                )}
-
-                                {/* Personal Ekle - Sadece manager ve administrator için */}
-                                {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                    <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
-                                        <FaUser className="dropdown-icon"/> Personal Ekle
-                                    </li>
-                                )}
-
-                                {/* Sadece administrator rolü "Kurum Ekle" seçeneğini görebilsin */}
-                                {user?.role === 'administrator' && (
-                                    <li onClick={() => goTo('/add-company')}>
-                                        <FaBuilding className="dropdown-icon"/> Kurum Ekle
-                                    </li>
-                                )}
-
-                                {/* Sensör Ekle - Sadece manager ve administrator için */}
-                                {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                    <li onClick={() => goTo('/add-address')}>
-                                        <FaMicrochip className="dropdown-icon"/> Sensör Ekle
-                                    </li>
-                                )}
-                            </ul>
-                        )}
-
-
+                        <ul className="dropdown">
+                            {user?.role === 'administrator' && (
+                                <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
+                                    <FaUser className="dropdown-icon" /> Manager Ekle
+                                </li>
+                            )}
+                            {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
+                                    <FaUser className="dropdown-icon" /> Personal Ekle
+                                </li>
+                            )}
+                            {user?.role === 'administrator' && (
+                                <li onClick={() => navigate('/add-company')}>
+                                    <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                                </li>
+                            )}
+                            {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                <li onClick={() => navigate('/add-address')}>
+                                    <FaMicrochip className="dropdown-icon" /> Sensör Ekle
+                                </li>
+                            )}
+                        </ul>
                     </>
                 )}
-
-                <div className="logout" onClick={handleLogout}>
-                    <FaSignOutAlt className="menu-icon"/>
+                <div className="logout" onClick={() => { logout(); navigate('/login'); }}>
+                    <FaSignOutAlt className="menu-icon" />
                     <span>Çıkış</span>
                 </div>
-
-                <button className="toggle-mode" onClick={toggleMode}>
-                    {isDarkMode ? <FaSun/> : <FaMoon/>}
+                <button className="toggle-mode" onClick={toggleDarkMode}>
+                    {isDarkMode ? <FaSun /> : <FaMoon />}
                 </button>
             </div>
         </div>

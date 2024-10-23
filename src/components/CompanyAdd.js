@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 
+
 export default function CompanyAdd() {
     const [formData, setFormData] = useState({
         name: '',
@@ -82,7 +83,9 @@ export default function CompanyAdd() {
     }
 
     return (
-        <Layout>
+<Layout>
+
+
             <form onSubmit={handleSubmit} style={styles.form}>
                 <h2 style={styles.formTitle}>Kurum Ekle</h2>
                 {error && <p style={styles.error}>{error}</p>}
@@ -129,7 +132,7 @@ export default function CompanyAdd() {
                     {isSubmitting ? 'Ekleniyor...' : 'Kurum Ekle'}
                 </button>
             </form>
-        </Layout>
+</Layout>
     );
 }
 
