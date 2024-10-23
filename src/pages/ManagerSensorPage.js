@@ -66,16 +66,13 @@ export default function ManagerPage({ role }) {
                 <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
                 <p>Şirket Kodu: {managerData.manager.companyCode}</p>
 
-                <button onClick={handleMapRedirect} style={{marginTop: '20px', marginBottom: '20px'}}>
-                    Haritayı Görüntüle
-                </button>
-
                 {/* Personeller Dropdown */}
                 <SensorsDropdowns
                     role={role}  // Manager rolü
                     personals={managerData.personals}  // Personelleri gönder
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
+                    onMapRedirect={handleMapRedirect}
                 />
 
                 {/* Sensör Listesi */}
