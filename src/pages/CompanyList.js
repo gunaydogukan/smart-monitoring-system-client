@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/CompanyList.css';
-import Layout from "../layouts/Layout"; // CSS dosyasını ekleyin
+import Layout from "../layouts/Layout";
+
 
 export default function CompanyList() {
     const [companies, setCompanies] = useState([]);
@@ -42,7 +43,9 @@ export default function CompanyList() {
     }
 
     return (
-        <Layout>
+
+
+<Layout>
 
 
         <div className="company-list">
@@ -57,6 +60,6 @@ export default function CompanyList() {
                 ))}
             </div>
         </div>
-        </Layout>
+</Layout>
     );
 }

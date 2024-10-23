@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 
+
 export default function Address() {
     const [provinces, setProvinces] = useState([]);
     const [filteredProvinces, setFilteredProvinces] = useState([]);
@@ -144,7 +145,9 @@ export default function Address() {
     }, [selectedProvinceId, searchProvince, searchDistrict, searchNeighborhood, village, navigate]);
 
     return (
-        <Layout>
+<Layout>
+
+
             <div style={{ padding: '20px' }}>
                 <h1>Adres Bilgisi</h1>
                 <form onSubmit={handleSubmit}>
@@ -259,6 +262,6 @@ export default function Address() {
                     </button>
                 </form>
             </div>
-        </Layout>
+</Layout>
     );
 }
