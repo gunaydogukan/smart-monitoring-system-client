@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from "../layouts/Layout";
+import { filterManagersByCompany } from '../services/FilterService';
 
 export default function SensorForm() {
     const location = useLocation();
@@ -17,6 +18,7 @@ export default function SensorForm() {
     const [types, setTypes] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
+    const [allManagers, setAllManagers] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -27,7 +29,7 @@ export default function SensorForm() {
                 const token = localStorage.getItem('token');
                 const headers = {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json' // JSON content type ekledik
+                    'Content-Type': 'application/json'
                 };
 
                 const urls = [
@@ -36,19 +38,16 @@ export default function SensorForm() {
                     'http://localhost:5000/api/users'
                 ];
 
-                // Promise.all ile tüm istekleri paralel olarak başlatıyoruz
                 const responses = await Promise.all(
                     urls.map((url) => fetch(url, { headers }))
                 );
-                console.log(responses);
-                // Her bir isteğin durumunu kontrol et
+
                 responses.forEach((response) => {
                     if (!response.ok) {
                         throw new Error('Veriler alınırken hata oluştu!');
                     }
                 });
 
-                // Tek seferde tüm json body'leri okuyalım
                 const [typesData, companiesData, usersData] = await Promise.all(
                     responses.map((response) => response.json())
                 );
@@ -56,9 +55,10 @@ export default function SensorForm() {
                 setTypes(typesData);
                 setCompanies(companiesData);
 
-                // Sadece 'manager' rolündeki kullanıcıları filtrele
+                // Tüm yöneticileri kaydet, filtrelemede kullanılacak
                 const managerList = usersData.filter((user) => user.role === 'manager');
-                setManagers(managerList);
+                setAllManagers(managerList); // Tüm yöneticiler
+                setManagers([]); // İlk başta manager'lar listelenmesin
 
             } catch (error) {
                 console.error('Veri alınırken hata:', error);
@@ -69,6 +69,25 @@ export default function SensorForm() {
         fetchData();
     }, []);
 
+    // Şirket seçimi değiştiğinde manager'ları filtreleme
+    useEffect(() => {
+        const filteredManagers = filterManagersByCompany(allManagers, companyCode);
+        setManagers(filteredManagers); // Filtrelenmiş yöneticilerle güncelle
+        setManagerId(''); // Manager seçimini sıfırlıyoruz
+    }, [companyCode, allManagers]);
+
+    // Tüm alanlar doldurulmuş mu kontrolü
+    const isFormValid = () => {
+        return (
+            companyCode &&
+            managerId &&
+            datacode &&
+            name &&
+            lat &&
+            lng &&
+            typeId
+        );
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -136,6 +155,7 @@ export default function SensorForm() {
                             value={managerId}
                             onChange={(e) => setManagerId(e.target.value)}
                             required
+                            disabled={!companyCode} // Şirket seçilmezse manager dropdown'u kilitli
                         >
                             <option value="">Yönetici Seç</option>
                             {managers.map((manager) => (
@@ -219,9 +239,12 @@ export default function SensorForm() {
 
                     {error && <p style={{ color: 'red' }}>{error}</p>}
 
-                    <button type="submit" style={{ marginTop: '20px' }}>
-                        Ekle
-                    </button>
+                    {/* Ekle butonu sadece tüm alanlar doldurulduğunda görünecek */}
+                    {isFormValid() && (
+                        <button type="submit" style={{ marginTop: '20px' }}>
+                            Ekle
+                        </button>
+                    )}
                 </form>
             </div>
         </Layout>

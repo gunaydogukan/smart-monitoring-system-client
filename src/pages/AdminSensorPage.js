@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SensorsDropdowns from '../components/SensorsDropdowns';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
+import { useNavigate } from 'react-router-dom';
 import {
     filterManagersByCompany,
     filterPersonalsByManager,
@@ -26,6 +27,8 @@ export default function AdminPage({ role }) {
     const [selectedPersonal, setSelectedPersonal] = useState('');
 
     const [sensorForCompany, setSensorForCompany] = useState([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchAdminData();
@@ -107,10 +110,19 @@ export default function AdminPage({ role }) {
         }
     };
 
+    const handleMapRedirect = () => {
+        navigate('/map', { state: { sensors: sensors } });
+    };
+
     return (
         <Layout>
             <div>
                 <h2>Admin Paneli</h2>
+                {/* /Map sayfasına yönlendiren buton */}
+                <button onClick={handleMapRedirect}  style={{ marginTop: '20px', marginBottom: '20px' }}>
+                    Haritayı Görüntüle
+                </button>
+
                 <SensorsDropdowns
                     role={role}
                     companies={companies}
@@ -121,6 +133,7 @@ export default function AdminPage({ role }) {
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
                 />
+
                 <SensorList sensors={filteredSensors} />
             </div>
         </Layout>
