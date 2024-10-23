@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Layout from "../layouts/Layout";
 import SensorList from "../components/SensorList";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function PersonalPage() {
     const [personalInfo, setPersonalInfo] = useState(null); // Kullanıcı bilgilerini tutar
     const [sensors, setSensors] = useState([]); // Sensörler başlangıçta boş dizi
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Personal'in sensörlerini almak için kullanıcı ID'sini kullanacağız
@@ -44,16 +48,25 @@ export default function PersonalPage() {
         return <p>{error}</p>;
     }
 
+    const handleMapRedirect = () => {
+        navigate('/map', { state: { sensors: sensors } });
+    };
+
     return (
         <Layout>
             <div style={styles.container}>
                 {/* Kullanıcının adını ve soyadını gösteriyoruz */}
                 <h2>
-                    {personalInfo ? `${personalInfo.name} ${personalInfo.lastname} (${personalInfo.companyCode})` : 'Kullanıcı'}'nın Sensör Listesi
+                    {personalInfo ? `${personalInfo.name} ${personalInfo.lastname} (${personalInfo.companyCode})` : 'Kullanıcı'}'nın
+                    Sensör Listesi
                 </h2>
 
+                <button onClick={handleMapRedirect} style={{marginTop: '20px', marginBottom: '20px'}}>
+                    Haritayı Görüntüle
+                </button>
+
                 {/* Sensör listesi */}
-                <SensorList sensors={sensors} />
+                <SensorList sensors={sensors}/>
             </div>
         </Layout>
     );

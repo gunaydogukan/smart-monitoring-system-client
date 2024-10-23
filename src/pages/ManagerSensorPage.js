@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react';
 import SensorsDropdowns from '../components/SensorsDropdowns';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
+import {useNavigate} from "react-router-dom";
 
 export default function ManagerPage({ role }) {
     const [managerData, setManagerData] = useState(null); // Manager verileri
+    const [sensors,setSensors] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
     const [selectedPersonal, setSelectedPersonal] = useState('');
+
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         fetchManagerSensors();  // Sayfa ilk yüklendiğinde verileri çekiyoruz
@@ -22,6 +27,7 @@ export default function ManagerPage({ role }) {
             const data = await response.json();
             setManagerData(data);
             setFilteredSensors(data.managerSensors); // Başlangıçta manager sensörlerini göster
+            setSensors(data.managerSensors);
         } catch (error) {
             console.error('Veri çekme hatası:', error);
         }
@@ -49,12 +55,20 @@ export default function ManagerPage({ role }) {
         return <p>Veriler yükleniyor...</p>;  // Veri yüklenene kadar
     }
 
+    const handleMapRedirect = () => {
+        navigate('/map', { state: { sensors: sensors } });
+    };
+
     return (
         <Layout>
             <div>
                 <h2>Manager Paneli</h2>
                 <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
                 <p>Şirket Kodu: {managerData.manager.companyCode}</p>
+
+                <button onClick={handleMapRedirect} style={{marginTop: '20px', marginBottom: '20px'}}>
+                    Haritayı Görüntüle
+                </button>
 
                 {/* Personeller Dropdown */}
                 <SensorsDropdowns
@@ -65,7 +79,7 @@ export default function ManagerPage({ role }) {
                 />
 
                 {/* Sensör Listesi */}
-                <SensorList sensors={filteredSensors} />
+                <SensorList sensors={filteredSensors}/>
             </div>
         </Layout>
     );
