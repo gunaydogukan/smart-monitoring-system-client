@@ -1,50 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { GoogleMap, Marker, InfoWindow, useLoadScript } from "@react-google-maps/api";
-import { useLocation } from 'react-router-dom'; // useLocation ile yönlendirme verisini alıyoruz
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import { useLocation } from 'react-router-dom';
+import '../styles/DisplayMap.css'; // CSS dosyamızı ekliyoruz
 
-// Harita stil ve başlangıç merkezi
 const containerStyle = {
     width: "100%",
-    height: "400px",
+    height: "100%",
 };
 
-// Statik libraries array
 const libraries = ["places"];
 
 const DisplayMap = () => {
-    const { state } = useLocation(); // useLocation ile sensör verisini alıyoruz
-    const sensors = Array.isArray(state?.sensors) ? state.sensors : [state?.sensor]; // Tek sensör veya çok sensör için ayarlama
-    console.log(sensors); // Gelen sensörleri kontrol ediyoruz
+    const { state } = useLocation();
+    const sensors = Array.isArray(state?.sensors) ? state.sensors : [state?.sensor];
 
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: "AIzaSyD_SgDBoNntGbcwChUDreSgHCwjDbld8xU", // Google API Key'inizi buraya ekleyin
         libraries,
     });
 
-    const [selectedSensor, setSelectedSensor] = useState(null); // Seçilen sensör için state
-    const [map, setMap] = useState(null); // Haritayı referans almak için state
+    const [selectedSensor, setSelectedSensor] = useState(null);
+    const [map, setMap] = useState(null);
+    const [sidebarExpanded, setSidebarExpanded] = useState(false);// Sidebar genişletme durumu
 
-    // Marker iconlarını sensör tipine göre alıyoruz
     const getMarkerIcon = (sensor) => {
-        if (sensor.type === "1") {
-            return 'https://img.icons8.com/ios-filled/50/000000/rain.png';
-        } else if (sensor.type === "2") {
-            return 'https://img.icons8.com/ios-filled/50/000000/temperature.png';
-        } else if (sensor.type === "3") {
-            return 'https://img.icons8.com/ios-filled/50/000000/tape-measure.png';
-        } else {
-            return null;
+        switch (sensor.type) {
+            case 1:
+                return 'https://img.icons8.com/ios-filled/50/000000/rain.png';
+            case 2:
+                return 'https://img.icons8.com/ios-filled/50/000000/temperature.png';
+            case 3:
+                return 'https://img.icons8.com/ios-filled/50/000000/tape-measure.png';
+            default:
+                return null;
         }
     };
 
     const handleDirections = (lat, lng) => {
         const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-        window.open(directionsUrl, "_blank"); // Yol tarifi için yeni sayfada aç
+        window.open(directionsUrl, "_blank");
     };
 
     useEffect(() => {
         if (map && sensors.length > 0) {
-            // Çoklu sensörler için marker ekliyoruz
             sensors.forEach((sensor) => {
                 const marker = new window.google.maps.Marker({
                     position: { lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng) },
@@ -54,83 +52,99 @@ const DisplayMap = () => {
                 });
 
                 marker.addListener('click', () => {
-                    setSelectedSensor(sensor); // Marker'a tıklanınca InfoWindow açılır
+                    setSelectedSensor(sensor);
                 });
             });
         }
     }, [map, sensors]);
 
-    // Harita yüklenmezse hata mesajı
     if (loadError) {
         return <div>Harita yüklenirken bir hata oluştu.</div>;
     }
 
-    // Harita yüklenmeden önce gösterilecek mesaj
     if (!isLoaded) {
         return <div>Harita yükleniyor...</div>;
     }
 
     return (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>
-                Sensör Haritası
-            </h1>
+        <div style={{display: "flex", width: '100%', height: '100vh'}}>
+            {/* Sidebar */}
+            <div style={{
+                width: sidebarExpanded ? '25%' : '50px',
+                backgroundColor: '#f0f0f0',
+                padding: '20px',
+                boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
+                transition: 'width 0.3s ease',
+                overflowY: 'auto'
+            }}>
+                <div onClick={() => setSidebarExpanded(!sidebarExpanded)}
+                     style={{cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" alt="Toggle Sidebar"/>
+                    {sidebarExpanded && <h2 style={{marginLeft: '10px'}}>Sensörler</h2>}
+                </div>
+                {sidebarExpanded && (
+                    <ul>
+                        {sensors.map(sensor => (
+                            <li key={sensor.id} onClick={() => setSelectedSensor(sensor)} style={{
+                                cursor: 'pointer',
+                                marginBottom: '10px',
+                                padding: '10px',
+                                border: '1px solid #ccc',
+                                borderRadius: '5px'
+                            }}>
+                                {sensor.def} (ID: {sensor.id})
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
 
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={{
-                    lat: parseFloat(sensors[0].lat), // İlk sensörü merkeze alıyoruz
-                    lng: parseFloat(sensors[0].lng),
-                }}
-                zoom={15}
-                onLoad={(mapInstance) => setMap(mapInstance)} // Harita yüklendiğinde map referansını alıyoruz
-            >
+            <div style={{width: '96%', backgroundColor: 'blue', height: '100%'}}>
+
+                <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={{
+                        lat: 39,
+                        lng: 36.5,
+                    }}
+                    zoom={7}
+                    onLoad={(mapInstance) => setMap(mapInstance)}
+                >
+                    {sensors.map((sensor) => (
+                        <Marker
+                            key={sensor.id}
+                            position={{lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng)}}
+                            icon={getMarkerIcon(sensor)}
+                            onClick={() => setSelectedSensor(sensor)}
+                        />
+                    ))}
+                </GoogleMap>
+
+                {/* Sensör bilgilerini gösteren üst bilgi kartı */}
                 {selectedSensor && (
-                    <InfoWindow
-                        position={{
-                            lat: parseFloat(selectedSensor.lat),
-                            lng: parseFloat(selectedSensor.lng),
-                        }}
-                        onCloseClick={() => setSelectedSensor(null)} // Pencereyi kapatma işlevi
-                    >
-                        <div style={{
-                            backgroundColor: "#fff",
-                            padding: "10px",
-                            borderRadius: "10px",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                            textAlign: "left",
-                            maxWidth: "200px",
-                            fontFamily: "Arial, sans-serif",
-                        }}>
-                            <h3 style={{
-                                fontSize: "18px",
-                                color: "#333",
-                                marginBottom: "8px"
-                            }}>Sensör Bilgisi</h3>
+                    <div className="sensor-info-overlay">
+                        <div className="sensor-info-header">
+                            <h2>Sensör Bilgileri</h2>
+                            <button className="close-button" onClick={() => setSelectedSensor(null)}>×</button>
+                        </div>
+                        <div className="sensor-info-content">
+                            <p><strong>ID:</strong> {selectedSensor.id}</p>
                             <p><strong>Açıklama:</strong> {selectedSensor.def}</p>
                             <p><strong>Enlem:</strong> {selectedSensor.lat}</p>
                             <p><strong>Boylam:</strong> {selectedSensor.lng}</p>
-                            <button
-                                onClick={() => handleDirections(selectedSensor.lat, selectedSensor.lng)}
-                                style={{
-                                    backgroundColor: "#007BFF",
-                                    color: "#fff",
-                                    border: "none",
-                                    padding: "8px 12px",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                    marginTop: "10px",
-                                    textAlign: "center"
-                                }}
-                            >
+                            <button className="sensor-info-button"
+                                    onClick={() => handleDirections(selectedSensor.lat, selectedSensor.lng)}>
                                 Yol Tarifi Al
                             </button>
                         </div>
-                    </InfoWindow>
+                    </div>
                 )}
-            </GoogleMap>
+            </div>
+
         </div>
     );
+
+
 };
 
 export default DisplayMap;

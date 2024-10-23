@@ -1,0 +1,63 @@
+.map-container {
+    display: flex;
+    position: relative;
+}
+
+.sensor-info-overlay {
+    position: absolute;
+    top: 20px; /* Haritanın üst kısmına yerleştiriyoruz */
+    right: 20px; /* Sağ tarafta görünmesi için */
+    background-color: #ecf0f1;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    width: 100%;
+    padding: 20px;
+    z-index: 1000;
+    text-align: left;
+}
+
+.sensor-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sensor-info-header h2 {
+    font-size: 22px;
+    color: #2980b9;
+    margin: 0;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #e74c3c;
+}
+
+.sensor-info-content {
+    margin-top: 10px;
+}
+
+.sensor-info-content p {
+    font-size: 16px;
+    color: #34495e;
+}
+
+.sensor-info-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.sensor-info-button:hover {
+    background-color: #0056b3;
+}
