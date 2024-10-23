@@ -92,7 +92,7 @@ const DisplayMap = () => {
                                 border: '1px solid #ccc',
                                 borderRadius: '5px'
                             }}>
-                                {sensor.def} (ID: {sensor.id})
+                                {sensor.name} , {sensor.def} ,  (ID: {sensor.id})
                             </li>
                         ))}
                     </ul>
