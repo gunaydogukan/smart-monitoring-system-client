@@ -119,9 +119,6 @@ export default function AdminPage({ role }) {
             <div>
                 <h2>Admin Paneli</h2>
                 {/* /Map sayfasına yönlendiren buton */}
-                <button onClick={handleMapRedirect}  style={{ marginTop: '20px', marginBottom: '20px' }}>
-                    Haritayı Görüntüle
-                </button>
 
                 <SensorsDropdowns
                     role={role}
@@ -132,10 +129,31 @@ export default function AdminPage({ role }) {
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
+                    onMapRedirect={handleMapRedirect} // Buton işlevselliği için yeni prop
                 />
 
-                <SensorList sensors={filteredSensors} />
+                <SensorList sensors={filteredSensors}/>
             </div>
         </Layout>
     );
 }
+
+
+const styles = {
+    button: {
+        padding: '10px 20px',
+        borderRadius: '8px',
+        border: 'none',
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'background-color 0.3s',
+        outline: 'none',
+    },
+    buttonHover: {
+        backgroundColor: '#0056b3',
+    },
+};
+

@@ -8,10 +8,19 @@ export default function SensorsDropdowns({
                                              selectedCompany,
                                              selectedManager,
                                              selectedPersonal,
-                                             onChange
+                                             onChange,
+                                             onMapRedirect // Yeni prop ekleniyor
                                          }) {
     return (
         <div style={styles.container}>
+            {/* Haritayı Görüntüle Butonu */}
+            <button
+                onClick={onMapRedirect}
+                style={styles.button}
+            >
+                Haritayı Görüntüle
+            </button>
+
             {/* Şirketler Dropdown (Sadece administrator görebilir) */}
             {role === 'administrator' && (
                 <select
@@ -82,4 +91,16 @@ const styles = {
         outline: 'none',
         minWidth: '200px',
     },
+    button: {
+        padding: '10px 20px',
+        borderRadius: '8px',
+        border: 'none',
+        backgroundColor: '#007BFF',
+        color: 'white',
+        fontSize: '1rem',
+        cursor: 'pointer',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'background-color 0.3s',
+        outline: 'none',
+    }
 };
