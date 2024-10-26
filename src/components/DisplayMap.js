@@ -25,11 +25,11 @@ const DisplayMap = () => {
 
     const getMarkerIcon = (sensor) => {
         switch (sensor.type) {
-            case 1:
-                return 'https://img.icons8.com/ios-filled/50/000000/rain.png';
-            case 2:
-                return 'https://img.icons8.com/ios-filled/50/000000/temperature.png';
             case 3:
+                return 'https://img.icons8.com/ios-filled/50/000000/rain.png';
+            case 1:
+                return 'https://img.icons8.com/ios-filled/50/000000/temperature.png';
+            case 2:
                 return 'https://img.icons8.com/ios-filled/50/000000/tape-measure.png';
             default:
                 return null;

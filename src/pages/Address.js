@@ -103,12 +103,13 @@ export default function Address() {
             districts: [
                 {
                     district: searchDistrict,
-                    neighborhoods: [
+                    neighborhoods: selectedNeighborhoodId ? [
                         {
                             neighborhood: searchNeighborhood,
                             villages: [village],
                         },
-                    ],
+                    ] : [],
+                    villages: selectedNeighborhoodId ? [] : [village],
                 },
             ],
         };
@@ -127,6 +128,9 @@ export default function Address() {
             });
 
             if (!response.ok) {
+                const errorData = await response.json(); // Hata detayını al
+                console.error('Sunucu Hatası:', errorData); // Hata detayını göster
+                console.log(addressData);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -227,7 +231,6 @@ export default function Address() {
                                     e.target.value
                                 )
                             }
-                            required
                         >
                             <option value="">Mahalle Seç</option>
                             {filteredNeighborhoods.map((neighborhood) => (
@@ -254,7 +257,6 @@ export default function Address() {
                         disabled={
                             !selectedProvinceId ||
                             !selectedDistrictId ||
-                            !selectedNeighborhoodId ||
                             !village.trim()
                         }
                     >
