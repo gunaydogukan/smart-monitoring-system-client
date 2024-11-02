@@ -14,6 +14,7 @@ import RoleBasedRedirect from './components/RoleBasedRedirect';
 import Users from './components/users'; // Updated import
 import DisplayMap from './components/DisplayMap';
 import CompanyList from './pages/CompanyList';
+import ChartPage from './pages/ChartPage';
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -38,6 +39,7 @@ export default function App() {
                             <Route path="/map" element={<DisplayMap />} />
                             <Route path="/add-company" element={<CompanyAdd />} />
                             <Route path="/users/:type" element={<Users />} /> {/* Dinamik URL */}
+                            <Route path="/charts" element={<ChartPage />} /> {/* Charts rotası eklendi 2.11.24 */}
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (
