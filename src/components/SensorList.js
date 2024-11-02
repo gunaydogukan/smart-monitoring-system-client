@@ -8,6 +8,15 @@ export default function SensorList({ sensors = [] }) { // Varsayılan olarak bo�
         navigate('/map', { state: { sensor } }); // Sensör verisini taşıyarak harita sayfasına yönlendir
     };
 
+    const handleViewOnChart = (sensor) => {
+        console.log(sensor)
+        if (sensor) {
+            navigate('/charts', { state: { sensor } });
+        } else {
+            console.error('Sensör verisi mevcut değil.');
+        }
+    };
+
     return (
         <div>
             {/* Sensör Listesi */}
@@ -19,6 +28,9 @@ export default function SensorList({ sensors = [] }) { // Varsayılan olarak bo�
                             <p style={styles.sensorLocation}>{sensor.location}</p>
                             <button style={styles.mapButton} onClick={() => handleViewOnMap(sensor)}>
                                 Haritada Göster
+                            </button>
+                            <button style={styles.mapButton} onClick={() => handleViewOnChart(sensor)}>
+                                Grafik Göster
                             </button>
                         </div>
                     ))

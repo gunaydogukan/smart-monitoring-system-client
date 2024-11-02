@@ -21,7 +21,7 @@ const DisplayMap = () => {
 
     const [selectedSensor, setSelectedSensor] = useState(null);
     const [map, setMap] = useState(null);
-    const [sidebarExpanded, setSidebarExpanded] = useState(false);// Sidebar genişletme durumu
+    const [sidebarExpanded, setSidebarExpanded] = useState(false); // Sidebar genişletme durumu
 
     const getMarkerIcon = (sensor) => {
         switch (sensor.type) {
@@ -40,6 +40,14 @@ const DisplayMap = () => {
         const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         window.open(directionsUrl, "_blank");
     };
+
+    // Haritayı seçilen sensöre odaklamak için useEffect
+    useEffect(() => {
+        if (selectedSensor && map) {
+            map.setCenter({ lat: parseFloat(selectedSensor.lat), lng: parseFloat(selectedSensor.lng) });
+            map.setZoom(12); // Yakınlaştırma seviyesini ayarlayabilirsiniz
+        }
+    }, [selectedSensor, map]);
 
     useEffect(() => {
         if (map && sensors.length > 0) {
@@ -67,7 +75,7 @@ const DisplayMap = () => {
     }
 
     return (
-        <div style={{display: "flex", width: '100%', height: '100vh'}}>
+        <div style={{ display: "flex", width: '100%', height: '100vh' }}>
             {/* Sidebar */}
             <div style={{
                 width: sidebarExpanded ? '25%' : '50px',
@@ -78,9 +86,9 @@ const DisplayMap = () => {
                 overflowY: 'auto'
             }}>
                 <div onClick={() => setSidebarExpanded(!sidebarExpanded)}
-                     style={{cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" alt="Toggle Sidebar"/>
-                    {sidebarExpanded && <h2 style={{marginLeft: '10px'}}>Sensörler</h2>}
+                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" alt="Toggle Sidebar" />
+                    {sidebarExpanded && <h2 style={{ marginLeft: '10px' }}>Sensörler</h2>}
                 </div>
                 {sidebarExpanded && (
                     <ul>
@@ -92,20 +100,19 @@ const DisplayMap = () => {
                                 border: '1px solid #ccc',
                                 borderRadius: '5px'
                             }}>
-                                {sensor.name} , {sensor.def} ,  (ID: {sensor.id})
+                                {sensor.name} , {sensor.def} , (ID: {sensor.id})
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
 
-            <div style={{width: '96%', backgroundColor: 'blue', height: '100%'}}>
-
+            <div style={{ width: '96%', height: '100%' }}>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={{
-                        lat: 39,
-                        lng: 36.5,
+                        lat: 41.6,
+                        lng: 32.3,
                     }}
                     zoom={7}
                     onLoad={(mapInstance) => setMap(mapInstance)}
@@ -113,7 +120,7 @@ const DisplayMap = () => {
                     {sensors.map((sensor) => (
                         <Marker
                             key={sensor.id}
-                            position={{lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng)}}
+                            position={{ lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng) }}
                             icon={getMarkerIcon(sensor)}
                             onClick={() => setSelectedSensor(sensor)}
                         />
@@ -140,11 +147,8 @@ const DisplayMap = () => {
                     </div>
                 )}
             </div>
-
         </div>
     );
-
-
 };
 
 export default DisplayMap;
