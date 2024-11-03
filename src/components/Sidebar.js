@@ -1,28 +1,29 @@
+// src/components/Sidebar.js
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
     FaPlus, FaSignOutAlt, FaSun, FaMoon
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom"; // React Router'dan navigate al
-import { useTheme } from "../contexts/ThemeContext"; // Tema bağlamını kullan
-import '../styles/Sidebar.css'; // CSS dosyasını dahil et
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
+import '../styles/Sidebar.css';
 
 export default function Sidebar() {
     const { user, logout } = useAuth();
-    const navigate = useNavigate(); // Yönlendirme fonksiyonunu çağır
-    const { isDarkMode, toggleDarkMode } = useTheme(); // Tema bağlamından dark mode durumunu al
+    const navigate = useNavigate();
+    const { isDarkMode, toggleDarkMode } = useTheme();
 
     const [isUsersOpen, setIsUsersOpen] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
 
     useEffect(() => {
-        if (!user) navigate('/login'); // Kullanıcı giriş yapmamışsa login sayfasına yönlendirme
+        if (!user) navigate('/login');
     }, [user, navigate]);
 
     const isPersonal = user?.role === 'personal';
 
-    if (!user) return null; // Kullanıcı çıkış yaptıysa sidebar'ı göstermiyoruz
+    if (!user) return null;
 
     return (
         <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
@@ -47,16 +48,10 @@ export default function Sidebar() {
                         </div>
                         {isUsersOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => {
-                                    console.log('Navigating to managers');
-                                    navigate('/users/managers');
-                                }}>
+                                <li onClick={() => navigate('/users/managers')}>
                                     <FaUser className="dropdown-icon" /> Managers
                                 </li>
-                                <li onClick={() => {
-                                    console.log('Navigating to personals');
-                                    navigate('/users/personals');
-                                }}>
+                                <li onClick={() => navigate('/users/personals')}>
                                     <FaUser className="dropdown-icon" /> Personals
                                 </li>
                             </ul>
@@ -73,28 +68,30 @@ export default function Sidebar() {
                             <FaPlus className="menu-icon" />
                             <span>Ekle</span>
                         </div>
-                        <ul className="dropdown">
-                            {user?.role === 'administrator' && (
-                                <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
-                                    <FaUser className="dropdown-icon" /> Manager Ekle
-                                </li>
-                            )}
-                            {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
-                                    <FaUser className="dropdown-icon" /> Personal Ekle
-                                </li>
-                            )}
-                            {user?.role === 'administrator' && (
-                                <li onClick={() => navigate('/add-company')}>
-                                    <FaBuilding className="dropdown-icon" /> Kurum Ekle
-                                </li>
-                            )}
-                            {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                <li onClick={() => navigate('/add-address')}>
-                                    <FaMicrochip className="dropdown-icon" /> Sensör Ekle
-                                </li>
-                            )}
-                        </ul>
+                        {isAddOpen && (
+                            <ul className="dropdown">
+                                {user?.role === 'administrator' && (
+                                    <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
+                                        <FaUser className="dropdown-icon" /> Manager Ekle
+                                    </li>
+                                )}
+                                {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
+                                        <FaUser className="dropdown-icon" /> Personal Ekle
+                                    </li>
+                                )}
+                                {user?.role === 'administrator' && (
+                                    <li onClick={() => navigate('/add-company')}>
+                                        <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                                    </li>
+                                )}
+                                {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    <li onClick={() => navigate('/add-address')}>
+                                        <FaMicrochip className="dropdown-icon" /> Sensör Ekle
+                                    </li>
+                                )}
+                            </ul>
+                        )}
                     </>
                 )}
                 <div className="logout" onClick={() => { logout(); navigate('/login'); }}>

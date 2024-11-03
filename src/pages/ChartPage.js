@@ -1,17 +1,10 @@
 // src/pages/ChartPage.js
 import React, { useContext } from 'react';
-import { useLocation } from 'react-router-dom';
 import Charts from '../components/Charts';
 import { ChartContext, ChartProvider } from '../contexts/ChartContext';
 
-const ChartPageContent = () => {
-    const location = useLocation();
+const ChartPageContent = ({ sensor }) => {
     const { sensorData, loading, error } = useContext(ChartContext);
-    const sensor = location.state?.sensor;
-
-    // Gelen veri ve durumları kontrol edin
-    console.log('Gelen sensör verisi:', sensor); //sensorün bilgilerini alır
-    console.log('Context üzerinden alınan sensorData:', sensorData); //contexten sensordata db ' den sensorün table'ına göre seçip veriyi alır //yapılacak
 
     // Yüklenme durumu
     if (loading) {
@@ -26,11 +19,9 @@ const ChartPageContent = () => {
     // Eğer veri varsa, grafik bileşenini göster
     return (
         <div>
-            <h1>
-                {sensor ? `${sensor.name} - Grafik` : 'Grafik Sayfası'}
-            </h1>
-            {sensorData.length > 0 || sensor ? (
-                <Charts sensorType={sensor ? sensor.type : undefined } data={sensor ? sensorData : sensorData} />
+            <h1 style={{ textAlign: 'center' }}>{sensor.name} - Grafik</h1>
+            {sensorData.length > 0 ? (
+                <Charts sensorType={sensor.type} data={sensorData} />
             ) : (
                 <p>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
             )}
@@ -38,14 +29,15 @@ const ChartPageContent = () => {
     );
 };
 
-const ChartPage = () => {
-    const location = useLocation();
-    const sensor = location.state?.sensor; // sensor'u burada tanımlıyoruz
-    console.log("akslşdjsaılşdfklşsadfjlkşsadjflksadj");
-    console.log(sensor.datacode);
+const ChartPage = ({ sensor }) => {
+    // Sensör nesnesinin tanımlı olup olmadığını kontrol edin
+    if (!sensor) {
+        return <p>Grafik verisi mevcut değil.</p>; // Sensör yoksa bilgi ver
+    }
+
     return (
         <ChartProvider sensor={sensor}>
-            <ChartPageContent />
+            <ChartPageContent sensor={sensor} />
         </ChartProvider>
     );
 };

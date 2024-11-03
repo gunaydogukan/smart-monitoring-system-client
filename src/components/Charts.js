@@ -11,7 +11,7 @@ const Charts = ({ sensorType, data }) => {
     }
 
     // Chart seçeneklerini al
-    const chartOptions = getSensorChartOptions(sensorType, data);
+    const chartOptions = getSensorChartOptions(sensorType, data); // çağırılan methot bu
 
     // Eğer `sensorType` 1 ise 6 ayrı grafik render et
     if (sensorType === 1 && Array.isArray(chartOptions)) {
