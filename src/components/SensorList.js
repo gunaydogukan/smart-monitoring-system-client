@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { useTheme } from '../contexts/ThemeContext';
 import styles from '../styles/SensorList.module.css';
 
 export default function SensorList({ sensors = [] }) {
     const { isDarkMode } = useTheme();
-    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState(null);
 
     const handleViewOnMap = (sensor) => {
-        navigate('/map', { state: { sensor } });
+        // Haritada göstermek için burayı düzenle
     };
 
     const handleViewOnChart = (sensor) => {
         if (sensor) {
             setSelectedSensor(sensor);
-            setIsModalOpen(true);
+            setIsModalOpen(true); // Modal açılıyor
         } else {
             console.error('Sensör verisi mevcut değil.');
         }

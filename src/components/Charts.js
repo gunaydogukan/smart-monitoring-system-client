@@ -7,7 +7,6 @@ const Charts = ({ sensorType, data,interval }) => {
 
     console.log(interval);
     const chartOptions = getSensorChartOptions(sensorType, data,interval);
-r
 
     return (
         <div style={{ width: '100%', height: '400px' }}>

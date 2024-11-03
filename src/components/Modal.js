@@ -1,19 +1,27 @@
 // src/components/Modal.js
 import React from 'react';
 import ChartPage from '../pages/ChartPage'; // ChartPage bileşenini içe aktar
+import { useTheme } from '../contexts/ThemeContext'; // Tema bağlamını içe aktar
 
 const Modal = ({ isOpen, onClose, sensor }) => {
+    const { isDarkMode } = useTheme(); // Temayı al
+
     if (!isOpen) return null; // Modal kapalıysa hiçbir şey render etme
+    console.log(sensor);
 
     return (
         <div style={styles.overlay}>
-            <div style={styles.modal}>
+            <div style={isDarkMode ? styles.modalDark : styles.modalLight}>
                 <div style={styles.header}>
-                    <h2 style={styles.title}>{sensor?.name || 'Grafik'}</h2>
+                    <h2 className={isDarkMode ? styles.titleDark : styles.titleLight}>
+                        {sensor ? `${sensor.name} - Grafiği` : 'Grafik'}
+                    </h2>
+
                     <button onClick={onClose} style={styles.closeButton}>✖</button>
                 </div>
-                {/* Sensörü doğrudan ChartPage'e geçiriyoruz */}
-                <ChartPage sensor={sensor} />
+                <div style={styles.chartContainer}>
+                    <ChartPage sensor={sensor} />
+                </div>
                 <div style={styles.footer}>
                     <button onClick={onClose} style={styles.footerButton}>Kapat</button>
                 </div>
@@ -35,14 +43,28 @@ const styles = {
         alignItems: 'center',
         zIndex: 999, // Diğer içeriklerin üstünde
     },
-    modal: {
-        backgroundColor: '#fff',
+    modalLight: {
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#fff', // Aydınlık modda beyaz arka plan
         borderRadius: '10px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
         width: '90%',
-        maxWidth: '800px', // Daha geniş modal
-        maxHeight: '80vh', // Maksimum yükseklik
-        overflowY: 'auto', // Taşarsa kaydırma çubuğu
+        maxWidth: '800px',
+        maxHeight: '80vh',
+        overflowY: 'auto',
+        padding: '20px',
+    },
+    modalDark: {
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#333', // Karanlık modda koyu gri arka plan
+        borderRadius: '10px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+        width: '90%',
+        maxWidth: '800px',
+        maxHeight: '80vh',
+        overflowY: 'auto',
         padding: '20px',
     },
     header: {
@@ -52,10 +74,15 @@ const styles = {
         borderBottom: '2px solid #f0f0f0',
         paddingBottom: '10px',
     },
-    title: {
+    titleLight: {
         margin: 0,
         fontSize: '1.5rem',
-        color: '#333',
+        color: '#333', // Aydınlık modda metin rengi
+    },
+    titleDark: {
+        margin: 0,
+        fontSize: '1.5rem',
+        color: '#fff', // Karanlık modda beyaz metin rengi
     },
     closeButton: {
         backgroundColor: 'transparent',
@@ -77,6 +104,11 @@ const styles = {
         borderRadius: '5px',
         cursor: 'pointer',
         transition: 'background-color 0.3s',
+    },
+    chartContainer: {
+        flex: 1,
+        overflowY: 'auto',
+        marginBottom: '20px',
     },
 };
 

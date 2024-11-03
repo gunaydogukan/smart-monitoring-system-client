@@ -15,11 +15,23 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
         tooltip: {
             trigger: 'axis',
             formatter: (params) => {
+                //console.log(params)
+                //console.log(params[0].data.distance);
                 const date = new Date(params[0].axisValue);
-                if (isNaN(date)) return params[0].axisValue; // Geçerli bir tarih değilse olduğu gibi göster
+                if (isNaN(date)) return params[0].axisValue;
+
                 const options = dateFormatOptions[interval] || { hour: '2-digit', minute: '2-digit' };
                 const formattedDate = date.toLocaleString('tr-TR', options);
-                return `${formattedDate}<br/>${params.map(p => `${p.seriesName}: ${p.data[p.encode.y[0]]}`).join('<br/>')}`;
+
+
+                // Tooltip içeriğini dinamik olarak oluşturuyoruz
+                return `${formattedDate}<br/>${params.map(p => {
+                    const seriesName = p.seriesName;
+                    //console.log(seriesName);
+                    const value = p.data[seriesName];
+                    //console.log(value);
+                    return `${p.seriesName}: ${value != null ? value.toFixed(2) : 'N/A'}`;
+                }).join('<br/>')}`;
             }
         },
         xAxis: {
@@ -29,7 +41,7 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
             axisLabel: {
                 formatter: function (value) {
                     const date = new Date(value);
-                    if (isNaN(date)) return value; // Eğer geçerli bir tarih değilse olduğu gibi göster
+                    if (isNaN(date)) return value;
                     const options = dateFormatOptions[interval] || { hour: '2-digit', minute: '2-digit' };
                     return date.toLocaleString('tr-TR', options);
                 }
@@ -50,7 +62,7 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
                     dataset: [{ id: 'dataset_sagUstNem', source: validData }],
                     series: [{
                         type: 'line',
-                        name: 'Üst Sağ Nem',
+                        name: 'sagUstNem',
                         datasetId: 'dataset_sagUstNem',
                         showSymbol: false,
                         encode: {
@@ -65,7 +77,7 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
                     dataset: [{ id: 'dataset_sagUstSıcaklık', source: validData }],
                     series: [{
                         type: 'line',
-                        name: 'Üst Sağ Sıcaklık',
+                        name: 'sagUstSıcaklık',
                         datasetId: 'dataset_sagUstSıcaklık',
                         showSymbol: false,
                         encode: {
@@ -74,17 +86,76 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
                         },
                     }],
                 },
-                // Diğer alt grafikler buraya eklenebilir...
+                {
+                    ...commonOptions,
+                    title: { text: 'Alt Sağ Nem' },
+                    dataset: [{ id: 'dataset_sagAltNem', source: validData }],
+                    series: [{
+                        type: 'line',
+                        name: 'sagAltNem',
+                        datasetId: 'dataset_sagAltNem',
+                        showSymbol: false,
+                        encode: {
+                            x: 'time',
+                            y: 'sagAltNem',
+                        },
+                    }],
+                },
+                {
+                    ...commonOptions,
+                    title: { text: 'Alt Sağ Sıcaklık' },
+                    dataset: [{ id: 'dataset_sagAltSıcaklık', source: validData }],
+                    series: [{
+                        type: 'line',
+                        name: 'sagAltSıcaklık',
+                        datasetId: 'dataset_sagAltSıcaklık',
+                        showSymbol: false,
+                        encode: {
+                            x: 'time',
+                            y: 'sagAltSıcaklık',
+                        },
+                    }],
+                },
+                {
+                    ...commonOptions,
+                    title: { text: 'Alt Sol Nem' },
+                    dataset: [{ id: 'dataset_solAltNem', source: validData }],
+                    series: [{
+                        type: 'line',
+                        name: 'solAltNem',
+                        datasetId: 'dataset_solAltNem',
+                        showSymbol: false,
+                        encode: {
+                            x: 'time',
+                            y: 'solAltNem',
+                        },
+                    }],
+                },
+                {
+                    ...commonOptions,
+                    title: { text: 'Alt Sol Sıcaklık' },
+                    dataset: [{ id: 'dataset_solAltSıcaklık', source: validData }],
+                    series: [{
+                        type: 'line',
+                        name: 'solAltSıcaklık',
+                        datasetId: 'dataset_solAltSıcaklık',
+                        showSymbol: false,
+                        encode: {
+                            x: 'time',
+                            y: 'solAltSıcaklık',
+                        },
+                    }],
+                }
             ];
+
         case 2: // Mesafe sensörü
             return {
                 ...commonOptions,
                 title: { text: 'Mesafe Sensörü' },
-                dataset: [{ id: 'dataset_distance', source: validData }],
+                dataset: [{ source: validData }],
                 series: [{
                     type: 'line',
-                    name: 'Mesafe',
-                    datasetId: 'dataset_distance',
+                    name: 'distance',
                     showSymbol: false,
                     encode: {
                         x: 'time',
@@ -97,11 +168,10 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
             return {
                 ...commonOptions,
                 title: { text: 'Yağmur Sensörü' },
-                dataset: [{ id: 'dataset_rainfall', source: validData }],
+                dataset: [{ source: validData }],
                 series: [{
                     type: 'line',
-                    name: 'Yağmur Miktarı',
-                    datasetId: 'dataset_rainfall',
+                    name: 'rainFall',
                     showSymbol: false,
                     encode: {
                         x: 'time',
@@ -113,12 +183,11 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
         default: // Diğer sensör türleri
             return {
                 ...commonOptions,
-                title: { text: 'Diğer Sensör Verisi' },
-                dataset: [{ id: 'dataset_other', source: validData }],
+                title: { text: 'Sensör Verisi' },
+                dataset: [{ source: validData }],
                 series: [{
                     type: 'line',
-                    name: 'Değer',
-                    datasetId: 'dataset_other',
+                    name: 'value',
                     showSymbol: false,
                     encode: {
                         x: 'time',
