@@ -38,10 +38,16 @@ const ChartPageContent = () => {
     );
 };
 
-const ChartPage = () => (
-    <ChartProvider>
-        <ChartPageContent />
-    </ChartProvider>
-);
+const ChartPage = () => {
+    const location = useLocation();
+    const sensor = location.state?.sensor; // sensor'u burada tanımlıyoruz
+    console.log("akslşdjsaılşdfklşsadfjlkşsadjflksadj");
+    console.log(sensor.datacode);
+    return (
+        <ChartProvider sensor={sensor}>
+            <ChartPageContent />
+        </ChartProvider>
+    );
+};
 
 export default ChartPage;
