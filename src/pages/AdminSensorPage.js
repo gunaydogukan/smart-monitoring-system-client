@@ -9,7 +9,8 @@ import {
     filterSensorsByCompany,
     filterSensorsByManager,
     filterSensorsByPersonal
-} from '../services/FilterService'; // Servisi import ettik
+} from '../services/FilterService';
+import styles from '../styles/AdminPage.module.css';
 
 export default function AdminPage({ role }) {
     const [companies, setCompanies] = useState([]);
@@ -17,17 +18,13 @@ export default function AdminPage({ role }) {
     const [personals, setPersonals] = useState([]);
     const [sensors, setSensors] = useState([]);
     const [sensorOwners, setSensorOwners] = useState([]);
-
     const [filteredManagers, setFilteredManagers] = useState([]);
     const [filteredPersonals, setFilteredPersonals] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
-
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
-
     const [sensorForCompany, setSensorForCompany] = useState([]);
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,14 +39,12 @@ export default function AdminPage({ role }) {
                 },
             });
             const { allCompanies, managers, personals, sensors, sensorOwners } = await response.json();
-
             setCompanies(allCompanies);
             setManagers(managers);
             setPersonals(personals);
             setSensors(sensors);
             setSensorOwners(sensorOwners);
-
-            setFilteredSensors(sensors); // Başlangıçta tüm sensörler gösterilsin
+            setFilteredSensors(sensors);
         } catch (error) {
             console.error('Veri çekme hatası:', error);
         }
@@ -58,7 +53,6 @@ export default function AdminPage({ role }) {
     const handleDropdownChange = (type, value) => {
         if (type === 'company') {
             setSelectedCompany(value);
-
             if (!value) {
                 setFilteredManagers([]);
                 setFilteredPersonals([]);
@@ -67,44 +61,36 @@ export default function AdminPage({ role }) {
                 setSelectedPersonal('');
                 return;
             }
-
             const filteredManagers = filterManagersByCompany(managers, value);
             setFilteredManagers(filteredManagers);
-
             const filteredSensors = filterSensorsByCompany(sensors, value);
             setFilteredSensors(filteredSensors);
             setSensorForCompany(filteredSensors);
-
-            setSelectedManager(''); // Manager ve personal sıfırlanacak
+            setSelectedManager('');
             setFilteredPersonals([]);
         } else if (type === 'manager') {
             setSelectedManager(value);
-
             if (!value) {
                 setFilteredPersonals([]);
-                setFilteredSensors(sensorForCompany); // Şirketin sensörlerine geri dön
+                setFilteredSensors(sensorForCompany);
                 setSelectedPersonal('');
                 return;
             }
-
             const filteredPersonals = filterPersonalsByManager(personals, value);
             setFilteredPersonals(filteredPersonals);
-
             const filteredSensors = filterSensorsByManager(sensors, sensorOwners, value);
             setFilteredSensors(filteredSensors);
         } else if (type === 'personal') {
             setSelectedPersonal(value);
-
             if (!value) {
                 if (selectedManager) {
                     const filteredSensors = filterSensorsByManager(sensors, sensorOwners, selectedManager);
                     setFilteredSensors(filteredSensors);
                 } else {
-                    setFilteredSensors(sensorForCompany); // Şirket sensörlerine geri dön
+                    setFilteredSensors(sensorForCompany);
                 }
                 return;
             }
-
             const filteredSensors = filterSensorsByPersonal(sensors, sensorOwners, value);
             setFilteredSensors(filteredSensors);
         }
@@ -116,9 +102,8 @@ export default function AdminPage({ role }) {
 
     return (
         <Layout>
-            <div>
-                <h2>Admin Paneli</h2>
-                {/* /Map sayfasına yönlendiren buton */}
+            <div className={styles.container}>
+                <h2 className={styles.header}>Admin Paneli</h2>
 
                 <SensorsDropdowns
                     role={role}
@@ -129,31 +114,11 @@ export default function AdminPage({ role }) {
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
-                    onMapRedirect={handleMapRedirect} // Buton işlevselliği için yeni prop
+                    onMapRedirect={handleMapRedirect}
                 />
 
-                <SensorList sensors={filteredSensors}/>
+                <SensorList sensors={filteredSensors} />
             </div>
         </Layout>
     );
 }
-
-
-const styles = {
-    button: {
-        padding: '10px 20px',
-        borderRadius: '8px',
-        border: 'none',
-        backgroundColor: '#4CAF50',
-        color: 'white',
-        fontSize: '1rem',
-        cursor: 'pointer',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        transition: 'background-color 0.3s',
-        outline: 'none',
-    },
-    buttonHover: {
-        backgroundColor: '#0056b3',
-    },
-};
-

@@ -1,8 +1,9 @@
+// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext"; // Import ThemeProvider
-
+import { ThemeProvider } from "./contexts/ThemeContext";
+import "./styles/App.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -11,7 +12,7 @@ import Register from "./components/Register";
 import SensorForm from "./pages/SensorForm";
 import CompanyAdd from "./components/CompanyAdd";
 import RoleBasedRedirect from './components/RoleBasedRedirect';
-import Users from './components/users'; // Updated import
+import Users from './components/users';
 import DisplayMap from './components/DisplayMap';
 import CompanyList from './pages/CompanyList';
 import ChartPage from './pages/ChartPage';
@@ -22,7 +23,7 @@ export default function App() {
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
     return (
-        <ThemeProvider> {/* Wrap App with ThemeProvider */}
+        <ThemeProvider>
             <Router>
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -38,8 +39,8 @@ export default function App() {
                             <Route path="/sensors" element={<RoleBasedRedirect />} />
                             <Route path="/map" element={<DisplayMap />} />
                             <Route path="/add-company" element={<CompanyAdd />} />
-                            <Route path="/users/:type" element={<Users />} /> {/* Dinamik URL */}
-                            <Route path="/charts" element={<ChartPage />} /> {/* Charts rotası eklendi 2.11.24 */}
+                            <Route path="/users/:type" element={<Users />} />
+                            <Route path="/charts" element={<ChartPage />} />
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (

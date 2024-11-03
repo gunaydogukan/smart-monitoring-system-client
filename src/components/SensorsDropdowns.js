@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import styles from '../styles/SensorsDropdowns.module.css';
 
 export default function SensorsDropdowns({
                                              role,
@@ -9,22 +11,22 @@ export default function SensorsDropdowns({
                                              selectedManager,
                                              selectedPersonal,
                                              onChange,
-                                             onMapRedirect // Yeni prop ekleniyor
+                                             onMapRedirect
                                          }) {
+    const { isDarkMode } = useTheme();
+
     return (
-        <div style={styles.container}>
-            {/* Haritayı Görüntüle Butonu */}
+        <div className={styles.container}>
             <button
                 onClick={onMapRedirect}
-                style={styles.button}
+                className={`${styles.button} ${isDarkMode ? styles.buttonDark : styles.buttonLight}`}
             >
                 Haritayı Görüntüle
             </button>
 
-            {/* Şirketler Dropdown (Sadece administrator görebilir) */}
             {role === 'administrator' && (
                 <select
-                    style={styles.dropdown}
+                    className={styles.dropdown}
                     onChange={(e) => onChange('company', e.target.value)}
                     value={selectedCompany}
                 >
@@ -37,13 +39,12 @@ export default function SensorsDropdowns({
                 </select>
             )}
 
-            {/* Managerlar Dropdown (Sadece administrator görebilir ve şirket seçilmeden kilitli) */}
             {role === 'administrator' && (
                 <select
-                    style={styles.dropdown}
+                    className={styles.dropdown}
                     value={selectedManager}
                     onChange={(e) => onChange('manager', e.target.value)}
-                    disabled={!selectedCompany}  // Şirket seçilmezse manager kilitli
+                    disabled={!selectedCompany}
                 >
                     <option value="">Tüm Managerlar</option>
                     {managers.map((manager) => (
@@ -54,12 +55,11 @@ export default function SensorsDropdowns({
                 </select>
             )}
 
-            {/* Personeller Dropdown (Hem administrator hem de manager için aktif) */}
             <select
-                style={styles.dropdown}
+                className={styles.dropdown}
                 value={selectedPersonal}
                 onChange={(e) => onChange('personal', e.target.value)}
-                disabled={role === 'administrator' && !selectedManager}  // Admin ise manager seçilmeden personel kilitli
+                disabled={role === 'administrator' && !selectedManager}
             >
                 <option value="">Tüm Personeller</option>
                 {personals.map((personal) => (
@@ -71,36 +71,3 @@ export default function SensorsDropdowns({
         </div>
     );
 }
-
-const styles = {
-    container: {
-        display: 'flex',
-        gap: '20px',
-        justifyContent: 'center',
-        padding: '20px',
-    },
-    dropdown: {
-        padding: '10px',
-        borderRadius: '8px',
-        border: '1px solid #ddd',
-        backgroundColor: '#f9f9f9',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        fontSize: '1rem',
-        transition: 'border-color 0.3s',
-        cursor: 'pointer',
-        outline: 'none',
-        minWidth: '200px',
-    },
-    button: {
-        padding: '10px 20px',
-        borderRadius: '8px',
-        border: 'none',
-        backgroundColor: '#007BFF',
-        color: 'white',
-        fontSize: '1rem',
-        cursor: 'pointer',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        transition: 'background-color 0.3s',
-        outline: 'none',
-    }
-};

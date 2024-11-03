@@ -1,170 +1,179 @@
-/* Sidebar */
-.sidebar {
-    width: 220px; /* Genişlik */
-    height: 100vh; /* Yükseklik */
-    background-color: #ffffff; /* Gündüz modu arka plan rengi */
-    color: #2c3e50; /* Gündüz modu metin rengi */
-    display: flex; /* Flex ile içerik düzenlemesi */
-    flex-direction: column; /* Dikey olarak yerleştir */
-    padding: 15px; /* İçerik boşluğu */
-    box-sizing: border-box; /* Kutunun boyutunu düzgün hesapla */
-    overflow-y: auto; /* Dikey kaydırma */
-    transition: background-color 0.3s, color 0.3s; /* Geçiş efekti */
-    border-right: 2px solid #dcdcdc; /* Sağda bir ayrım */
+:root {
+    --bg-color-light: #f9fafb;
+    --bg-color-dark: #1f1f1f;
+    --text-color-light: #333333;
+    --text-color-dark: #e0e0e0;
+    --hover-bg-color-light: #ddebf9;
+    --hover-bg-color-dark: #333f52;
+    --icon-color-light: #4a90e2;
+    --icon-color-dark: #4a90e2;
+    --border-color-light: #e0e0e0;
+    --border-color-dark: #444;
+    --toggle-btn-bg-light: #4a90e2;
+    --toggle-btn-bg-dark: #34495e;
 }
 
-/* Gece Modu */
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    transition: background-color 0.3s, color 0.3s;
+    border-right: 2px solid var(--border-color-light);
+}
+
+/* Dark mode */
 .sidebar.dark {
-    background-color: #2c3e50; /* Gece modu arka plan rengi */
-    color: #ffffff; /* Gece modu metin rengi */
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+    border-right: 2px solid var(--border-color-dark);
 }
 
 /* Menü Grubu */
 .menu-group {
-    display: flex; /* Flex ile dikey yerleştir */
-    flex-direction: column; /* Dikey yerleşim */
-    gap: 15px; /* Boşluk */
-    margin-bottom: auto; /* Alt boşluk bırak */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: auto;
 }
 
 /* Menü ve Logout Butonları */
 .menu, .logout {
-    display: flex; /* Flex ile içerikleri yan yana getir */
-    align-items: center; /* Dikey olarak ortala */
-    gap: 10px; /* Boşluk */
-    cursor: pointer; /* Tıklanabilir imleci göster */
-    padding: 12px 15px; /* İçerik alanı boşluğu */
-    border-radius: 5px; /* Kenar yuvarlama */
-    transition: background-color 0.3s, transform 0.3s, color 0.3s; /* Geçiş efekti */
-    font-size: 18px; /* Font boyutu artırıldı */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 12px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s, color 0.3s;
+    font-size: 18px;
+    color: inherit;
 }
 
 /* İkon Renkleri */
 .menu-icon {
-    color: #0984e3; /* İkon rengi */
-    transition: color 0.3s; /* Renk geçiş efekti */
+    color: var(--icon-color-light);
+    transition: color 0.3s;
 }
 
 /* Hover Durumu */
 .menu:hover, .logout:hover {
-    background-color: #0984e3; /* Canlı mavi hover durumu */
-    color: #ffffff; /* Metin rengi */
-    transform: scale(1.05); /* Hover durumunda büyütme efekti */
+    background-color: var(--hover-bg-color-light);
+    color: #ffffff;
+    transform: scale(1.05);
 }
 
-/* Hover Durumunda İkon Rengi */
 .menu:hover .menu-icon, .logout:hover .menu-icon {
-    color: #ffffff; /* İkon rengi beyaz */
+    color: #ffffff;
 }
 
-/* Gece Modu Hover Durumu */
+/* Dark mode hover durumu */
 .sidebar.dark .menu:hover, .sidebar.dark .logout:hover {
-    background-color: #34495e; /* Gece modunda hover durumu */
-    color: #ffffff; /* Metin rengi */
+    background-color: var(--hover-bg-color-dark);
+    color: #ffffff;
 }
 
-/* Gece Modu Hover Durumunda İkon Rengi */
 .sidebar.dark .menu:hover .menu-icon, .sidebar.dark .logout:hover .menu-icon {
-    color: #ffffff; /* İkon rengi beyaz */
+    color: #ffffff;
 }
 
 /* Gece/Gündüz Modu Toggle Butonu */
 .toggle-mode {
     cursor: pointer;
-    padding: 10px; /* Buton boyutları */
-    background-color: #0984e3; /* Gündüz modu rengi */
-    color: #ffffff; /* Gündüz modu metin rengi */
+    padding: 10px;
+    background-color: var(--toggle-btn-bg-light);
+    color: #ffffff;
     border: none;
-    border-radius: 25px; /* Yuvarlak kenarlar */
-    transition: background-color 0.3s, color 0.3s; /* Geçiş efekti */
-    font-size: 16px; /* Buton font boyutu */
-    width: 100%; /* Tam genişlik */
-    margin-top: auto; /* Aşağıya kaydır */
-    display: flex; /* Flex ile içerik düzenlemesi */
-    align-items: center; /* Dikey ortalama */
-    justify-content: center; /* Yatay ortalama */
+    border-radius: 25px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Gündüz Modu Hover Durumu */
 .toggle-mode:hover {
-    background-color: #000000; /* Gündüz modunda hover rengi siyah */
+    background-color: #3a6fa5;
 }
 
-/* Gece Modu Stilleri */
+/* Dark mode toggle butonu */
 .sidebar.dark .toggle-mode {
-    background-color: #34495e; /* Gece modunda arka plan rengi */
-    color: #ffffff; /* Metin rengi */
+    background-color: var(--toggle-btn-bg-dark);
 }
 
-/* Gece Modu Hover Durumu */
 .sidebar.dark .toggle-mode:hover {
-    background-color: #2c3e50; /* Gece modunda hover rengi koyu mavi */
-    color: #ffffff; /* Metin rengi */
+    background-color: #2c3e50;
 }
 
 /* Dropdown Menü */
 .dropdown {
-    list-style: none; /* Liste stilini kaldır */
-    padding-left: 15px; /* Soldan boşluk */
-    background-color: #ecf0f1; /* Açık gri dropdown arka plan rengi */
-    border-radius: 5px; /* Kenar yuvarlama */
-    margin-top: 5px; /* Üstten boşluk */
+    list-style: none;
+    padding-left: 15px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    margin-top: 5px;
 }
 
-/* Dropdown Öğeleri */
 .dropdown li {
-    padding: 10px 15px; /* İç boşluk */
-    cursor: pointer; /* Tıklanabilir imleci göster */
-    color: #2c3e50; /* Açık gri metin rengi */
-    transition: background-color 0.3s, color 0.3s; /* Geçiş efekti */
-    display: flex; /* Flex ile içerikleri yan yana getir */
-    align-items: center; /* Dikey olarak ortala */
-    gap: 10px; /* İkon ile metin arasında boşluk */
+    padding: 10px 15px;
+    cursor: pointer;
+    color: var(--text-color-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Dropdown Öğelerindeki İkon Renkleri */
-.dropdown li .dropdown-icon {
-    color: #0984e3; /* İkon rengi */
-    transition: color 0.3s; /* Renk geçiş efekti */
-}
-
-/* Dropdown Öğeleri Hover Durumu */
+/* Dropdown öğesi hover durumu */
 .dropdown li:hover {
-    background-color: #0984e3; /* Hover arka plan rengi */
-    color: #ffffff; /* Metin rengi */
+    background-color: var(--hover-bg-color-light);
+    color: #ffffff;
 }
 
-/* Hover Durumunda İkon Rengi */
+.dropdown li .dropdown-icon {
+    color: var(--icon-color-light);
+}
+
 .dropdown li:hover .dropdown-icon {
-    color: #ffffff; /* Hover durumunda ikon rengi beyaz */
+    color: #ffffff;
 }
 
-/* Gece Modu Dropdown Stilleri */
+/* Dark mode dropdown */
 .sidebar.dark .dropdown {
-    background-color: #34495e; /* Gece modunda açık renk */
+    background-color: #333f52;
 }
 
 .sidebar.dark .dropdown li {
-    color: #ffffff; /* Gece modunda metin rengi */
+    color: var(--text-color-dark);
 }
 
 .sidebar.dark .dropdown li:hover {
-    background-color: #2c3e50; /* Gece modunda hover durumu */
-    color: #ffffff; /* Gece modunda metin rengi */
+    background-color: #2c3e50;
+    color: #ffffff;
 }
 
 .sidebar.dark .dropdown li:hover .dropdown-icon {
-    color: #ffffff; /* Gece modunda ikon rengi beyaz */
+    color: #ffffff;
 }
 
 /* Çıkış Butonu Hover Durumu */
 .logout:hover {
-    background-color: #e74c3c; /* Çıkış butonu hover durumu kırmızı */
-    color: #ffffff; /* Metin rengi beyaz */
+    background-color: #e74c3c;
+    color: #ffffff;
 }
 
-/* Gece Modu Çıkış Butonu Hover Durumu */
 .sidebar.dark .logout:hover {
-    background-color: #c0392b; /* Gece modunda çıkış butonu hover durumu kırmızı ton */
-    color: #ffffff; /* Metin rengi beyaz */
+    background-color: #c0392b;
+    color: #ffffff;
 }

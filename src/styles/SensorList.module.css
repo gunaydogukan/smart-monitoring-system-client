@@ -1,0 +1,87 @@
+/* src/styles/SensorList.module.css */
+
+.container {
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.containerLight {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.containerDark {
+    background-color: #333;
+    color: #f9f9f9;
+}
+
+.sensorListContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+
+.sensorCard {
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 250px;
+    text-align: center;
+}
+
+.sensorCardLight {
+    background-color: #f9f9f9;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.sensorCardDark {
+    background-color: #333;
+    color: #f9f9f9;
+    border: 1px solid #444;
+}
+
+.sensorName {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+}
+
+.sensorLocation {
+    font-size: 1rem;
+    margin: 0 0 15px 0;
+    color: #777;
+}
+
+.mapButton {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+    color: white;
+}
+
+.mapButtonLight {
+    background-color: #007BFF;
+}
+
+.mapButtonDark {
+    background-color: #555555;
+}
+
+.mapButtonLight:hover {
+    background-color: #0056b3;
+}
+
+.mapButtonDark:hover {
+    background-color: #333333;
+}
+
+/* Butonlar arasındaki boşluk */
+.buttonSpacing {
+    margin-top: 10px;
+}
