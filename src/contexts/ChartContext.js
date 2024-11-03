@@ -4,7 +4,7 @@ import { fetchSensorData } from '../services/dataService';
 
 export const ChartContext = createContext();
 
-export const ChartProvider = ({ children }) => {
+export const ChartProvider = ({ sensor,children }) => {
     const [sensorData, setSensorData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ export const ChartProvider = ({ children }) => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await fetchSensorData();
+                const data = await fetchSensorData(sensor);
                 console.log('Alınan sensör verisi:', data); // Konsolda veriyi görüntüleyin
                 setSensorData(data);
             } catch (error) {
@@ -22,8 +22,10 @@ export const ChartProvider = ({ children }) => {
                 setLoading(false);
             }
         };
-        loadData();
-    }, []);
+        if (sensor) { // Sadece sensor tanımlıysa yükleme yap
+            loadData();
+        }
+    }, [sensor]); // sensor bağımlılığını ekleyin
 
     return (
         <ChartContext.Provider value={{ sensorData, loading, error }}>
