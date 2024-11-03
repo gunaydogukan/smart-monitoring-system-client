@@ -1,4 +1,3 @@
-// src/pages/ChartPage.js
 import React, { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import Charts from '../components/Charts';
@@ -6,31 +5,37 @@ import { ChartContext, ChartProvider } from '../contexts/ChartContext';
 
 const ChartPageContent = () => {
     const location = useLocation();
-    const { sensorData, loading, error } = useContext(ChartContext);
+    const { sensorData, loading, error, setInterval,interval } = useContext(ChartContext);
     const sensor = location.state?.sensor;
 
-    // Gelen veri ve durumları kontrol edin
-    console.log('Gelen sensör verisi:', sensor); //sensorün bilgilerini alır
-    console.log('Context üzerinden alınan sensorData:', sensorData); //contexten sensordata db ' den sensorün table'ına göre seçip veriyi alır //yapılacak
+    const handleIntervalChange = (event) => {
+        setInterval(event.target.value); // Seçilen zaman aralığını context’e güncelle
+    };
 
-    // Yüklenme durumu
     if (loading) {
         return <p>Yükleniyor...</p>;
     }
 
-    // Hata durumu
     if (error) {
         return <p>Veri yüklenirken bir hata oluştu: {error.message}</p>;
     }
 
-    // Eğer veri varsa, grafik bileşenini göster
     return (
         <div>
-            <h1>
-                {sensor ? `${sensor.name} - Grafik` : 'Grafik Sayfası'}
-            </h1>
+            <h1>{sensor ? `${sensor.name} - Grafik` : 'Grafik Sayfası'}</h1>
+
+            {/* Zaman Aralığı Seçici */}
+            <label htmlFor="interval-select">Zaman Aralığı Seçin: </label>
+            <select id="interval-select" onChange={handleIntervalChange}>
+                <option value="dakikalık">Dakikalık</option>
+                <option value="saatlik">Saatlik</option>
+                <option value="günlük">Günlük</option>
+                <option value="aylık">Aylık</option>
+                <option value="yıllık">Yıllık</option>
+            </select>
+
             {sensorData.length > 0 || sensor ? (
-                <Charts sensorType={sensor ? sensor.type : undefined } data={sensor ? sensorData : sensorData} />
+                <Charts sensorType={sensor ? sensor.type : undefined} data={sensorData} interval={interval} />
             ) : (
                 <p>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
             )}
@@ -40,9 +45,8 @@ const ChartPageContent = () => {
 
 const ChartPage = () => {
     const location = useLocation();
-    const sensor = location.state?.sensor; // sensor'u burada tanımlıyoruz
-    console.log("akslşdjsaılşdfklşsadfjlkşsadjflksadj");
-    console.log(sensor.datacode);
+    const sensor = location.state?.sensor;
+
     return (
         <ChartProvider sensor={sensor}>
             <ChartPageContent />
