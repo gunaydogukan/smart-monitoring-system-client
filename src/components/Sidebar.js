@@ -40,10 +40,19 @@ export default function Sidebar() {
                     <FaMicrochip className="menu-icon" />
                     <span>Sensörler</span>
                 </div>
+
+                {user?.role === "administrator" && (
+                    <div className="menu" onClick={() => navigate("/sensorControl")}>
+                        <FaMicrochip className="menu-icon"/>
+                        <span>Sensör Kontrol</span>
+                    </div>
+                )}
+
                 {!isPersonal && (
                     <>
-                        <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
-                            <FaUser className="menu-icon" />
+                        <div className={`menu ${isUsersOpen ? 'open' : ''}`}
+                             onClick={() => setIsUsersOpen(!isUsersOpen)}>
+                        <FaUser className="menu-icon" />
                             <span>Kullanıcılar</span>
                         </div>
                         {isUsersOpen && (
