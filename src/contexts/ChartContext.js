@@ -7,7 +7,7 @@ export const ChartProvider = ({ sensor, children }) => {
     const [sensorData, setSensorData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [interval, setInterval] = useState('dakikalık'); // Varsayılan zaman aralığı
+    const [interval, setInterval] = useState('1 Gün'); // Varsayılan zaman aralığı
 
     // interval veya sensor değiştiğinde veriyi çek
     useEffect(() => {

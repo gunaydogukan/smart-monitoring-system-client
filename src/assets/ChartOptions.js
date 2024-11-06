@@ -1,11 +1,11 @@
 export const getSensorChartOptions = (sensorType, data, interval) => {
     const validData = Array.isArray(data) ? data : [];
-    console.log("Valid Data for chart options:", validData);
+    //console.log("Valid Data for chart options:", validData);
 
     // Tarih formatları
     const dateFormatOptions = {
         dakikalık: { hour: '2-digit', minute: '2-digit' },
-        saatlik: { month: '2-digit', day: '2-digit', hour: '2-digit' },
+        saatlik: { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' },
         günlük: { month: '2-digit', day: '2-digit' },
         aylık: { year: 'numeric', month: '2-digit' },
         yıllık: { year: 'numeric' }
@@ -15,22 +15,21 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
         tooltip: {
             trigger: 'axis',
             formatter: (params) => {
-                //console.log(params)
-                //console.log(params[0].data.distance);
-                const date = new Date(params[0].axisValue);
-                if (isNaN(date)) return params[0].axisValue;
-
+                console.log(params)
+                let date = new Date(params[0].axisValue);
+                if (isNaN(date)){
+                    date =  params[0].axisValue;
+                }
                 const options = dateFormatOptions[interval] || { hour: '2-digit', minute: '2-digit' };
                 const formattedDate = date.toLocaleString('tr-TR', options);
-
 
                 // Tooltip içeriğini dinamik olarak oluşturuyoruz
                 return `${formattedDate}<br/>${params.map(p => {
                     const seriesName = p.seriesName;
-                    //console.log(seriesName);
                     const value = p.data[seriesName];
-                    //console.log(value);
-                    return `${p.seriesName}: ${value != null ? value.toFixed(2) : 'N/A'}`;
+                    const time = p.data.time;
+                    //console.log(time);
+                    return `${time} - ${seriesName}: ${value != null ? value.toFixed(2) : 'N/A'}`;
                 }).join('<br/>')}`;
             }
         },

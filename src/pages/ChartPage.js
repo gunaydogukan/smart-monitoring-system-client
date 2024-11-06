@@ -7,6 +7,8 @@ const ChartPageContent = ({ sensor }) => {
     const { sensorData, loading, error, setInterval, interval } = useContext(ChartContext);
     const { isDarkMode } = useTheme(); // Tema bağlamını kullanarak karanlık modu alın
 
+
+
     const handleIntervalChange = (event) => {
         setInterval(event.target.value); // Seçilen zaman aralığını context’e güncelle
     };
@@ -28,6 +30,7 @@ const ChartPageContent = ({ sensor }) => {
             <select
                 id="interval-select"
                 onChange={handleIntervalChange}
+                value={interval}
                 style={{
                     backgroundColor: isDarkMode ? '#555' : '#fff',
                     color: isDarkMode ? '#fff' : '#000',
@@ -36,11 +39,14 @@ const ChartPageContent = ({ sensor }) => {
                     padding: '5px'
                 }}
             >
-                <option value="dakikalık">Dakikalık</option>
-                <option value="saatlik">Saatlik</option>
-                <option value="günlük">Günlük</option>
-                <option value="aylık">Aylık</option>
-                <option value="yıllık">Yıllık</option>
+                <option value="1 Gün">1 Gün</option>
+                <option value="1 Hafta">1 Hafta</option>
+                <option value="1 Ay">1 Ay</option>
+                <option value="3 Ay">3 Ay</option>
+                <option value="6 Ay">6 Ay</option>
+                <option value="1 Yıl">1 Yıl</option>
+                <option value="5 Yıl">5 Yıl</option>
+                <option value="Maksimum">Maksimum</option>
             </select>
 
             {sensorData.length > 0 ? (
