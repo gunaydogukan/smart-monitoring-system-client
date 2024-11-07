@@ -1,13 +1,19 @@
-/* src/styles/SensorsDropdowns.module.css */
-
 .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dropdownRow {
     display: flex;
     gap: 20px;
     justify-content: center;
-    padding: 20px;
     width: 100%;
-    flex-wrap: wrap;
-    box-sizing: border-box;
+    max-width: 800px; /* Maksimum genişliği ayarlayarak yan yana durmalarını sağlar */
 }
 
 .dropdown {
@@ -19,10 +25,18 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-size: 1rem;
     min-width: 200px;
+    height: 40px;
+    display: flex;
+    align-items: center;
     cursor: pointer;
     outline: none;
     transition: background-color 0.3s, color 0.3s;
-    flex: 1 1 200px;
+}
+
+.dropdown.dark {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
 }
 
 .button {
@@ -34,28 +48,29 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     outline: none;
     transition: background-color 0.3s, color 0.3s;
+    background-color: #3768a1; /* Light mode default */
+    color: white;
+    align-self: center;
 }
 
 .buttonDark {
-    background-color: #555; /* Dark modda daha koyu renk */
-    color: white;
+    background-color: #555;
 }
 
 .buttonLight {
-    background-color: #007BFF; /* Light modda mavi ton */
-    color: white;
+    background-color: #3768a1;
 }
 
 .buttonDark:hover {
-    background-color: #333; /* Dark modda hover efekti */
+    background-color: #272626;
 }
 
 .buttonLight:hover {
-    background-color: #0056b3; /* Light modda hover efekti */
+    background-color: #0851d1;
 }
 
 @media (max-width: 768px) {
-    .container {
+    .dropdownRow {
         flex-direction: column;
         align-items: center;
     }

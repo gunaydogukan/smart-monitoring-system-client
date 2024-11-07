@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
-
+import { useTheme } from "../contexts/ThemeContext"; // ThemeContext'i içe aktar
+import styles from '../styles/Address.module.css'; // CSS dosyasını içe aktar
 
 export default function Address() {
+    const { isDarkMode } = useTheme(); // Dark mode durumunu al
     const [provinces, setProvinces] = useState([]);
     const [filteredProvinces, setFilteredProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -115,21 +117,21 @@ export default function Address() {
         };
 
         try {
-            const token = localStorage.getItem('token'); // Token kontrolü
-            console.log('Gönderilen token:', token); // Token çıktısını kontrol et
+            const token = localStorage.getItem('token');
+            console.log('Gönderilen token:', token);
 
             const response = await fetch('http://localhost:5000/api/address', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`, // Bearer token ekleniyor
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(addressData),
             });
 
             if (!response.ok) {
-                const errorData = await response.json(); // Hata detayını al
-                console.error('Sunucu Hatası:', errorData); // Hata detayını göster
+                const errorData = await response.json();
+                console.error('Sunucu Hatası:', errorData);
                 console.log(addressData);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -149,13 +151,11 @@ export default function Address() {
     }, [selectedProvinceId, searchProvince, searchDistrict, searchNeighborhood, village, navigate]);
 
     return (
-<Layout>
-
-
-            <div style={{ padding: '20px' }}>
+        <Layout>
+            <div className={`${styles.addressContainer} ${isDarkMode ? styles.dark : ''}`}>
                 <h1>Adres Bilgisi</h1>
                 <form onSubmit={handleSubmit}>
-                    <div>
+                    <div className={styles['form-group']}>
                         <label>İl: </label>
                         <input
                             type="text"
@@ -184,7 +184,7 @@ export default function Address() {
                         </select>
                     </div>
 
-                    <div style={{ marginTop: '10px' }}>
+                    <div className={styles['form-group']}>
                         <label>İlçe: </label>
                         <input
                             type="text"
@@ -213,7 +213,7 @@ export default function Address() {
                         </select>
                     </div>
 
-                    <div style={{ marginTop: '10px' }}>
+                    <div className={styles['form-group']}>
                         <label>Mahalle: </label>
                         <input
                             type="text"
@@ -241,7 +241,7 @@ export default function Address() {
                         </select>
                     </div>
 
-                    <div style={{ marginTop: '10px' }}>
+                    <div className={styles['form-group']}>
                         <label>Köy: </label>
                         <input
                             type="text"
@@ -253,7 +253,6 @@ export default function Address() {
 
                     <button
                         type="submit"
-                        style={{ marginTop: '20px' }}
                         disabled={
                             !selectedProvinceId ||
                             !selectedDistrictId ||
@@ -264,6 +263,6 @@ export default function Address() {
                     </button>
                 </form>
             </div>
-</Layout>
+        </Layout>
     );
 }

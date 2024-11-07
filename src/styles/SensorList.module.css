@@ -66,7 +66,7 @@
 }
 
 .mapButtonLight {
-    background-color: #007BFF;
+    background-color: #3768a1;
 }
 
 .mapButtonDark {
@@ -74,14 +74,47 @@
 }
 
 .mapButtonLight:hover {
-    background-color: #0056b3;
+    background-color: #0851d1;
 }
 
 .mapButtonDark:hover {
-    background-color: #333333;
+    background-color: #272626;
 }
 
 /* Butonlar arasındaki boşluk */
 .buttonSpacing {
     margin-top: 10px;
 }
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.paginationButton {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #3768a1;
+    color: white;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.paginationButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: #0851d1;
+}
+
+.pageInfo {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
