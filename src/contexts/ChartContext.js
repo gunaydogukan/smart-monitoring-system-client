@@ -1,38 +1,36 @@
-// src/contexts/ChartContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import { fetchSensorData } from '../services/dataService';
 
 export const ChartContext = createContext();
 
-export const ChartProvider = ({ sensor,children }) => {
+export const ChartProvider = ({ sensor, children }) => {
     const [sensorData, setSensorData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-
     const [interval, setInterval] = useState('1 Gün'); // Varsayılan zaman aralığı
 
-
+    // interval veya sensor değiştiğinde veriyi çek
     useEffect(() => {
-        const loadData = async () => {
+        const fetchData = async () => {
+            setLoading(true);
             try {
-                const data = await fetchSensorData(sensor);
-                console.log('Alınan sensör verisi:', data); // Konsolda veriyi görüntüleyin
+                const data = await fetchSensorData(sensor, interval);
                 setSensorData(data);
-            } catch (error) {
-                console.error('Veri yükleme hatası:', error);
-                setError(error);
+                setError(null);
+            } catch (err) {
+                setError(err);
             } finally {
                 setLoading(false);
             }
         };
-        if (sensor) { // Sadece sensor tanımlıysa yükleme yap
-            loadData();
+
+        if (sensor && interval) {
+            fetchData();
         }
-    }, [sensor]); // sensor bağımlılığını ekleyin
+    }, [sensor, interval]);
 
     return (
-        <ChartContext.Provider value={{ sensorData, loading, error }}>
+        <ChartContext.Provider value={{ sensorData, loading, error, setInterval,interval }}>
             {children}
         </ChartContext.Provider>
     );

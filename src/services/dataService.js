@@ -1,12 +1,15 @@
-// client/src/services/dataService.js
-export const fetchSensorData = async (sensor) => {
+export const fetchSensorData = async (sensor, interval) => {
+
     if (!sensor || !sensor.datacode) {
         throw new Error("Geçersiz sensör veya datacode bilgisi.");
     }
 
     console.log("fetchSensorData - Sensor datacode:", sensor.datacode); // datacode kontrolü
     try {
-        const response = await fetch(`http://localhost:5000/api/sensor-data?dataCode=${sensor.datacode}`, {
+        // Interval parametresi varsa URL'ye ekle
+        const url = `http://localhost:5000/api/sensor-data?dataCode=${sensor.datacode}${interval ? `&interval=${interval}` : ''}`;
+
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
