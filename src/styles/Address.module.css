@@ -1,0 +1,128 @@
+/* Address.module.css */
+
+.addressContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* Light mode background */
+    color: #333; /* Light mode text color */
+    max-width: 400px; /* Reduce max-width for a more compact layout */
+    margin: auto; /* Center the container on the page */
+    height: auto; /* Adjust height to fit content */
+    justify-content: center; /* Center vertically */
+    min-height: 60vh; /* Set a minimum height for better appearance */
+}
+
+.addressContainer.dark {
+    background-color: #212529; /* Dark mode background */
+    color: #fff; /* Dark mode text color */
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center; /* Center the title */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column; /* Stack label and input vertically */
+    margin-bottom: 1.5rem; /* Increased space between input and dropdown */
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem; /* Space below the label */
+}
+
+/* Light mode label color */
+.form-group label {
+    color: #666; /* Darker label color for light mode */
+}
+
+/* Dark mode label color */
+.addressContainer.dark .form-group label {
+    color: #e0e0e0; /* Lighter label color for dark mode */
+}
+
+.form-group input,
+.form-group select {
+    margin-top: 0.6rem;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 3px 3px 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745; /* Light mode button background */
+    color: #fff; /* Light mode button text color */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    width: auto; /* Set width to auto */
+    align-self: center; /* Center the button */
+}
+
+/* Dark mode button styles */
+.addressContainer.dark button {
+    background-color: #17a2b8; /* Dark mode button background */
+    color: #fff; /* Dark mode button text color */
+}
+
+button:hover {
+    background-color: #218838; /* Darker green for hover */
+    transform: scale(1.05);
+}
+
+/* Dark mode hover styles */
+.addressContainer.dark button:hover {
+    background-color: #138496; /* Darker blue for hover */
+}
+
+button:disabled {
+    background-color: #ccc; /* Disabled button color for light mode */
+    cursor: not-allowed;
+}
+
+/* Dark mode disabled button styles */
+.addressContainer.dark button:disabled {
+    background-color: #495057; /* Darker gray for disabled button in dark mode */
+    color: #a6a6a6; /* Lighter text color to indicate it's disabled */
+    cursor: not-allowed; /* Show that the button is not clickable */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .form-group {
+        flex-direction: column; /* Stack label and input on smaller screens */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        width: 100%; /* Full width on smaller screens */
+    }
+}

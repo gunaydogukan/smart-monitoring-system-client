@@ -1,0 +1,122 @@
+.sensorFormContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    color: #333;
+    max-width: 700px; /* Formun yatay genişliğini artır */
+    margin: 20px auto;
+    max-height: 80vh; /* Sayfa yüksekliğine göre form yüksekliğini sınırla */
+    overflow-y: auto; /* Formun içeriğini kaydırılabilir yap */
+}
+
+.sensorFormContainer.dark {
+    background-color: #212529;
+    color: #fff;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.sensorFormContainer.dark .formGroup label {
+    color: #e0e0e0;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+    border-color: #5cb85c;
+    box-shadow: 0 0 5px rgba(92, 184, 92, 0.5);
+}
+
+button {
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+    align-self: center;
+}
+
+.sensorFormContainer.dark button {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.sensorFormContainer.dark button:hover {
+    background-color: #138496;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.sensorFormContainer.dark button:disabled {
+    background-color: #495057;
+    color: #a6a6a6;
+}
+
+.error {
+    color: red;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .sensorFormContainer {
+        max-width: 90%; /* Küçük ekranlarda genişlik ayarı */
+        padding: 1rem;
+    }
+
+    button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+}

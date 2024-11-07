@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import Layout from "../layouts/Layout";
 import { FaEnvelope, FaPhone, FaBuilding } from 'react-icons/fa';
-import userIcon from '../assets/profile-icon.avif'; // Profil resmi için modern ikon
+import userIcon from '../assets/profile-icon.avif';
+import styles from '../styles/Profile.module.css';
+import { useTheme } from '../contexts/ThemeContext'; // ThemeContext'i içe aktar
 
 export default function Profile() {
     const { token } = useAuth();
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { isDarkMode } = useTheme(); // ThemeContext'ten dark mode durumunu al
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -44,47 +47,43 @@ export default function Profile() {
 
     return (
         <Layout>
-            <div style={styles.container}>
-                <div style={styles.profileContent}>
-                    <div style={styles.avatarContainer}>
-                        <img src={userIcon} alt="User Icon" style={styles.avatarImage} />
+            <div className={`${styles.content} ${isDarkMode ? styles.dark : ''}`}>
+                <div className={styles.profileContent}>
+                    <div className={styles.avatarContainer}>
+                        <img src={userIcon} alt="User Icon" className={styles.avatarImage} />
                     </div>
-
-                    <h2 style={styles.title}>Profil Bilgilerim</h2>
-
-                    <div style={styles.infoContainer}>
-                        <div style={styles.infoRow}>
+                    <h2 className={styles.title}>Profil Bilgilerim</h2>
+                    <div className={styles.infoContainer}>
+                        <div className={styles.infoRow}>
                             <strong>Ad:</strong>
                             <p>{profileData.name}</p>
                         </div>
-                        <div style={styles.infoRow}>
+                        <div className={styles.infoRow}>
                             <strong>Soyad:</strong>
                             <p>{profileData.lastname}</p>
                         </div>
-                        <div style={styles.infoRow}>
-                            <FaEnvelope style={styles.icon} />
+                        <div className={styles.infoRow}>
+                            <FaEnvelope className={styles.icon}/>
                             <p>{profileData.email}</p>
                         </div>
-                        <div style={styles.infoRow}>
-                            <FaPhone style={styles.icon} />
+                        <div className={styles.infoRow}>
+                            <FaPhone className={styles.icon}/>
                             <p>{profileData.phone}</p>
                         </div>
-
                         {!isAdministrator && (
                             <>
-                                <div style={styles.infoRow}>
-                                    <FaBuilding style={styles.icon} />
+                                <div className={styles.infoRow}>
+                                    <FaBuilding className={styles.icon}/>
                                     <p>{profileData.companyName || 'Kurum bulunamadı'}</p>
                                 </div>
-                                <div style={styles.infoRow}>
+                                <div className={styles.infoRow}>
                                     <strong>Kurum Kodu:</strong>
                                     <p>{profileData.companyCode || 'Kurum kodu bulunamadı'}</p>
                                 </div>
                             </>
                         )}
-
                         {isAdministrator && (
-                            <p style={styles.adminMessage}>
+                            <p className={styles.adminMessage}>
                                 <em>Bu kullanıcı bir administrator, kurum bilgisi yok.</em>
                             </p>
                         )}
@@ -94,54 +93,3 @@ export default function Profile() {
         </Layout>
     );
 }
-
-const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#f0f0f0',
-    },
-    profileContent: {
-        width: '400px',
-        padding: '20px',
-        backgroundColor: '#fff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatarContainer: {
-        marginBottom: '20px',
-    },
-    avatarImage: {
-        width: '100px',
-        height: '100px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-    },
-    title: {
-        fontSize: '24px',
-        marginBottom: '10px',
-    },
-    infoContainer: {
-        width: '100%',
-    },
-    infoRow: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '10px',
-        fontSize: '18px',
-    },
-    icon: {
-        marginRight: '8px',
-        color: '#4CAF50',
-    },
-    adminMessage: {
-        marginTop: '20px',
-        fontStyle: 'italic',
-        color: '#777',
-    },
-};

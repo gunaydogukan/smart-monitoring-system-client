@@ -9,6 +9,10 @@ export default function SensorList({ sensors = [] }) {
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const sensorsPerPage = 10; // Her sayfada gösterilecek sensör sayısı
+    const totalPages = Math.ceil(sensors.length / sensorsPerPage);
 
     const handleViewOnMap = (sensor) => {
         navigate('/map', { state: { sensor } });
@@ -28,11 +32,25 @@ export default function SensorList({ sensors = [] }) {
         setSelectedSensor(null);
     };
 
+    const handleNextPage = () => {
+        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) setCurrentPage(currentPage - 1);
+    };
+
+    // Sayfa numarasına göre sensörleri filtreleme
+    const currentSensors = sensors.slice(
+        (currentPage - 1) * sensorsPerPage,
+        currentPage * sensorsPerPage
+    );
+
     return (
         <div className={`${styles.container} ${isDarkMode ? styles.containerDark : styles.containerLight}`}>
             <div className={styles.sensorListContainer}>
-                {sensors.length > 0 ? (
-                    sensors.map(sensor => (
+                {currentSensors.length > 0 ? (
+                    currentSensors.map(sensor => (
                         <div key={sensor.id} className={`${styles.sensorCard} ${isDarkMode ? styles.sensorCardDark : styles.sensorCardLight}`}>
                             <h3 className={styles.sensorName}>{sensor.name}</h3>
                             <p className={styles.sensorLocation}>{sensor.location}</p>
@@ -53,6 +71,27 @@ export default function SensorList({ sensors = [] }) {
                 ) : (
                     <p>Henüz kayıtlı bir sensör yok.</p>
                 )}
+            </div>
+
+            {/* Sayfa değiştirme butonları */}
+            <div className={styles.pagination}>
+                <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    className={styles.paginationButton}
+                >
+                    Önceki
+                </button>
+                <span className={styles.pageInfo}>
+                    Sayfa {currentPage} / {totalPages}
+                </span>
+                <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={styles.paginationButton}
+                >
+                    Sonraki
+                </button>
             </div>
 
             <Modal isOpen={isModalOpen} onClose={closeModal} sensor={selectedSensor} />
