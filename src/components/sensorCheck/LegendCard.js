@@ -20,7 +20,7 @@ function LegendCard() {
                     <li><span className="marker blue-dot"></span> Nem - Yağış</li>
                     <li><span className="marker green-dot"></span> Nem</li>
                     <li><span className="marker yellow-dot"></span> Seviye</li>
-                    <li><span className="marker gray-dot"></span> Eski Nem - Yağış</li>
+                    <li><span className="marker orange-dot"></span> Eski Nem - Yağış</li>
                     <li><span className="marker purple-dot"></span> Eski Seviye</li>
                 </ul>
             )}

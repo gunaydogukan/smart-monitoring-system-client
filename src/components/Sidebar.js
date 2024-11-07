@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaSun, FaMoon
+    FaPlus, FaSignOutAlt, FaSun, FaMoon,FaRss
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +43,7 @@ export default function Sidebar() {
 
                 {user?.role === "administrator" && (
                     <div className="menu" onClick={() => navigate("/sensorControl")}>
-                        <FaMicrochip className="menu-icon"/>
+                        <FaRss className="menu-icon" style={{ fontSize: "23px" }} />
                         <span>Sensör Kontrol</span>
                     </div>
                 )}

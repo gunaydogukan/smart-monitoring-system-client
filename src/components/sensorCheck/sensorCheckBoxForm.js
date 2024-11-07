@@ -4,11 +4,8 @@ import '../../styles/sensorCheck/sensorCheckBoxForm.css';
 function SensorCheckBoxForm({ selectedSensor, onClose }) {
     const [formData, setFormData] = useState({
         sagUstNem: false,
-        sagUstSicaklik: false,
         sagAltNem: false,
-        sagAltSicaklik: false,
         solAltNem: false,
-        solAltSicaklik: false,
         yagis: false,
         mesafe: false,
         turkcell: false,
@@ -18,30 +15,30 @@ function SensorCheckBoxForm({ selectedSensor, onClose }) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`http://localhost:5000/api/sensors/${encodeURIComponent(selectedSensor.name)}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setFormData({
-                        sagUstNem: data.sagUstNem || false,
-                        sagUstSicaklik: data.sagUstSicaklik || false,
-                        sagAltNem: data.sagAltNem || false,
-                        sagAltSicaklik: data.sagAltSicaklik || false,
-                        solAltNem: data.solAltNem || false,
-                        solAltSicaklik: data.solAltSicaklik || false,
-                        yagis: data.yagis || false,
-                        mesafe: data.mesafe || false,
-                        turkcell: data.turkcell || false,
-                        vodafone: data.vodafone || false,
-                        turkTelekom: data.turkTelekom || false,
-                    });
+        // selectedSensor kontrolü
+        if (selectedSensor && selectedSensor.name) {
+            const fetchData = async () => {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/sensors/${encodeURIComponent(selectedSensor.name)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setFormData({
+                            sagUstNem: data.sagUstNem || false,
+                            sagAltNem: data.sagAltNem || false,
+                            solAltNem: data.solAltNem || false,
+                            yagis: data.yagis || false,
+                            mesafe: data.mesafe || false,
+                            turkcell: data.turkcell || false,
+                            vodafone: data.vodafone || false,
+                            turkTelekom: data.turkTelekom || false,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Veri çekme hatası:', error);
                 }
-            } catch (error) {
-                console.error('Veri çekme hatası:', error);
-            }
-        };
-        fetchData();
+            };
+            fetchData();
+        }
     }, [selectedSensor]);
 
     const handleCheckboxChange = (event) => {
@@ -79,30 +76,18 @@ function SensorCheckBoxForm({ selectedSensor, onClose }) {
             <div className="sensor-modal-content">
                 <span className="sensor-close" onClick={onClose}>&times;</span>
                 <form onSubmit={handleSubmit}>
-                    <h2>{`${selectedSensor.name} / ${selectedSensor.tur}`}</h2>
+                    <h2>{selectedSensor ? `${selectedSensor.name} / ${selectedSensor.tur}` : 'Sensör Seçilmedi'}</h2>
                     <label className="sensor-label">
                         Sağ Üst Nem
                         <input type="checkbox" className="sensor-checkbox" name="sagUstNem" checked={formData.sagUstNem} onChange={handleCheckboxChange} />
-                    </label>
-                    <label className="sensor-label">
-                        Sağ Üst Sıcaklık
-                        <input type="checkbox" className="sensor-checkbox" name="sagUstSicaklik" checked={formData.sagUstSicaklik} onChange={handleCheckboxChange} />
                     </label>
                     <label className="sensor-label">
                         Sağ Alt Nem
                         <input type="checkbox" className="sensor-checkbox" name="sagAltNem" checked={formData.sagAltNem} onChange={handleCheckboxChange} />
                     </label>
                     <label className="sensor-label">
-                        Sağ Alt Sıcaklık
-                        <input type="checkbox" className="sensor-checkbox" name="sagAltSicaklik" checked={formData.sagAltSicaklik} onChange={handleCheckboxChange} />
-                    </label>
-                    <label className="sensor-label">
                         Sol Alt Nem
                         <input type="checkbox" className="sensor-checkbox" name="solAltNem" checked={formData.solAltNem} onChange={handleCheckboxChange} />
-                    </label>
-                    <label className="sensor-label">
-                        Sol Alt Sıcaklık
-                        <input type="checkbox" className="sensor-checkbox" name="solAltSicaklik" checked={formData.solAltSicaklik} onChange={handleCheckboxChange} />
                     </label>
                     <label className="sensor-label">
                         Yağış

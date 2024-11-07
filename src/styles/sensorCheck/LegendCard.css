@@ -57,8 +57,8 @@
 
 .blue-dot { background-color: blue; }
 .green-dot { background-color: green; }
-.yellow-dot { background-color: yellow; }
-.gray-dot { background-color: gray; }
+.yellow-dot { background-color: #f4f41c; }
+.orange-dot { background-color: #f57c00; }
 .purple-dot { background-color: purple; }
 
 /* Responsive adjustments for tablet */
