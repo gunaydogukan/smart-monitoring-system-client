@@ -1,0 +1,104 @@
+.legend-card {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 200px;
+    max-width: 90%;
+    z-index: 1000; /* Legend card diğer içeriklerin altında kalacak */
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.legend-card.open {
+    transform: translateY(0);
+}
+
+.legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.legend-content {
+    padding: 10px;
+    list-style: none;
+    margin: 0;
+}
+
+.legend-content li {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.marker {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.blue-dot { background-color: blue; }
+.green-dot { background-color: green; }
+.yellow-dot { background-color: #f4f41c; }
+.orange-dot { background-color: #f57c00; }
+.purple-dot { background-color: purple; }
+
+/* Responsive adjustments for tablet */
+@media (max-width: 768px) {
+    .legend-card {
+        width: 150px;
+        right: 10px;
+        top: 10px;
+    }
+    .legend-content li {
+        font-size: 0.9em;
+    }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+    .legend-card {
+        width: 130px;
+        right: 5px;
+        top: 5px;
+    }
+    .legend-content li {
+        font-size: 0.85em;
+    }
+}
+
+/* Form açıldığında legend card'ın altında kalması için modal z-index ayarı */
+.modal {
+    z-index: 1100; /* Form, legend card'dan daha yüksek z-index'e sahip olacak */
+}
+
+/* Form ve legend card'ın responsive uyumluluğu */
+@media (max-width: 768px) {
+    .modal {
+        margin-top: 60px; /* Formun legend card altında görünmesi için margin ekliyoruz */
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        margin-top: 70px; /* Küçük ekranlar için margin */
+    }
+}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaSun, FaMoon
+    FaPlus, FaSignOutAlt, FaSun, FaMoon,FaRss
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -40,10 +40,19 @@ export default function Sidebar() {
                     <FaMicrochip className="menu-icon" />
                     <span>Sensörler</span>
                 </div>
+
+                {user?.role === "administrator" && (
+                    <div className="menu" onClick={() => navigate("/sensorControl")}>
+                        <FaRss className="menu-icon" style={{ fontSize: "23px" }} />
+                        <span>Sensör Kontrol</span>
+                    </div>
+                )}
+
                 {!isPersonal && (
                     <>
-                        <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
-                            <FaUser className="menu-icon" />
+                        <div className={`menu ${isUsersOpen ? 'open' : ''}`}
+                             onClick={() => setIsUsersOpen(!isUsersOpen)}>
+                        <FaUser className="menu-icon" />
                             <span>Kullanıcılar</span>
                         </div>
                         {isUsersOpen && (

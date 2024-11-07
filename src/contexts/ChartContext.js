@@ -9,6 +9,10 @@ export const ChartProvider = ({ sensor,children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
+    const [interval, setInterval] = useState('1 Gün'); // Varsayılan zaman aralığı
+
+
     useEffect(() => {
         const loadData = async () => {
             try {

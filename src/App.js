@@ -16,6 +16,7 @@ import Users from './components/users';
 import DisplayMap from './components/DisplayMap';
 import CompanyList from './pages/CompanyList';
 import ChartPage from './pages/ChartPage';
+import SensorControl from './pages/sensorCheck/MapPage';
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -41,6 +42,7 @@ export default function App() {
                             <Route path="/add-company" element={<CompanyAdd />} />
                             <Route path="/users/:type" element={<Users />} />
                             <Route path="/charts" element={<ChartPage />} />
+                            <Route path="/sensorControl" element={<SensorControl />} />
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (

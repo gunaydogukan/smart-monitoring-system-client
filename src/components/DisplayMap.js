@@ -78,7 +78,7 @@ const DisplayMap = () => {
         <div style={{ display: "flex", width: '100%', height: '100vh' }}>
             {/* Sidebar */}
             <div style={{
-                width: sidebarExpanded ? '25%' : '50px',
+                width: sidebarExpanded ? '15%' : '25px',
                 backgroundColor: '#f0f0f0',
                 padding: '20px',
                 boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
@@ -87,7 +87,7 @@ const DisplayMap = () => {
             }}>
                 <div onClick={() => setSidebarExpanded(!sidebarExpanded)}
                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" alt="Toggle Sidebar" />
+                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" style={{ width: '20px', height: '20px' }} alt="Toggle Sidebar" />
                     {sidebarExpanded && <h2 style={{ marginLeft: '10px' }}>Sensörler</h2>}
                 </div>
                 {sidebarExpanded && (

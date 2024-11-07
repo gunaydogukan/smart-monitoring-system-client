@@ -1,0 +1,139 @@
+/* Genel Modal Yapısı */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto; /* Kaydırma çubuğu ekle */
+    padding: 10px;
+}
+
+.sensor-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh; /* Yükseklik sınırı */
+    overflow-y: auto; /* Dikey kaydırma çubuğu ekle */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: relative;
+    animation: scaleUp 0.3s forwards;
+}
+
+/* Başlık */
+.sensor-modal-content h2 {
+    font-size: 1.4em !important;
+    margin-bottom: 10px;
+}
+
+/* Checkbox Etiket ve Input Yapısı */
+.sensor-label {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1em !important;
+    margin: 10px 0;
+    width: 100% !important; /* Genişlik %100 */
+}
+
+.sensor-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    transform: scale(1.2) !important; /* Büyüklük */
+    cursor: pointer;
+}
+
+/* Kapatma Butonu */
+.sensor-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Kaydet Butonu */
+.sensor-button {
+    padding: 10px 15px;
+    font-size: 1em !important;
+    background-color: #007BFF !important;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%; /* Buton genişliği %100 */
+    margin-top: 15px; /* Buton üstüne boşluk ekle */
+}
+
+.sensor-button:hover {
+    background-color: #0056b3;
+}
+
+/* Başarı Mesajı */
+.success-message {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.9em;
+    animation: fadeIn 0.5s;
+}
+
+/* Animasyonlar */
+@keyframes scaleUp {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Mobil ve Tablet Uyumluluğu */
+@media (max-width: 480px) {
+    .sensor-modal-content {
+        padding: 15px;
+        width: 95%;
+        max-width: 95%;
+        overflow-y: auto; /* Dikey kaydırma çubuğu ekle */
+        max-height: 90vh; /* Modal yüksekliğini sınırla */
+    }
+
+    .sensor-label {
+        font-size: 1.2em;
+    }
+
+    .sensor-button {
+        font-size: 1.1em;
+    }
+
+    .success-message {
+        font-size: 0.85em;
+    }
+}
+
+/* Tablet Uyumluluğu */
+@media (max-width: 768px) {
+    .sensor-modal-content {
+        width: 90%;
+        max-height: 80vh; /* Yüksekliği ayarla */
+    }
+
+    .sensor-label {
+        font-size: 1.1em;
+    }
+
+    .sensor-button {
+        font-size: 1em;
+    }
+}

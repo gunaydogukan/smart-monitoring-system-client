@@ -1,7 +1,12 @@
-// client/src/components/Charts.js
+
 import React from 'react';
+
+import React, { useState, useEffect } from 'react';
+
 import ReactECharts from 'echarts-for-react';
 import { getSensorChartOptions } from '../assets/ChartOptions';
+import { fetchSensorDataIncrementally } from '../services/dataIncrementally';
+
 
 const Charts = ({ sensorType, data }) => {
     // Eksik sensör tipi veya veri kontrolü
@@ -12,6 +17,27 @@ const Charts = ({ sensorType, data }) => {
 
     // Chart seçeneklerini al
     const chartOptions = getSensorChartOptions(sensorType, data); // çağırılan methot bu
+
+const Charts = ({ sensorType, data, interval }) => {
+    //const [displayedData, setDisplayedData] = useState([]); // Gösterilen veriler , silenecek
+/*
+    //silenecek
+    useEffect(() => {
+        setDisplayedData([]); // Yeni interval veya data geldiğinde sıfırla
+
+        // Veriyi kademeli olarak ekleyen servisi başlat
+        const stopFetching = fetchSensorDataIncrementally(data, interval, (newData) => {
+            setDisplayedData(prevData => [...prevData, newData]);
+            localStorage.setItem('displayedData', JSON.stringify(updatedData)); // Güncel gösterilen veriyi kaydet
+            return updatedData;
+        });
+
+        return () => stopFetching(); // Bileşen unmounted olduğunda temizle
+    }, [data, interval]);
+*/
+    // Chart seçeneklerini al
+    const chartOptions = getSensorChartOptions(sensorType, data, interval);
+
 
     // Eğer `sensorType` 1 ise 6 ayrı grafik render et
     if (sensorType === 1 && Array.isArray(chartOptions)) {

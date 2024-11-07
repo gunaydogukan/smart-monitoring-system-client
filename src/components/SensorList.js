@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 import { useTheme } from '../contexts/ThemeContext';
 import styles from '../styles/SensorList.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function SensorList({ sensors = [] }) {
     const { isDarkMode } = useTheme();
-    const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState(null);
+
     const [currentPage, setCurrentPage] = useState(1);
 
     const sensorsPerPage = 10; // Her sayfada gösterilecek sensör sayısı
     const totalPages = Math.ceil(sensors.length / sensorsPerPage);
+
+
+    const navigate = useNavigate();
 
     const handleViewOnMap = (sensor) => {
         navigate('/map', { state: { sensor } });
@@ -21,7 +24,7 @@ export default function SensorList({ sensors = [] }) {
     const handleViewOnChart = (sensor) => {
         if (sensor) {
             setSelectedSensor(sensor);
-            setIsModalOpen(true);
+            setIsModalOpen(true); // Modal açılıyor
         } else {
             console.error('Sensör verisi mevcut değil.');
         }
