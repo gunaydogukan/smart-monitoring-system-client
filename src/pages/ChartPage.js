@@ -1,4 +1,3 @@
-// src/pages/ChartPage.js
 import React, { useContext } from 'react';
 import Charts from '../components/Charts';
 import { ChartContext, ChartProvider } from '../contexts/ChartContext';
@@ -8,33 +7,21 @@ const ChartPageContent = ({ sensor }) => {
     const { sensorData, loading, error, setInterval, interval } = useContext(ChartContext);
     const { isDarkMode } = useTheme(); // Tema bağlamını kullanarak karanlık modu alın
 
-const ChartPageContent = ({ sensor }) => {
-    const { sensorData, loading, error } = useContext(ChartContext);
-
 
 
     const handleIntervalChange = (event) => {
         setInterval(event.target.value); // Seçilen zaman aralığını context’e güncelle
     };
 
-
     if (loading) {
         return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Yükleniyor...</p>;
     }
 
-    // Hata durumu
     if (error) {
         return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Veri yüklenirken bir hata oluştu: {error.message}</p>;
     }
 
-    // Eğer veri varsa, grafik bileşenini göster
     return (
-
-        <div>
-            <h1 style={{ textAlign: 'center' }}>{sensor.name} - Grafik</h1>
-            {sensorData.length > 0 ? (
-                <Charts sensorType={sensor.type} data={sensorData} />
-
         <div style={{ backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#000', padding: '20px', borderRadius: '10px' }}>
 
 
@@ -64,7 +51,6 @@ const ChartPageContent = ({ sensor }) => {
 
             {sensorData.length > 0 ? (
                 <Charts sensorType={sensor.type} data={sensorData} interval={interval} />
-
             ) : (
                 <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
             )}
@@ -73,12 +59,6 @@ const ChartPageContent = ({ sensor }) => {
 };
 
 const ChartPage = ({ sensor }) => {
-
-    // Sensör nesnesinin tanımlı olup olmadığını kontrol edin
-    if (!sensor) {
-        return <p>Grafik verisi mevcut değil.</p>; // Sensör yoksa bilgi ver
-    }
-
     return (
         <ChartProvider sensor={sensor}>
             <ChartPageContent sensor={sensor} />

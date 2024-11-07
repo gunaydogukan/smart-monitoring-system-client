@@ -4,6 +4,7 @@ import { GoogleMap, Marker,useLoadScript } from '@react-google-maps/api';
 import SensorCheckBoxForm from '../../components/sensorCheck/sensorCheckBoxForm';
 import LegendCard from '../../components/sensorCheck/LegendCard'; // Import the LegendCard component
 import '../../styles/sensorCheck/MapPage.css';
+import Layout from "../../layouts/Layout";
 
 const libraries = ['places']; // Gerekli kütüphaneler
 const mapContainerStyle = {
@@ -48,6 +49,9 @@ function MapPage() {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
+        <Layout>
+
+
         <div>
             <h2>Toplam Sensör Sayısı: {sensors.length}</h2>
             <GoogleMap
@@ -75,6 +79,7 @@ function MapPage() {
             )}
             <LegendCard /> {/* LegendCard bileşenini ekledik */}
         </div>
+        </Layout>
     );
 }
 
