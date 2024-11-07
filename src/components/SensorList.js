@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 import { useTheme } from '../contexts/ThemeContext';
 import styles from '../styles/SensorList.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function SensorList({ sensors = [] }) {
     const { isDarkMode } = useTheme();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState(null);
-
+    const navigate = useNavigate();
     const handleViewOnMap = (sensor) => {
-        // Haritada göstermek için burayı düzenle
+        navigate('/map', { state: { sensor } });
     };
 
     const handleViewOnChart = (sensor) => {
