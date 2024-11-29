@@ -219,3 +219,21 @@
     margin-top: 20px;
     color: #555;
 }
+.statusActive {
+    color: white;
+    background-color: green;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+    display: inline-block;
+}
+
+.statusInactive {
+    color: white;
+    background-color: red;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-align: center;
+    display: inline-block;
+}
+
