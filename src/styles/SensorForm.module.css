@@ -1,3 +1,14 @@
+/* Specific styles for the SensorForm component */
+.sensorFormWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f7f7f7; /* Background color for the page */
+}
+
+/* Container for the form */
 .sensorFormContainer {
     display: flex;
     flex-direction: column;
@@ -7,10 +18,11 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     color: #333;
-    max-width: 700px; /* Formun yatay genişliğini artır */
+    max-width: 700px;
     margin: 20px auto;
-    max-height: 80vh; /* Sayfa yüksekliğine göre form yüksekliğini sınırla */
-    overflow-y: auto; /* Formun içeriğini kaydırılabilir yap */
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
 }
 
 .sensorFormContainer.dark {
@@ -18,6 +30,7 @@
     color: #fff;
 }
 
+/* Form Title */
 h1 {
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
@@ -25,18 +38,21 @@ h1 {
     text-align: center;
 }
 
+/* Form styling */
 form {
     display: flex;
     flex-direction: column;
     width: 100%;
 }
 
+/* Form Group (label + input/select/textarea) */
 .formGroup {
     display: flex;
     flex-direction: column;
     margin-bottom: 1.5rem;
 }
 
+/* Form Group Label */
 .formGroup label {
     font-weight: bold;
     margin-bottom: 0.5rem;
@@ -47,6 +63,7 @@ form {
     color: #e0e0e0;
 }
 
+/* Form Inputs, Selects, Textarea */
 .formGroup input,
 .formGroup select,
 .formGroup textarea {
@@ -65,7 +82,8 @@ form {
     box-shadow: 0 0 5px rgba(92, 184, 92, 0.5);
 }
 
-button {
+/* Button Styling (for SensorForm only) */
+.sensorFormContainer button {
     margin-top: 1rem;
     padding: 0.8rem 1.5rem;
     border: none;
@@ -83,7 +101,7 @@ button {
     color: #fff;
 }
 
-button:hover {
+.sensorFormContainer button:hover {
     background-color: #218838;
     transform: scale(1.05);
 }
@@ -92,7 +110,7 @@ button:hover {
     background-color: #138496;
 }
 
-button:disabled {
+.sensorFormContainer button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
@@ -102,19 +120,21 @@ button:disabled {
     color: #a6a6a6;
 }
 
+/* Error message styling */
 .error {
     color: red;
     margin-top: 1rem;
     text-align: center;
 }
 
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .sensorFormContainer {
         max-width: 90%; /* Küçük ekranlarda genişlik ayarı */
         padding: 1rem;
     }
 
-    button {
+    .sensorFormContainer button {
         padding: 0.6rem 1rem;
         font-size: 0.9rem;
         width: 100%;

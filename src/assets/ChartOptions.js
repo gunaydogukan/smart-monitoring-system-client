@@ -39,7 +39,9 @@ export const getSensorChartOptions = (sensorType, data, interval) => {
         },
         xAxis: {
             type: 'category',
-            name: 'Time',
+            name: '\n' +
+                '\n' +
+                'Zaman',
             nameLocation: 'middle',
 
             axisLabel: {

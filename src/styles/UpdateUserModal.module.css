@@ -1,0 +1,283 @@
+/* Modal background */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Modal content */
+.modalContent {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Modal header */
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Custom close button */
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #f44336; /* Red on hover */
+    background-color: transparent;
+}
+
+/* Form Message */
+.message {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Success message */
+/* Success Message */
+.successMessage {
+    background-color: #4caf50;
+    color: #fff;
+    border-left: 8px solid #388e3c;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideInFromTop 0.5s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Error Message */
+.errorMessage {
+    background-color: #d32f2f;
+    color: #fff;
+    border-left: 8px solid #c62828;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    animation: slideInFromTop 0.5s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Icon styles */
+.successMessage .icon,
+.errorMessage .icon {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+/* Close button in message */
+.successMessage .closeBtn,
+.errorMessage .closeBtn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.successMessage .closeBtn:hover,
+.errorMessage .closeBtn:hover {
+    color: #ddd;
+}
+
+/* Slide-in animation for messages */
+@keyframes slideInFromTop {
+    0% {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Adjustments for small screens */
+@media (max-width: 768px) {
+    .successMessage,
+    .errorMessage {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+}
+
+
+/* Form styles */
+.modalForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.modalInput {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.modalInput:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Password Visibility Toggle */
+.passwordWrapper {
+    position: relative;
+}
+
+.passwordInput {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.passwordInput:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.passwordToggle {
+    position: absolute;
+    top: -15px;
+    right: -18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+}
+
+.passwordToggle:hover {
+    color: #007bff;
+    background-color: transparent;
+}
+
+/* Button group */
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.modalButton,
+.cancelButton {
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 48%;
+    transition: background-color 0.3s ease;
+}
+
+.modalButton {
+    background-color: #007bff;
+    color: white;
+}
+
+.modalButton:hover {
+    background-color: #0056b3;
+}
+
+.cancelButton {
+    background-color: #f5f5f5;
+    color: #555;
+}
+
+.cancelButton:hover {
+    background-color: #ddd;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .modalContent {
+        padding: 20px;
+    }
+
+    .modalButton,
+    .cancelButton {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+/* Delete button style */
+.deleteButton {
+    background-color: #f44336;
+    color: white;
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 48%;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
