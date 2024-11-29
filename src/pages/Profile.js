@@ -5,13 +5,14 @@ import { FaEnvelope, FaPhone, FaBuilding } from 'react-icons/fa';
 import userIcon from '../assets/profile-icon.avif';
 import styles from '../styles/Profile.module.css';
 import { useTheme } from '../contexts/ThemeContext'; // ThemeContext'i içe aktar
-
+import UpdateModal from '../components/profileUpdateModal';
 export default function Profile() {
     const { token } = useAuth();
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const { isDarkMode } = useTheme(); // ThemeContext'ten dark mode durumunu al
+    const [showModal, setShowModal] = useState(false); // Modal görünürlüğünü kontrol eden state
+    const { isDarkMode } = useTheme();
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -44,6 +45,9 @@ export default function Profile() {
     if (error) return <div>{error}</div>;
 
     const isAdministrator = profileData.role === 'administrator';
+
+    const openModal = () => setShowModal(true);
+    const closeModal = () => setShowModal(false);
 
     return (
         <Layout>
@@ -88,8 +92,21 @@ export default function Profile() {
                             </p>
                         )}
                     </div>
+                    {/* Güncelle Butonu */}
+                    <button onClick={openModal} className={styles.updateButton}>
+                        Güncelle
+                    </button>
                 </div>
             </div>
+
+            {/* Modal */}
+            {showModal && (
+                <UpdateModal
+                    profileData={profileData}
+                    token={token}
+                    closeModal={closeModal}
+                />
+            )}
         </Layout>
     );
 }
