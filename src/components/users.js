@@ -257,11 +257,19 @@ export default function Users() {
                                     <td>{person.lastname}</td>
                                     <td>{person.email}</td>
                                     <td>{person.companyCode || 'Kurum Yok'}</td>
-                                    <td>{person.isActive ? 'Aktif' : 'Pasif'}</td>
-                                    <td>{person.role}</td>
-                                    {/* Kullanıcı rolü */}
                                     <td>
-                                        {/* Yalnızca yetkili rollere buton göster */}
+                <span
+                    className={
+                        person.isActive
+                            ? styles.statusActive
+                            : styles.statusInactive
+                    }
+                >
+                    {person.isActive ? 'Aktif' : 'Pasif'}
+                </span>
+                                    </td>
+                                    <td>{person.role}</td>
+                                    <td>
                                         {role === 'administrator' || (role === 'manager' && person.role === 'personal') ? (
                                             <>
                                                 <button
@@ -287,11 +295,11 @@ export default function Users() {
                                                 )}
                                             </>
                                         ) : null}
-
                                     </td>
                                 </tr>
                             ))}
                             </tbody>
+
 
                         </table>
                     ) : (
