@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaSun, FaMoon,FaRss
+    FaPlus, FaSignOutAlt, FaSun, FaMoon,FaRss,FaTag
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -92,6 +92,11 @@ export default function Sidebar() {
                                 {user?.role === 'administrator' && (
                                     <li onClick={() => navigate('/add-company')}>
                                         <FaBuilding className="dropdown-icon" /> Kurum Ekle
+                                    </li>
+                                )}
+                                {user?.role === 'administrator' && (
+                                    <li onClick={() => navigate('/add-sensor-type',{ state: { role: 'administrator' } })}> {/* Burada '/add-sensor-type' yolunu kullanın */}
+                                        <FaTag  className="dropdown-icon" /> Yeni Sensör Tipi Ekle
                                     </li>
                                 )}
                                 {(user?.role === 'manager' || user?.role === 'administrator') && (
