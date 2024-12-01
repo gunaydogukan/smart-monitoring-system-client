@@ -198,7 +198,7 @@ export default function Users() {
         <Layout>
             <div className={`${styles.container} ${isDarkMode ? styles.dark : ''}`}>
                 <h2 className={`${styles.title} ${isDarkMode ? styles.darkTitle : ''}`}>
-                    {type === 'managers' ? 'Yöneticiler (Managers)' : 'Personeller (Personals)'}
+                    {type === 'managers' ? ' Managers' : ' Personals'}
                 </h2>
 
                 <UpdateUserModal

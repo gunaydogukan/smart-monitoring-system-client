@@ -1,81 +1,73 @@
-.container {
+/* Genel Container */
+.sensorDropdownContainer {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.dropdownRow {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    width: 100%;
-    max-width: 800px; /* Maksimum genişliği ayarlayarak yan yana durmalarını sağlar */
-}
-
-.dropdown {
-    padding: 10px;
+    justify-content: space-evenly; /* Eşit boşluklarla yayar */
+    align-items: center; /* Dikey hizalama */
+    padding: 15px;
+    width: 98%;
+    background-color: white;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background-color: var(--dropdown-bg-color);
-    color: var(--dropdown-text-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    gap: 20px; /* Elemanlar arasında ekstra boşluk */
+    flex-wrap: wrap; /* Küçük ekranlarda elemanlar alt alta geçer */
+}
+
+/* Dropdown Style */
+.dropdown {
+    flex: 1 1 200px; /* Elemanlar aynı genişlikte ve esnek */
+    max-width: 250px; /* Maksimum genişlik */
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
     font-size: 1rem;
-    min-width: 200px;
-    height: 40px;
-    display: flex;
-    align-items: center;
+    color: #2c3e50;
+    background-color: #f9f9f9;
+    height: 45px;
     cursor: pointer;
-    outline: none;
-    transition: background-color 0.3s, color 0.3s;
+    transition: all 0.3s ease;
 }
 
-.dropdown.dark {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
+.dropdown:hover {
+    border-color: #3498db;
+    background-color: #ecf5ff;
 }
 
-.button {
+.dropdown:disabled {
+    background-color: #e0e0e0;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Haritayı Görüntüle Butonu */
+.mapButton {
+    flex: 1 1 200px; /* Dropdownlarla aynı genişlikte */
+    max-width: 245px; /* Maksimum genişlik */
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    outline: none;
-    transition: background-color 0.3s, color 0.3s;
-    background-color: #3768a1; /* Light mode default */
+    background-color: #3498db; /* Mavi renk */
     color: white;
-    align-self: center;
+    transition: background-color 0.3s ease;
+    height: 45px; /* Dropdownlarla aynı yükseklik */
+    margin-bottom: 17px;
 }
 
-.buttonDark {
-    background-color: #555;
+.mapButton:hover {
+    background-color: #2980b9;
 }
 
-.buttonLight {
-    background-color: #3768a1;
-}
-
-.buttonDark:hover {
-    background-color: #272626;
-}
-
-.buttonLight:hover {
-    background-color: #0851d1;
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-    .dropdownRow {
-        flex-direction: column;
-        align-items: center;
+    .sensorDropdownContainer {
+        flex-direction: column; /* Küçük ekranlarda elemanlar alt alta geçer */
+        align-items: stretch;
     }
-    .dropdown, .button {
-        min-width: 100%;
-        margin-bottom: 10px;
+
+    .dropdown,
+    .mapButton {
+        flex: none; /* Genişlik esnekliğini kaldırır */
+        width: 100%; /* Ekran genişliği kadar yayılır */
     }
 }

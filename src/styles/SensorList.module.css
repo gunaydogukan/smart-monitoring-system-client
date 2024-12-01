@@ -1,120 +1,268 @@
-/* src/styles/SensorList.module.css */
-
-.container {
-    padding: 20px;
-    background-color: var(--background-color);
-    color: var(--text-color);
+/* Ana Container */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Sayfa genelindeki kaydırma çubuğunu kaldırır */
 }
 
-.containerLight {
-    background-color: #f9f9f9;
-    color: #333;
-}
-
-.containerDark {
-    background-color: #333;
-    color: #f9f9f9;
-}
-
+/* Sensor List Container */
 .sensorListContainer {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100vh; /* Sayfa yüksekliğini tamamen kapsar */
+    padding: 10px;
+    box-sizing: border-box;
+    max-height: calc(100vh - 120px); /* Yükseklik sınırlaması */
 }
 
-
-.sensorCard {
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 250px;
-    text-align: center;
-}
-
-.sensorCardLight {
-    background-color: #f9f9f9;
-    color: #333;
+/* Table Wrapper */
+.tableContainer {
+    flex-grow: 1; /* Tablo alanını tamamen doldurur */
+    overflow-y: auto; /* Tablo içinde dikey kaydırma */
+    overflow-x: auto; /* Tablo içinde yatay kaydırma */
     border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 120px); /* Tablo alanını sınırlar */
+    margin-bottom: 10px; /* Alt boşluk */
+    white-space: nowrap; /* İçeriğin sığmaması durumunda kaydırma */
 }
 
-.sensorCardDark {
-    background-color: #333;
-    color: #f9f9f9;
-    border: 1px solid #444;
+/* Custom Scrollbar (Webkit) */
+.tableContainer::-webkit-scrollbar {
+    width: 8px; /* Scroll bar genişliği */
 }
 
-.sensorName {
-    font-size: 1.5rem;
-    margin: 0 0 10px 0;
+.tableContainer::-webkit-scrollbar-track {
+    background: #f9f9f9; /* Scroll bar arka planı */
+    border-radius: 8px;
 }
 
-.sensorLocation {
-    font-size: 1rem;
-    margin: 0 0 15px 0;
-    color: #777;
+.tableContainer::-webkit-scrollbar-thumb {
+    background-color: #34495e; /* Scroll bar rengi */
+    border-radius: 8px;
+    border: 2px solid #f9f9f9; /* Scroll bar iç kenar */
 }
 
-.mapButton {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
+/* Search Bar */
+.searchBar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 300px; /* Arama kutusunun genişliği */
+    margin-left: auto; /* Sağ üst köşeye yerleşir */
+    margin-bottom: 5px; /* Alt boşluk */
+}
+
+/* Search Input */
+.searchInput {
     border: none;
-    display: inline-block;
+    outline: none;
+    font-size: 1rem;
+    color: #34495e;
+    background-color: transparent;
+    flex-grow: 1;
+    padding: 0;
+}
+
+.searchInput::placeholder {
+    color: #aaa;
+}
+
+/* Search Icon */
+.searchIcon {
+    width: 24px;
+    height: 24px;
+    color: #34495e;
+    cursor: pointer;
+}
+
+/* Table Style */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1rem;
+    min-width: 800px; /* Tablo genişliği küçük ekranlarda kayar */
+}
+
+.table th,
+.table td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    word-break: break-word;
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.table th {
+    background-color: #34495e;
     color: white;
+    font-weight: bold;
 }
 
-.mapButtonLight {
-    background-color: #3768a1;
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
-.mapButtonDark {
-    background-color: #555555;
+.table tr:hover {
+    background-color: #f1f1f1;
 }
 
-.mapButtonLight:hover {
-    background-color: #0851d1;
+/* Durum Stilleri */
+.activeStatus,
+.inactiveStatus {
+    display: inline-block;
+    background-color: #27ae60; /* Varsayılan yeşil */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    line-height: 1.2; /* Yükseklik uyumu */
+    text-align: center;
+    vertical-align: middle;
 }
 
-.mapButtonDark:hover {
-    background-color: #272626;
+.inactiveStatus {
+    background-color: #e74c3c; /* Varsayılan kırmızı */
 }
 
-/* Butonlar arasındaki boşluk */
-.buttonSpacing {
-    margin-top: 10px;
+/* Button Group */
+.buttonGroup {
+    display: flex;
+    gap: 10px; /* Butonlar arasındaki boşluk */
+    justify-content: center;
+    align-items: center; /* Dikey hizalamayı ortalar */
 }
-.pagination {
+
+/* Butonlar */
+.actionButton,
+.mapButton,
+.graphButton {
+    min-width: 120px; /* Buton genişliklerini eşitler */
+    height: 40px; /* Buton yüksekliklerini eşitler */
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    gap: 10px;
 }
 
-.paginationButton {
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    background-color: #3768a1;
-    color: white;
-    border: none;
-    transition: background-color 0.3s;
+/* Update Butonu */
+.updateButton {
+    background-color: #3498db;
 }
 
-.paginationButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.updateButton:hover {
+    background-color: #2980b9;
 }
 
-.paginationButton:hover:not(:disabled) {
-    background-color: #0851d1;
+/* Activate Butonu */
+.activateButton {
+    background-color: #27ae60;
 }
 
-.pageInfo {
-    font-size: 1rem;
-    color: var(--text-color);
+.activateButton:hover {
+    background-color: #1e8449;
+}
+
+/* Deactivate Butonu */
+.deactivateButton {
+    background-color: #e74c3c;
+}
+
+.deactivateButton:hover {
+    background-color: #c0392b;
+}
+
+/* Define Butonu */
+.defineButton {
+    background-color: #f39c12;
+}
+
+.defineButton:hover {
+    background-color: #e67e22;
+}
+
+/* Haritada Göster ve Grafik Göster Butonları */
+.mapButton {
+    background-color: #0056b3; /* Yeni renk - Koyu mavi */
+}
+
+.mapButton:hover {
+    background-color: #003d80;
+}
+
+.graphButton {
+    background-color: #0056b3; /* Yeni renk - Koyu mor */
+}
+
+.graphButton:hover {
+    background-color: #003d80;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tableContainer {
+        overflow-x: auto; /* Küçük ekranlarda yatay kaydırma */
+    }
+
+    .table {
+        font-size: 0.9rem;
+        min-width: 600px; /* Tablo genişliği kaydırılabilir */
+    }
+
+    .searchBar {
+        max-width: 200px;
+        padding: 8px 12px;
+    }
+
+    .searchIcon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .actionButton {
+        font-size: 0.75rem;
+        padding: 8px 12px;
+        min-width: auto; /* Buton genişliği dinamik */
+        height: auto; /* Buton yüksekliği dinamik */
+    }
+}
+@keyframes highlightRow {
+    0% {
+        border-color: #90caf9; /* Başlangıçta mavi tonunda */
+        box-shadow: 0 0 10px rgba(144, 202, 249, 0.5); /* Mavi gölge */
+    }
+    100% {
+        border-color: #2196f3; /* Daha koyu mavi tonuna geçiş */
+        box-shadow: 0 0 15px rgba(33, 150, 243, 0.8); /* Daha güçlü mavi gölge */
+    }
+}
+
+.highlightedRow {
+    animation: highlightRow 1s ease-out; /* Animasyon süresi */
+    border: 2px solid #90caf9; /* Başlangıçta mavi çerçeve */
+}
+
+.highlightedRow:hover {
+    border-color: #2196f3; /* Hoverda daha koyu mavi */
+    box-shadow: 2px 2px 18px rgba(33, 150, 243, 0.8); /* Hoverda güçlü mavi gölge */
 }
 
