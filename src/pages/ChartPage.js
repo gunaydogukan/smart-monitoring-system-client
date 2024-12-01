@@ -4,11 +4,8 @@ import { ChartContext, ChartProvider } from '../contexts/ChartContext';
 import { useTheme } from '../contexts/ThemeContext'; // Tema bağlamını ekleyin
 
 const ChartPageContent = ({ sensor }) => {
-    const { sensorData, loading, error, setInterval, interval } = useContext(ChartContext);
+    const { sensorData,sensorType ,loading, error, setInterval, interval } = useContext(ChartContext);
     const { isDarkMode } = useTheme(); // Tema bağlamını kullanarak karanlık modu alın
-
-
-
     const handleIntervalChange = (event) => {
         setInterval(event.target.value); // Seçilen zaman aralığını context’e güncelle
     };
@@ -18,7 +15,7 @@ const ChartPageContent = ({ sensor }) => {
     }
 
     if (error) {
-        return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Veri yüklenirken bir hata oluştu: {error.message}</p>;
+        return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Veri yüklenirken bir hata oluştu(chartspage): {error.message}</p>;
     }
 
     return (
@@ -50,7 +47,7 @@ const ChartPageContent = ({ sensor }) => {
             </select>
 
             {sensorData.length > 0 ? (
-                <Charts sensorType={sensor.type} data={sensorData} interval={interval} />
+                <Charts sensorType={sensorType} data={sensorData} interval={interval} />
             ) : (
                 <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
             )}

@@ -5,6 +5,7 @@ export const ChartContext = createContext();
 
 export const ChartProvider = ({ sensor, children }) => {
     const [sensorData, setSensorData] = useState([]);
+    const [sensorType, setSensorType] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [interval, setInterval] = useState('1 Gün'); // Varsayılan zaman aralığı
@@ -14,8 +15,9 @@ export const ChartProvider = ({ sensor, children }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const data = await fetchSensorData(sensor, interval);
+                const {type,data} = await fetchSensorData(sensor,interval);
                 setSensorData(data);
+                setSensorType(type);
                 setError(null);
             } catch (err) {
                 setError(err);
@@ -30,7 +32,7 @@ export const ChartProvider = ({ sensor, children }) => {
     }, [sensor, interval]);
 
     return (
-        <ChartContext.Provider value={{ sensorData, loading, error, setInterval,interval }}>
+        <ChartContext.Provider value={{ sensorData,sensorType ,loading, error, setInterval,interval }}>
             {children}
         </ChartContext.Provider>
     );
