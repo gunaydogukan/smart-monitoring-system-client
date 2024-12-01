@@ -170,6 +170,10 @@ export default function UpdateSensorModal({ sensor, isOpen, onClose, onUpdate })
         <div className={styles.modal}>
             <div className={styles.modalContent}>
                 <h2>Sensör Güncelle</h2>
+                <p className={styles.infoMessage}>
+                    Değiştirmediğiniz alanlar mevcut değerleriyle kalacaktır.
+                </p>
+
                 {message && (
                     <div
                         className={`${styles.message} ${

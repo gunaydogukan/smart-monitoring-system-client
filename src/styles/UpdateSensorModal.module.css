@@ -17,28 +17,32 @@
     max-width: 600px;
     max-height: 90vh; /* Ekran taşmasın */
     padding: 25px;
-    border-radius: 16px;
+    border-radius: 10px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Hafif gölge */
     border: 2px solid #90caf9; /* Hafif mavi çerçeve */
     overflow-y: auto; /* Taşan içerik kayabilir */
+    overflow-x: hidden; /* Yatay taşma gizlenmeli */
+    box-sizing: border-box; /* Padding'in genişlikte hesaba katılması */
     animation: fadeIn 0.3s ease-in-out;
 }
 
+
 /* Scroll bar tasarımı */
 .modalContent::-webkit-scrollbar {
-    width: 10px;
+    width: 11px; /* Scroll bar genişliği */
 }
 
 .modalContent::-webkit-scrollbar-thumb {
     background-color: #90caf9; /* Scroll çubuğu rengi */
-    border-radius: 8px;
-    border: 2px solid #ffffff; /* Scroll çubuğuna beyaz kenar */
+    border-radius: 5px; /* Daha yuvarlak köşeler */
+    border: 2px solid #f5f5f5; /* Scroll çubuğu kenar rengi */
 }
 
 .modalContent::-webkit-scrollbar-track {
-    background: #f5f5f5; /* Scroll barın arka planı */
-    border-radius: 8px;
+    background: #f1f1f1; /* Scroll barın arka planı */
+    border-radius: 12px;
 }
+
 
 .modalContent h2 {
     font-size: 1.8rem;
@@ -128,6 +132,26 @@
     background-color: #e0e0e0;
     transform: scale(1.05);
 }
+.infoMessage {
+    background-color: #f5f7fa; /* Hafif bir arka plan rengi */
+    border: 1px solid #d1d5db; /* İnce bir çerçeve */
+    border-radius: 8px; /* Yuvarlatılmış köşeler */
+    padding: 12px 16px; /* Yeterli boşluk */
+    font-size: 1rem; /* Gövde metni boyutu */
+    font-weight: 500; /* Metni biraz daha belirgin yapmak için */
+    color: #374151; /* Okunabilir koyu gri metin */
+    margin-bottom: 16px; /* Altında yeterli boşluk bırak */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Hafif bir gölge */
+    display: flex;
+    align-items: center; /* İkon ve metin aynı hizada */
+    gap: 8px; /* İkon ve metin arasındaki boşluk */
+}
+
+.infoMessage::before {
+    content: "ℹ️"; /* Bilgilendirme ikonu */
+    font-size: 1.2rem; /* İkon boyutu */
+}
+
 
 /* Animasyon */
 @keyframes fadeIn {
