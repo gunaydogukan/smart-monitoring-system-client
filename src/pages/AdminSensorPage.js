@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import SensorsDropdowns from '../components/SensorsDropdowns';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
 import { useNavigate } from 'react-router-dom';
@@ -12,12 +11,13 @@ import {
 } from '../services/FilterService';
 import styles from '../styles/AdminPage.module.css';
 
-export default function AdminPage({ role }) {
+export default function AdminSensorPage({ role }) {
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
     const [personals, setPersonals] = useState([]);
     const [sensors, setSensors] = useState([]);
     const [sensorOwners, setSensorOwners] = useState([]);
+    const [sensorTypes, setSensorTypes] = useState({}); // Tip eşleştirmesi için eklenen state
     const [filteredManagers, setFilteredManagers] = useState([]);
     const [filteredPersonals, setFilteredPersonals] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
@@ -45,6 +45,17 @@ export default function AdminPage({ role }) {
             setSensors(sensors);
             setSensorOwners(sensorOwners);
             setFilteredSensors(sensors);
+
+            // Tip verilerini ayrı bir API çağrısıyla al
+            const typesResponse = await fetch('http://localhost:5000/api/type', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            });
+            const typesData = await typesResponse.json();
+            const typesMap = typesData.reduce((acc, type) => {
+                acc[type.id] = type.type; // { 1: "Sıcaklık", 2: "Nem", vb. }
+                return acc;
+            }, {});
+            setSensorTypes(typesMap);
         } catch (error) {
             console.error('Veri çekme hatası:', error);
         }
@@ -104,8 +115,9 @@ export default function AdminPage({ role }) {
         <Layout>
             <div className={styles.container}>
                 <h2 className={styles.header}>Admin Paneli</h2>
-
-                <SensorsDropdowns
+                <SensorList
+                    sensors={filteredSensors}
+                    sensorTypes={sensorTypes} // Tip eşleştirmesini gönderiyoruz
                     role={role}
                     companies={companies}
                     managers={filteredManagers}
@@ -113,11 +125,12 @@ export default function AdminPage({ role }) {
                     selectedCompany={selectedCompany}
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
-                    onChange={handleDropdownChange}
+                    onDropdownChange={handleDropdownChange}
                     onMapRedirect={handleMapRedirect}
+                    onUpdateSensor={(id) => console.log('Güncelle:', id)}
+                    onToggleActive={(id, isActive) => console.log('Aktif/Pasif:', id, isActive)}
+                    onDefine={(id) => console.log('Tanımla:', id)}
                 />
-
-                <SensorList sensors={filteredSensors} />
             </div>
         </Layout>
     );
