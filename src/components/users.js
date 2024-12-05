@@ -1,61 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // useParams'ı import ettik
-import { FaSearch } from 'react-icons/fa'; // Arama ikonu
-import styles from '../styles/Users.module.css';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+import styles from "../styles/Users.module.css";
 import Layout from "../layouts/Layout";
-import { useTheme } from "../contexts/ThemeContext"; // Tema bağlamını kullan
-import UpdateUserModal from '../components/UpdateUserModal'; // Modal'ı dahil ediyoruz
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useTheme } from "../contexts/ThemeContext";
+import UpdateUserModal from "../components/UpdateUserModal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Users() {
     const [companies, setCompanies] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedUser, setSelectedUser] = useState(null); // Güncellenmek istenen kullanıcı
-    const [modalVisible, setModalVisible] = useState(false); // Modal görünürlüğü
-    const { type } = useParams(); // URL'den gelen parametreyi almak için kullanılıyor
+    const [selectedCompany, setSelectedCompany] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+    const [actionType, setActionType] = useState("");
+    const { type } = useParams();
     const { isDarkMode } = useTheme();
-    const [role, setRole] = useState(''); // Kullanıcı rolü
+    const [role, setRole] = useState("");
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = JSON.parse(localStorage.getItem("user"));
         if (user) {
-            setRole(user.role); // Kullanıcı rolünü al
+            setRole(user.role);
         }
         fetchCompanies();
-        fetchDataByCompany(type); // URL parametresi ile veri getirme
+        fetchDataByCompany(type);
     }, [type]);
 
     const fetchCompanies = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/companies', {
+            const response = await fetch("http://localhost:5000/api/companies", {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
             const data = await response.json();
             setCompanies(data || []);
         } catch (error) {
-            console.error('Şirket verisi çekilemedi:', error);
+            console.error("Şirket verisi çekilemedi:", error);
         }
     };
 
-    const fetchDataByCompany = async (type, companyCode = '') => {
+    const fetchDataByCompany = async (type, companyCode = "") => {
         try {
             const url = companyCode
-                ? `http://localhost:5000/api/${type}?companyCode=${encodeURIComponent(companyCode)}`
+                ? `http://localhost:5000/api/${type}?companyCode=${encodeURIComponent(
+                    companyCode
+                )}`
                 : `http://localhost:5000/api/${type}`;
 
             const response = await fetch(url, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
 
             if (!response.ok) {
-                throw new Error('Veri çekme hatası');
+                throw new Error("Veri çekme hatası");
             }
 
             const data = await response.json();
@@ -80,154 +84,147 @@ export default function Users() {
         setSearchTerm(e.target.value);
     };
 
-    const filteredResults = filteredData.filter(person => {
+    const filteredResults = filteredData.filter((person) => {
         const search = searchTerm.toLowerCase();
-
-        // Yalnızca manager rolü personal'ları görsün
-        if (role === 'manager' && person.role !== 'personal') return false;
+        if (role === "manager" && person.role !== "personal") return false;
 
         return (
-            person.name.toLowerCase().includes(search) || // Ad
-            person.lastname.toLowerCase().includes(search) || // Soyad
-            person.email.toLowerCase().includes(search) || // E-posta
+            person.name.toLowerCase().includes(search) ||
+            person.lastname.toLowerCase().includes(search) ||
+            person.email.toLowerCase().includes(search) ||
             (person.companyCode
-                ? person.companyCode.toLowerCase().includes(search) // Şirket kodu varsa
-                : 'kurum yok'.includes(search)) || // Şirket kodu yoksa "Kurum Yok" olarak aransın
-            (person.isActive ? 'aktif' : 'pasif').includes(search) // Durum (Aktif/Pasif)
+                ? person.companyCode.toLowerCase().includes(search)
+                : "kurum yok".includes(search)) ||
+            (person.isActive ? "aktif" : "pasif").includes(search)
         );
     });
-
-
-
-    const handleUpdateClick = (user) => {
-        setSelectedUser(user); // Kullanıcıyı seç
-        setModalVisible(true); // Modal'ı aç
-    };
-
-    const handleCloseModal = () => {
-        setModalVisible(false);
-        setSelectedUser(null); // Modal kapandığında seçilen kullanıcıyı sıfırla
-    };
 
     const handleModifyUserDetails = async (updatedUser) => {
         try {
             const response = await fetch(`http://localhost:5000/api/modifyuser`, {
-                method: 'PUT',
+                method: "PUT",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(updatedUser),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Güncelleme sırasında bir hata oluştu.');
+                throw new Error(
+                    errorData.message || "Güncelleme sırasında bir hata oluştu."
+                );
             }
 
             setModalVisible(false);
             setSelectedUser(null);
             fetchDataByCompany(type, selectedCompany); // Kullanıcı listesini güncellemek için çağrı
-            toast.success('Kullanıcı başarıyla güncellendi.');
+            toast.success("Kullanıcı başarıyla güncellendi.");
         } catch (error) {
-            console.error('Güncelleme hatası:', error.message);
+            console.error("Güncelleme hatası:", error.message);
             toast.error(`Güncelleme sırasında bir hata oluştu: ${error.message}`);
         }
     };
 
 
+    const handleConfirmAction = (userId, action) => {
+        setActionType(action);
+        setSelectedUser(userId);
+        setConfirmModalVisible(true);
+    };
 
-    const handleDeleteUser = async (userId) => {
+    const executeAction = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/${userId}/deactivate`, {
-                method: 'PATCH',
+            const endpoint =
+                actionType === "deactivate"
+                    ? `http://localhost:5000/api/${selectedUser}/deactivate`
+                    : `http://localhost:5000/api/${selectedUser}/activate`;
+
+            const response = await fetch(endpoint, {
+                method: "PATCH",
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
                 },
             });
 
             if (!response.ok) {
                 const { message } = await response.json();
-                toast.error(message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
-            } else {
-                toast.success(
-                    <span>
-                    Kullanıcı <span style={{ color: 'red', fontWeight: 'bold' }}>Pasif</span> hale getirildi.
-                </span>
-                );
-                fetchDataByCompany(type, selectedCompany);
+                throw new Error(message || "Bir hata oluştu. Lütfen tekrar deneyin.");
             }
+
+            toast.success(
+                <span>
+          Kullanıcı{" "}
+                    <span
+                        style={{
+                            color: actionType === "deactivate" ? "red" : "green",
+                            fontWeight: "bold",
+                        }}
+                    >
+            {actionType === "deactivate" ? "Pasif" : "Aktif"}
+          </span>{" "}
+                    hale getirildi.
+        </span>
+            );
+
+            fetchDataByCompany(type, selectedCompany);
         } catch (error) {
-            console.error('Kullanıcıyı pasif yapma hatası:', error);
-            toast.error('Kullanıcıyı pasif yapma sırasında bir hata oluştu.');
+            console.error("İşlem hatası:", error.message);
+            toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
+        } finally {
+            setConfirmModalVisible(false);
+            setSelectedUser(null);
         }
     };
 
-
-
-    const handleActivateUser = async (userId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/${userId}/activate`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                const { message } = await response.json();
-                toast.error(message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
-            } else {
-                toast.success(
-                    <span>
-                    Kullanıcı <span style={{ color: 'green', fontWeight: 'bold' }}>Aktif</span> hale getirildi.
-                </span>
-                );
-                fetchDataByCompany(type, selectedCompany);
-            }
-        } catch (error) {
-            console.error('Kullanıcıyı aktif yapma hatası:', error);
-            toast.error('Kullanıcıyı aktif yapma sırasında bir hata oluştu.');
-        }
+    const handleUpdateClick = (user) => {
+        setSelectedUser(user);
+        setModalVisible(true);
     };
 
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        setSelectedUser(null);
+    };
 
     return (
         <Layout>
-            <div className={`${styles.container} ${isDarkMode ? styles.dark : ''}`}>
-                <h2 className={`${styles.title} ${isDarkMode ? styles.darkTitle : ''}`}>
-                    {type === 'managers' ? ' Managers' : ' Personals'}
+            <div className={`${styles.container} ${isDarkMode ? styles.dark : ""}`}>
+                <h2 className={`${styles.title} ${isDarkMode ? styles.darkTitle : ""}`}>
+                    {type === "managers" ? " Managers" : " Personals"}
                 </h2>
 
                 <UpdateUserModal
                     modalVisible={modalVisible}
                     handleCloseModal={handleCloseModal}
                     selectedUser={selectedUser}
-                    handleUpdateUser={handleModifyUserDetails}
+                    handleUpdateUser={handleModifyUserDetails} // handleUpdateUser fonksiyonu eklendi
                 />
 
                 <div className={styles.filterContainer}>
-
-
                     <select
-                        className={`${styles.select} ${isDarkMode ? styles.darkSelect : ''}`}
+                        className={`${styles.select} ${
+                            isDarkMode ? styles.darkSelect : ""
+                        }`}
                         value={selectedCompany}
                         onChange={handleCompanyChange}
                     >
                         <option value="">Tüm Şirketler</option>
-                        {companies.map(company => (
+                        {companies.map((company) => (
                             <option key={company.code} value={company.code}>
                                 {company.name}
                             </option>
                         ))}
                     </select>
                     <div className={styles.searchContainer}>
-                        <FaSearch className={styles.searchIcon}/>
+                        <FaSearch className={styles.searchIcon} />
                         <input
                             type="text"
-                            className={`${styles.searchInput} ${isDarkMode ? styles.darkInput : ''}`}
+                            className={`${styles.searchInput} ${
+                                isDarkMode ? styles.darkInput : ""
+                            }`}
                             placeholder="Ara"
                             value={searchTerm}
                             onChange={handleSearch}
@@ -237,7 +234,11 @@ export default function Users() {
 
                 <div className={styles.tableContainer}>
                     {filteredResults.length > 0 ? (
-                        <table className={`${styles.table} ${isDarkMode ? styles.darkTable : ''}`}>
+                        <table
+                            className={`${styles.table} ${
+                                isDarkMode ? styles.darkTable : ""
+                            }`}
+                        >
                             <thead>
                             <tr>
                                 <th>Ad</th>
@@ -246,80 +247,100 @@ export default function Users() {
                                 <th>Şirket</th>
                                 <th>Durum</th>
                                 <th>Rol</th>
-                                {/* Yeni kolon */}
                                 <th>İşlemler</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {filteredResults.map(person => (
+                            {filteredResults.map((person) => (
                                 <tr key={person.id}>
                                     <td>{person.name}</td>
                                     <td>{person.lastname}</td>
                                     <td>{person.email}</td>
-                                    <td>{person.companyCode || 'Kurum Yok'}</td>
+                                    <td>{person.companyCode || "Kurum Yok"}</td>
                                     <td>
-                <span
-                    className={
-                        person.isActive
-                            ? styles.statusActive
-                            : styles.statusInactive
-                    }
-                >
-                    {person.isActive ? 'Aktif' : 'Pasif'}
-                </span>
+                      <span
+                          className={
+                              person.isActive
+                                  ? styles.statusActive
+                                  : styles.statusInactive
+                          }
+                      >
+                        {person.isActive ? "Aktif" : "Pasif"}
+                      </span>
                                     </td>
                                     <td>{person.role}</td>
                                     <td>
-                                        {role === 'administrator' || (role === 'manager' && person.role === 'personal') ? (
-                                            <>
-                                                <button
-                                                    className={`${styles.actionButton} ${styles.updateButton}`}
-                                                    onClick={() => handleUpdateClick(person)}
-                                                >
-                                                    Güncelle
-                                                </button>
-                                                {person.isActive ? (
-                                                    <button
-                                                        className={`${styles.actionButton} ${styles.deleteButton}`}
-                                                        onClick={() => handleDeleteUser(person.id)}
-                                                    >
-                                                        Pasif Yap
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        className={`${styles.actionButton} ${styles.activateButton}`}
-                                                        onClick={() => handleActivateUser(person.id)}
-                                                    >
-                                                        Aktif Yap
-                                                    </button>
-                                                )}
-                                            </>
-                                        ) : null}
+                                        <button
+                                            className={`${styles.actionButton} ${styles.updateButton}`}
+                                            onClick={() => handleUpdateClick(person)}
+                                        >
+                                            Güncelle
+                                        </button>
+                                        <button
+                                            className={`${styles.actionButton} ${
+                                                person.isActive
+                                                    ? styles.deleteButton
+                                                    : styles.activateButton
+                                            }`}
+                                            onClick={() =>
+                                                handleConfirmAction(
+                                                    person.id,
+                                                    person.isActive ? "deactivate" : "activate"
+                                                )
+                                            }
+                                        >
+                                            {person.isActive ? "Pasif Yap" : "Aktif Yap"}
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
                             </tbody>
-
-
                         </table>
                     ) : (
                         <p className={styles.message}>
-                            Bu şirkete ait {type === 'managers' ? 'yönetici' : 'personel'} bulunamadı.
+                            Bu şirkete ait {type === "managers" ? "yönetici" : "personel"}{" "}
+                            bulunamadı.
                         </p>
                     )}
                 </div>
-            </div>
-            <ToastContainer
-                position="top-right" // Mesajın pozisyonu
-                autoClose={3000} // Mesajın otomatik kapanma süresi (ms)
-                hideProgressBar={false} // İlerleme çubuğu
-                newestOnTop={true} // Yeni mesajların üste gelmesi
-                closeOnClick // Mesajın tıklamayla kapanması
-                pauseOnHover // Üzerine gelindiğinde durdurma
-                draggable // Sürüklenebilirlik
-                theme={isDarkMode ? 'dark' : 'light'} // Temaya göre toast stili
-            />
 
+                {confirmModalVisible && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <p>
+                                {actionType === "deactivate"
+                                    ? "Bu kullanıcıyı pasif yapmak istediğinize emin misiniz?"
+                                    : "Bu kullanıcıyı aktif yapmak istediğinize emin misiniz?"}
+                            </p>
+                            <div className={styles.modalActions}>
+                                <button
+                                    className={`${styles.actionButton} ${styles.updateButton}`}
+                                    onClick={executeAction}
+                                >
+                                    Onayla
+                                </button>
+                                <button
+                                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                                    onClick={() => setConfirmModalVisible(false)}
+                                >
+                                    İptal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <ToastContainer
+                    position="top-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={true}
+                    closeOnClick
+                    pauseOnHover
+                    draggable
+                    theme={isDarkMode ? "dark" : "light"}
+                />
+            </div>
         </Layout>
     );
 }
