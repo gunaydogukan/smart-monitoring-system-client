@@ -20,6 +20,13 @@ export default function Users() {
     const { type } = useParams();
     const { isDarkMode } = useTheme();
     const [role, setRole] = useState("");
+    const [undefinedUsersModalVisible, setUndefinedUsersModalVisible] = useState(false);
+    const [undefinedUsers, setUndefinedUsers] = useState([]);
+    const [activeManagers, setActiveManagers] = useState([]);
+    const [selectedManager, setSelectedManager] = useState("");
+    const [selectedPersonals, setSelectedPersonals] = useState([]);
+    const [notificationUser,setNotificationUser] = useState("");
+    const [notificationMessage, setNotificationMessage] = useState("");
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -126,13 +133,83 @@ export default function Users() {
             toast.error(`Güncelleme sırasında bir hata oluştu: ${error.message}`);
         }
     };
+    const handleAssignPersonals = async () => {
+        if (!selectedManager) {
+            toast.error("Lütfen bir manager seçin.");
+            return;
+        }
+        if (selectedPersonals.length === 0) {
+            toast.error("Lütfen en az bir personel seçin.");
+            return;
+        }
 
+
+        try {
+            const response = await fetch("http://localhost:5000/api/assign-personals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    managerId: selectedManager,
+                    personalIds: selectedPersonals,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Atama işlemi sırasında bir hata oluştu.");
+            }
+
+            toast.success("Personeller başarıyla atandı.");
+            setUndefinedUsers(undefinedUsers.filter(
+                (user) => !selectedPersonals.includes(user.user.id)
+            ));
+            setSelectedPersonals([]);
+            setUndefinedUsersModalVisible(false);
+        } catch (error) {
+            console.error("Atama işlemi sırasında hata:", error);
+            toast.error("Personeller atanamadı.");
+        }
+    };
+
+    const fetchUndefinedUsersAndManagers = async () => {
+        if (!selectedCompany) {
+            toast.error("Lütfen bir şirket seçin.");
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/company/${selectedCompany}/undefined-users-and-managers`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+            const data = await response.json();
+
+            // Sadece "personal" rolündeki kullanıcıları al
+            const filteredUndefinedUsers = data.undefinedUsers.filter(
+                (user) => user.user.role === "personal"
+            );
+
+            setUndefinedUsers(filteredUndefinedUsers); // Yalnızca "personal" rolündeki kullanıcılar
+            setActiveManagers(data.activeManagers || []);
+        } catch (error) {
+            console.error("Undefined users veya active managers verisi çekilemedi:", error);
+            toast.error("Veri çekme hatası.");
+        }
+    };
 
     const handleConfirmAction = (userId, action) => {
         setActionType(action);
         setSelectedUser(userId);
         setConfirmModalVisible(true);
     };
+
+    const [relatedPersonals,setRelatedPersonals] = useState([]);
 
     const executeAction = async () => {
         try {
@@ -149,27 +226,22 @@ export default function Users() {
                 },
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const { message } = await response.json();
-                throw new Error(message || "Bir hata oluştu. Lütfen tekrar deneyin.");
+                throw new Error(data.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
             }
 
-            toast.success(
-                <span>
-          Kullanıcı{" "}
-                    <span
-                        style={{
-                            color: actionType === "deactivate" ? "red" : "green",
-                            fontWeight: "bold",
-                        }}
-                    >
-            {actionType === "deactivate" ? "Pasif" : "Aktif"}
-          </span>{" "}
-                    hale getirildi.
-        </span>
-            );
+            // Güncellenen kullanıcının ismi ve mesajını ayarla
+            setNotificationUser(data.user?.name + " " + data.user?.lastname || "Kullanıcı");
+            setNotificationMessage(data.notification || data.message);
+            setRelatedPersonals(data.relatedPersonals || []);  // Bu kısım ilgili personelleri ayarlıyor
 
-            fetchDataByCompany(type, selectedCompany);
+            // Undefined users listesi yeniden alınıyor
+            fetchUndefinedUsersAndManagers();
+
+            fetchDataByCompany(type, selectedCompany); // Şirket verilerini güncelle
+
         } catch (error) {
             console.error("İşlem hatası:", error.message);
             toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
@@ -178,6 +250,8 @@ export default function Users() {
             setSelectedUser(null);
         }
     };
+
+
 
     const handleUpdateClick = (user) => {
         setSelectedUser(user);
@@ -219,7 +293,7 @@ export default function Users() {
                         ))}
                     </select>
                     <div className={styles.searchContainer}>
-                        <FaSearch className={styles.searchIcon} />
+                        <FaSearch className={styles.searchIcon}/>
                         <input
                             type="text"
                             className={`${styles.searchInput} ${
@@ -230,7 +304,26 @@ export default function Users() {
                             onChange={handleSearch}
                         />
                     </div>
+
                 </div>
+                {type === "personals" && (
+                    <button
+                        className={`${styles.actionButton} ${styles.undefinedButton}`}
+                        onClick={() => {
+                            if (!selectedCompany) {
+                                toast.error("Lütfen bir şirket seçin.");
+                                return;
+                            }
+                            fetchUndefinedUsersAndManagers();
+                            setUndefinedUsersModalVisible(true);
+                        }}
+                    >
+                        Tanımsız Personeller
+                        {undefinedUsers.length > 0 && (
+                            <span className={styles.notificationBadge}>{undefinedUsers.length}</span>
+                        )}
+                    </button>
+                )}
 
                 <div className={styles.tableContainer}>
                     {filteredResults.length > 0 ? (
@@ -314,23 +407,131 @@ export default function Users() {
                             </p>
                             <div className={styles.modalActions}>
                                 <button
-                                    className={`${styles.actionButton} ${styles.updateButton}`}
-                                    onClick={executeAction}
-                                >
-                                    Onayla
-                                </button>
-                                <button
                                     className={`${styles.actionButton} ${styles.deleteButton}`}
                                     onClick={() => setConfirmModalVisible(false)}
                                 >
                                     İptal
                                 </button>
+                                <button
+                                    className={`${styles.actionButton} ${styles.updateButton}`}
+                                    onClick={executeAction}
+                                >
+                                    Onayla
+                                </button>
                             </div>
                         </div>
                     </div>
                 )}
+                {notificationMessage && (
+                    <div className={styles.notificationOverlay}>
+                        <div className={styles.notificationModal}>
+                            <h3 className={styles.notificationTitle}>Bilgilendirme</h3>
+                            <p className={styles.notificationText}>
+                                Kullanıcı <strong className={styles.notificationHighlight}>{notificationUser}</strong> {notificationMessage}
+                            </p>
+                            {relatedPersonals && relatedPersonals.length > 0 && (
+                                <p className={styles.notificationInstruction}>
+                                    Ona bağlı personeller (
+                                    <strong className={styles.notificationHighlight}>{relatedPersonals.length}</strong>)
+                                    yeni managerlere atanmayı bekliyor. <br />
+                                    Personeller için <strong>"Kullanıcılar > Personals > Tanımsız Personeller"</strong> sekmesine gidin.
+                                </p>
+                            )}
+                            <button
+                                className={styles.notificationButton}
+                                onClick={() => {
+                                    setNotificationMessage("");
+                                    setRelatedPersonals([]);
+                                }}
+                            >
+                                Tamam
+                            </button>
+                        </div>
+                    </div>
+                )}
 
-                <ToastContainer
+
+
+                {undefinedUsersModalVisible && (
+                    <div className={styles.modalOverlay}>
+                <div className={styles.undefinedUsersModal}>
+                    <h3>Tanımsız Personelleri Atama</h3>
+                    <div className={styles.undefinedUsersDropdown}>
+                        <label htmlFor="manager-select">Aktif Manager Seç:</label>
+                        <select
+                            id="manager-select"
+                            value={selectedManager}
+                            onChange={(e) => setSelectedManager(e.target.value)}
+                        >
+                            <option value="">Manager Seç</option>
+                            {activeManagers.map((manager) => (
+                                <option key={manager.id} value={manager.id}>
+                                    {manager.name} {manager.lastname}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.undefinedUsersContainer}>
+                        {undefinedUsers.filter((undefinedUser) => undefinedUser.user.role === "personal").length > 0 ? (
+                            <table className={styles.undefinedUsersTable}>
+                                <thead>
+                                <tr>
+                                    <th>Seç</th>
+                                    <th>Ad</th>
+                                    <th>Soyad</th>
+                                    <th>Email</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {undefinedUsers
+                                    .filter((undefinedUser) => undefinedUser.user.role === "personal")
+                                    .map((undefinedUser) => (
+                                        <tr key={undefinedUser.user.id}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    value={undefinedUser.user.id}
+                                                    onChange={(e) => {
+                                                        const isChecked = e.target.checked;
+                                                        setSelectedPersonals((prev) =>
+                                                            isChecked
+                                                                ? [...prev, undefinedUser.user.id]
+                                                                : prev.filter((id) => id !== undefinedUser.user.id)
+                                                        );
+                                                    }}
+                                                />
+                                            </td>
+                                            <td>{undefinedUser.user.name}</td>
+                                            <td>{undefinedUser.user.lastname}</td>
+                                            <td>{undefinedUser.user.email}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <p className={styles.undefinedUsersEmpty}>Pasif personel bulunamadı.</p>
+                        )}
+                    </div>
+                    <div className={styles.modalActions}>
+                        <button
+                            className={`${styles.modalButton} ${styles.cancel}`}
+                            onClick={() => setUndefinedUsersModalVisible(false)}
+                        >
+                            İptal
+                        </button>
+                        <button
+                            className={`${styles.modalButton} ${styles.assign}`}
+                            onClick={handleAssignPersonals}
+                            disabled={!selectedManager || selectedPersonals.length === 0}
+                        >
+                            Atama Yap
+                        </button>
+                    </div>
+                </div>
+            </div>
+            )}
+
+            <ToastContainer
                     position="top-right"
                     autoClose={3000}
                     hideProgressBar={false}
