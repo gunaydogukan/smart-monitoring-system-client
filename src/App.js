@@ -18,6 +18,8 @@ import CompanyList from './pages/CompanyList';
 import ChartPage from './pages/ChartPage';
 import SensorControl from './pages/sensorCheck/MapPage';
 import AddType from "./components/AddType";
+import SensorIpControlPage from "./pages/SensorIpControlPage";
+
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -43,7 +45,8 @@ export default function App() {
                             <Route path="/add-company" element={<CompanyAdd />} />
                             <Route path="/users/:type" element={<Users />} />
                             <Route path="/charts" element={<ChartPage />} />
-                            <Route path="/sensorControl" element={<SensorControl />} />
+                            <Route path="/sensorControl/kurulum" element={<SensorControl />} />
+                            <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
                             <Route path="/add-sensor-type" element={<AddType/>} />
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>

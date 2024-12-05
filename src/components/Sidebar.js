@@ -16,6 +16,8 @@ export default function Sidebar() {
 
     const [isUsersOpen, setIsUsersOpen] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isSensorControlOpen, setIsSensorControlOpen] = useState(false);
+
 
     useEffect(() => {
         if (!user) navigate('/login');
@@ -42,10 +44,25 @@ export default function Sidebar() {
                 </div>
 
                 {user?.role === "administrator" && (
-                    <div className="menu" onClick={() => navigate("/sensorControl")}>
-                        <FaRss className="menu-icon" style={{ fontSize: "23px" }} />
-                        <span>Sensör Kontrol</span>
-                    </div>
+                    <>
+                        <div className="menu" onClick={() => setIsSensorControlOpen(!isSensorControlOpen)}>
+                            <FaRss className="menu-icon" style={{ fontSize: "23px" }} />
+                            <span>Sensör Kontrol</span>
+                        </div>
+                        {isSensorControlOpen && (
+                            <ul className="dropdown">
+                                <li onClick={() => navigate("/sensorControl/kurulum")}>
+                                    <FaRss className="dropdown-icon" /> Kurum Kontrol
+                                </li>
+                                <li onClick={() => navigate("/sensorControl/ip")}>
+                                    <FaRss className="dropdown-icon" /> IP Kontrol
+                                </li>
+                                <li onClick={() => navigate("/sensorControl/data")}>
+                                    <FaRss className="dropdown-icon" /> Veri Kontrol
+                                </li>
+                            </ul>
+                        )}
+                    </>
                 )}
 
                 {!isPersonal && (

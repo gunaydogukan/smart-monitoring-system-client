@@ -17,7 +17,7 @@ export default function Login() {
             console.log('Giriş başarılı!');
             navigate('/dashboard'); // Başarılı girişte yönlendir
         } catch (error) {
-            setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.'); // Hata durumunu göster
+            setError(error.response.data.error); // Hata durumunu göster
         }
     };
 
