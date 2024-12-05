@@ -293,6 +293,271 @@ body, html {
     margin-top: 20px;
 }
 
+.undefinedUsersModal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    overflow: hidden;
+}
+
+.undefinedUsersModal h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.undefinedUsersDropdown {
+    display: flex;
+    align-items: center; /* Dikeyde ortalar */
+    justify-content: space-between; /* Etiketi ve dropdown'u hizalar */
+    margin-bottom: 20px;
+    gap: 10px; /* Etiket ile dropdown arasına boşluk ekler */
+}
+
+.undefinedUsersDropdown label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.undefinedUsersDropdown select {
+    flex-grow: 1; /* Dropdown'un genişlemesini sağlar */
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.undefinedUsersDropdown select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+
+.undefinedUsersTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    text-align: left;
+}
+
+.undefinedUsersTable th,
+.undefinedUsersTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.undefinedUsersTable th {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+
+.undefinedUsersTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.undefinedUsersTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+.undefinedUsersTable input[type="checkbox"] {
+    margin: 0 auto;
+    display: block;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modalButton {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modalButton.cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.modalButton.cancel:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+.modalButton.assign {
+    background-color: #27ae60;
+    color: white;
+}
+
+.modalButton.assign:hover {
+    background-color: #1e8449;
+    transform: scale(1.05);
+}
+
+.undefinedUsersEmpty {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-top: 20px;
+}
+
+/* Modal Overlay */
+.notificationOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); /* Yumuşak koyu arka plan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal */
+.notificationModal {
+    background: #ffffff; /* Beyaz arka plan */
+    border: 3px solid #007bff; /* Başarılı mesajlar için mavi çerçeve */
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 700px;
+    width: 90%;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.4s ease-out;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Başlık */
+.notificationTitle {
+    font-size: 26px;
+    font-weight: bold;
+    color: #007bff; /* Başlık mavi renkte */
+    margin-bottom: 20px;
+    text-transform: uppercase; /* Büyük harfler */
+    letter-spacing: 1px;
+}
+
+/* Mesaj Texti */
+.notificationText {
+    font-size: 18px;
+    color: #333333;
+    margin-bottom: 7px;  /* Daha az boşluk */
+    line-height: 1.8;
+    font-weight: 500;
+}
+
+/* Vurgulanan Kullanıcı */
+.notificationHighlight {
+    color: #e74c3c; /* Kırmızı vurgulama */
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: capitalize;
+}
+
+/* Talimatlar */
+.notificationInstruction {
+    font-size: 16px;
+    color: #2c3e50; /* Koyu mavi */
+    font-weight: 600;
+    margin-top: 2px;  /* Daha az boşluk */
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Buton */
+.notificationButton {
+    padding: 12px 25px;
+    background-color: #007bff; /* Buton mavi renkte */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.notificationButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+/* Animasyon */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Tanımsız Personeller Butonu */
+/* Tanımsız Personeller Butonu */
+.undefinedButton {
+    position: relative;
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 15px;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.undefinedButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+/* Bildirim Sayısı */
+.notificationBadge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
 /* Responsive Tasarım */
 @media (max-width: 768px) {
@@ -310,5 +575,21 @@ body, html {
     .table td {
         font-size: 0.9rem;
         padding: 10px;
+    }
+    .notificationModal {
+        padding: 20px;
+        width: 95%;
+    }
+
+    .notificationTitle {
+        font-size: 22px;
+    }
+
+    .notificationText {
+        font-size: 16px;
+    }
+
+    .notificationInstruction {
+        font-size: 14px;
     }
 }
