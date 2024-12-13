@@ -1,15 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import SensorsDropdowns from './SensorsDropdowns';
-import styles from '../styles/SensorList.module.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from "react";
+import SensorsDropdowns from "./SensorsDropdowns";
+import styles from "../styles/sensorIPList.module.css";
+import { useNavigate } from "react-router-dom";
 import {
     filterManagersByCompany,
     filterSensorsByCompany,
     filterPersonalsByCompany,
     filterPersonalsByManager,
     filterSensorsByManager,
-    filterSensorsByPersonal
-} from '../services/FilterService'; // Filtre servisini import ediyoruz
+    filterSensorsByPersonal,
+} from "../services/FilterService";
 
 export default function SensorIPControl({
                                             role,
@@ -21,76 +21,210 @@ export default function SensorIPControl({
                                             ipLogs,
                                             types,
                                         }) {
-    const [selectedCompany, setSelectedCompany] = useState('');
-    const [selectedManager, setSelectedManager] = useState('');
-    const [selectedPersonal, setSelectedPersonal] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCompany, setSelectedCompany] = useState("");
+    const [selectedManager, setSelectedManager] = useState("");
+    const [selectedPersonal, setSelectedPersonal] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sensorColorClasses, setSensorColorClasses] = useState({});
     const navigate = useNavigate();
 
+    // Kullanıcı dostu tarih formatı
     // Tarih formatını dönüştürme işlevi
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleString('tr-TR', {
-            year: 'numeric',
-            month: 'numeric', // Ağu, Eyl, vb.
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
+        return date.toLocaleString("tr-TR", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
         });
     };
 
-    // Sensör ve IP loglarını eşleştir
+    const parseDate = (dateString) => {
+        if (!dateString) return null; // Tarih boşsa null döndür
+
+        const [datePart, timePart] = dateString.split(" ");
+
+        if (!datePart || !timePart) {
+            console.error(`Geçersiz tarih formatı: ${dateString}`);
+            return null;
+        }
+        const [day, month, year] = datePart.split(".");
+        const [hour, minute, second] = timePart.split(":");
+
+        return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+    };
+
+    const getTimeColorClass = async (updatedAt, sensorId,active) => {
+        let isActive = true;
+        if (!updatedAt || updatedAt === "Zaman Yok") return styles.defaultBox;
+
+        let updatedTime = parseDate(updatedAt);
+
+        if (isNaN(updatedTime.getTime())) {
+            console.error(`Geçersiz tarih: ${updatedAt}`);
+            return styles.defaultBox;
+        }
+
+        const now = new Date();
+        const timeDifferenceInMinutes = (now - updatedTime) / (1000 * 60);
+
+        //eğer 24 saatten az sürede ip geldiyse active durumuna geçir
+        if (timeDifferenceInMinutes <= 5){
+            if(!active){
+                try {
+                    await isActiveForIP(sensorId,isActive);
+                } catch (error) {
+                    console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
+                }
+            }
+            //tekrar aktif olacak
+            return styles.greenBox;
+        }
+        if (timeDifferenceInMinutes <= 1440){
+            if(!active){
+                try {
+                    await isActiveForIP(sensorId,isActive);
+                } catch (error) {
+                    console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
+                }
+            }
+            return styles.yellowBox;
+        }
+
+        // 1440 dakikadan fazla geçmişse sensör pasiv yapılacak
+        if (timeDifferenceInMinutes > 1440 ) {
+            if(active){
+                try {
+                    isActive = false;
+                    await isActiveForIP(sensorId,isActive); // Asenkron kontrol
+                } catch (error) {
+                    console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
+                }
+            }
+            return styles.redBox;
+        }
+        console.log("time ",timeDifferenceInMinutes);
+        return styles.defaultBox;
+    };
+
+    const isActiveForIP = async (sensorId,isActive) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/sensor-logs/update/isActiveForIP/${sensorId}/${isActive}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(`Sensor ID ${sensorId} başarıyla güncellendi.`, data);
+            return data;
+        } catch (error) {
+            console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
+        }
+    };
+
+
+    // IP ve zaman eşleştirme
     const enrichedSensors = useMemo(() => {
+        const normalizeIpLogs = (ipLogs) => {
+            if (!ipLogs) {
+                console.warn("IP Logs boş veya undefined!");
+                return [];
+            }
+
+            if (Array.isArray(ipLogs)) {
+                return ipLogs.map((log) => ({
+                    ...log,
+                    datacode: log.sensorName?.trim().toLowerCase() || "",
+                }));
+            }
+
+            console.warn("IP Logs beklenmeyen bir formatta!");
+            return [];
+        };
+
+        const normalizedIpLogs = normalizeIpLogs(ipLogs);
+
         return sensors.map((sensor) => {
-            const matchingLog = ipLogs.find((log) => log.datacode.toLowerCase() === sensor.datacode.toLowerCase());
+            const matchingLog = normalizedIpLogs.find(
+                (log) => log.datacode === sensor.datacode.trim().toLowerCase()
+            );
             return {
                 ...sensor,
-                ip: matchingLog?.IP_Adresses || 'IP Yok',
-                timestamp: matchingLog?.updatedAt ? formatDate(matchingLog.updatedAt) : 'Zaman Yok', // Zamanı formatla
+                ip: matchingLog?.ip || "IP Yok",
+                timestamp: matchingLog?.time ? formatDate(matchingLog.time) : "Zaman Yok",
             };
         });
     }, [sensors, ipLogs]);
 
-    // Filtreleme işlemleri
-    const filteredByCompany = useMemo(() => filterSensorsByCompany(enrichedSensors, selectedCompany), [enrichedSensors, selectedCompany]);
-    const filteredByManager = useMemo(() => filterSensorsByManager(filteredByCompany, sensorOwners, selectedManager), [filteredByCompany, sensorOwners, selectedManager]);
-    const filteredByPersonal = useMemo(() => filterSensorsByPersonal(filteredByManager, sensorOwners, selectedPersonal), [filteredByManager, sensorOwners, selectedPersonal]);
+    // Sensör renklerini hesaplama
+// Sensör renklerini hesaplama
+    useEffect(() => {
+        const calculateColors = async () => {
+            const colorClasses = {};
+            for (const sensor of enrichedSensors) {
+                try {
+                    const colorClass = await getTimeColorClass(sensor.timestamp, sensor.id,sensor.isActive);
+                    colorClasses[sensor.id] = colorClass;
+                } catch (error) {
+                    console.error(`Error calculating color for sensor ID ${sensor.id}:`, error.message);
+                    colorClasses[sensor.id] = styles.defaultBox; // Hata durumunda varsayılan sınıf
+                }
+            }
+            setSensorColorClasses(colorClasses);
+        };
 
-    // Arama sorgusuna göre filtrele
+        calculateColors();
+    }, [enrichedSensors]);
+    // Filtreleme işlemleri
+    const filteredByCompany = useMemo(
+        () => filterSensorsByCompany(enrichedSensors, selectedCompany),
+        [enrichedSensors, selectedCompany]
+    );
+    const filteredByManager = useMemo(
+        () => filterSensorsByManager(filteredByCompany, sensorOwners, selectedManager),
+        [filteredByCompany, sensorOwners, selectedManager]
+    );
+    const filteredByPersonal = useMemo(
+        () => filterSensorsByPersonal(filteredByManager, sensorOwners, selectedPersonal),
+        [filteredByManager, sensorOwners, selectedPersonal]
+    );
+
     const filteredSensors = useMemo(() => {
         return filteredByPersonal.filter((sensor) =>
             sensor.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [filteredByPersonal, searchQuery]);
 
-    // Dropdown değişikliklerini işlemek için bir fonksiyon
+    // Dropdown değişikliklerini yönetme
     const handleDropdownChange = (type, value) => {
-        if (type === 'company') setSelectedCompany(value);
-        if (type === 'manager') setSelectedManager(value);
-        if (type === 'personal') setSelectedPersonal(value);
+        if (type === "company") setSelectedCompany(value);
+        if (type === "manager") setSelectedManager(value);
+        if (type === "personal") setSelectedPersonal(value);
     };
 
+    // Sensör tipini belirleme
     const handleType = (typeId) => {
-        if (!types || types.length === 0) {
-            console.error('Types dizisi boş veya tanımlı değil.');
-            return 'Bilinmiyor'; // Eğer types dizisi boşsa bir varsayılan değer döndürüyoruz
-        }
-        console.log(types);
+        if (!types || types.length === 0) return "Bilinmiyor";
         const foundType = types.find((type) => type.id === typeId);
-
-        return foundType ? foundType.type : 'Bilinmiyor'; // Eğer eşleşme yoksa varsayılan bir metin döner
+        return foundType ? foundType.type : "Bilinmiyor";
     };
 
-
-    // Harita görüntüleme fonksiyonu (placeholder)
-    const handleMapRedirect = () => {
-        console.log('Tüm haritayı görüntüle');
-    };
-
-    // Haritada gösterme işlevi
+    // Harita yönlendirme
     const handleViewOnMap = (sensor) => {
-        navigate('/map', { state: { sensor } });
+        navigate("/map", { state: { sensor } });
     };
 
     return (
@@ -105,7 +239,6 @@ export default function SensorIPControl({
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
-                    onMapRedirect={handleMapRedirect}
                 />
             </div>
 
@@ -135,18 +268,24 @@ export default function SensorIPControl({
                     {filteredSensors.map((sensor) => (
                         <tr key={sensor.id}>
                             <td>{sensor.name}</td>
-                            <td>{handleType(sensor.type)|| 'Bilinmiyor'}</td>
+                            <td>{handleType(sensor.type)}</td>
                             <td>{sensor.ip}</td>
                             <td>
                                     <span
                                         className={
-                                            sensor.isActive ? styles.activeStatus : styles.inactiveStatus
+                                            sensor.isActive
+                                                ? styles.activeStatus
+                                                : styles.inactiveStatus
                                         }
                                     >
-                                        {sensor.isActive ? 'Aktif' : 'Pasif'}
+                                        {sensor.isActive ? "Aktif" : "Pasif"}
                                     </span>
                             </td>
-                            <td>{sensor.timestamp}</td>
+                            <td>
+                                    <span className={sensorColorClasses[sensor.id]}>
+                                        {sensor.timestamp}
+                                    </span>
+                            </td>
                             <td>
                                 <button
                                     className={styles.mapButton}
