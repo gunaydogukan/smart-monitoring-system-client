@@ -26,6 +26,9 @@ export default function SensorIPControl({
     const [selectedPersonal, setSelectedPersonal] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [sensorColorClasses, setSensorColorClasses] = useState({});
+    const [filteredManagers, setFilteredManagers] = useState([]);
+    const [filteredPersonals, setFilteredPersonals] = useState([]);
+
     const navigate = useNavigate();
 
     // Kullanıcı dostu tarih formatı
@@ -170,7 +173,7 @@ export default function SensorIPControl({
     }, [sensors, ipLogs]);
 
     // Sensör renklerini hesaplama
-// Sensör renklerini hesaplama
+    // Sensör renklerini hesaplama
     useEffect(() => {
         const calculateColors = async () => {
             const colorClasses = {};
@@ -188,6 +191,7 @@ export default function SensorIPControl({
 
         calculateColors();
     }, [enrichedSensors]);
+
     // Filtreleme işlemleri
     const filteredByCompany = useMemo(
         () => filterSensorsByCompany(enrichedSensors, selectedCompany),
@@ -208,11 +212,33 @@ export default function SensorIPControl({
         );
     }, [filteredByPersonal, searchQuery]);
 
+    // Filter managers when company changes
+    useEffect(() => {
+        const updatedManagers = filterManagersByCompany(managers, selectedCompany);
+        setFilteredManagers(updatedManagers);
+    }, [managers, selectedCompany]); // Re-filter managers based on selected company
+
+    useEffect(() => {
+        const updatedPersonals = selectedManager
+            ? filterPersonalsByManager(personals, selectedManager)
+            : filterPersonalsByCompany(personals, selectedCompany);
+        setFilteredPersonals(updatedPersonals);
+    }, [personals, selectedCompany, selectedManager]);
+
     // Dropdown değişikliklerini yönetme
     const handleDropdownChange = (type, value) => {
-        if (type === "company") setSelectedCompany(value);
-        if (type === "manager") setSelectedManager(value);
-        if (type === "personal") setSelectedPersonal(value);
+        if (type === "company") {
+            setSelectedCompany(value);
+            managers = filterManagersByCompany(managers,selectedCompany);
+            console.log(managers);
+            setSelectedManager("");
+            setSelectedPersonal("");
+        } else if (type === "manager") {
+            setSelectedManager(value);
+            setSelectedPersonal("");
+        } else if (type === "personal") {
+            setSelectedPersonal(value);
+        }
     };
 
     // Sensör tipini belirleme
@@ -233,8 +259,8 @@ export default function SensorIPControl({
                 <SensorsDropdowns
                     role={role}
                     companies={companies}
-                    managers={managers}
-                    personals={personals}
+                    managers={filteredManagers}
+                    personals={filteredPersonals}
                     selectedCompany={selectedCompany}
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
