@@ -1,5 +1,6 @@
 export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
     const validData = Array.isArray(data) ? data : [];
+    console.log(validData);
 
     if (!validData.length) {
         console.warn("Grafik için geçerli veri yok.");
@@ -45,14 +46,32 @@ export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
         tooltip: {
             trigger: "axis",
             formatter: (params) => {
-                const date = new Date(params[0]?.axisValue || Date.now());
-                const options =
-                    dateFormatOptions[interval] || { hour: "2-digit", minute: "2-digit" };
+                const date = new Date(params[0]?.axisValue || "zaman alınamadı");
+
+                // Veritabanındaki verinin zaman bilgisi
+                const realTime = new Date(params[0]?.data?.time);
+                const realFormattedDate = realTime.toLocaleString("tr-TR", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                });
+
                 const formattedDate = isNaN(date)
                     ? params[0]?.axisValue
-                    : date.toLocaleString("tr-TR", options);
+                    : date.toLocaleString("tr-TR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                    });
 
-                return `${formattedDate}<br/>${params
+                // Tooltip'ı veritabanındaki zaman bilgisi ile gösteriyoruz
+                return `${realFormattedDate}<br/>Zaman: ${formattedDate}<br/>${params
                     .map(
                         (p) =>
                             `${p.seriesName}: ${p.data?.[p.seriesName]?.toFixed(2) || "N/A"}`
@@ -83,10 +102,25 @@ export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
     const charts = [];
     for (let i = 0; i < dataCount; i++) {
         const dataName = dataNames[i];
+
+        // Veriyi işliyoruz
+        const selectedData = validData.map(item => {
+            const selectedDataItem = {
+                time: item.time, // Zaman bilgisini olduğu gibi alıyoruz
+            };
+
+            // Veriyi doğrudan alıyoruz, herhangi bir dönüştürme yapmıyoruz
+            let value = item[dataName];
+
+            selectedDataItem[dataName] = value; // parsedItem'e ekliyoruz
+
+            return selectedDataItem; // Sonuçları döndürüyoruz
+        });
+
         charts.push({
             ...commonOptions,
             title: { text: `${dataName}` },
-            dataset: { source: validData },
+            dataset: { source: selectedData  },
             series: [
                 {
                     type: "line",
