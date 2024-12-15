@@ -1,5 +1,4 @@
 import axios from 'axios';
-import {type} from "@testing-library/user-event/dist/type";
 
 const userSensorAPI = 'http://localhost:5000/api/user-sensors';
 const sensorTypeAPI = 'http://localhost:5000/api/type';
@@ -44,8 +43,6 @@ export const sensorIpServices = async (role, userId) => {
         const IP_Data = await getIPData(sensors);
         const types = await fetchSensorTypes();
 
-        console.log(types);
-
         return {
             companies: allCompanies,
             managers,
@@ -70,7 +67,6 @@ export const getIPData = async (sensors) => {
 
         // Sensör datacode'larını virgülle ayrılmış bir string olarak oluştur
         const datacodes = sensors.map(sensor => sensor.datacode).join(',');
-
         // GET isteği yap
         const response = await axios.get('http://localhost:5000/log/IP-controll', {
             params: {
@@ -80,7 +76,6 @@ export const getIPData = async (sensors) => {
                 Authorization: `Bearer ${localStorage.getItem('token')}`, // Token ekle
             },
         });
-
 
         // Başarılı sonuç döndür
         return response.data;
