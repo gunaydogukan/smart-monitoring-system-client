@@ -10,6 +10,7 @@ import {
     filterSensorsByPersonal
 } from '../services/FilterService';
 import styles from '../styles/AdminPage.module.css';
+import SensorsDropdowns from '../components/SensorsDropdowns'; // SensorsDropdowns'u import etmeyi unutmayın
 
 export default function AdminSensorPage({ role }) {
     const [companies, setCompanies] = useState([]);
@@ -115,18 +116,29 @@ export default function AdminSensorPage({ role }) {
         <Layout>
             <div className={styles.container}>
                 <h2 className={styles.header}>Admin Paneli</h2>
+
+                {/* SensorsDropdowns Bileşeni Buraya Taşındı */}
+                <div className={styles.filterArea}>
+                    <SensorsDropdowns
+                        role={role}
+                        companies={companies}
+                        managers={filteredManagers}
+                        personals={filteredPersonals}
+                        selectedCompany={selectedCompany}
+                        selectedManager={selectedManager}
+                        selectedPersonal={selectedPersonal}
+                        onChange={handleDropdownChange}
+                        onMapRedirect={handleMapRedirect}
+                    />
+                </div>
+
+                {/* SensorList Daha Bağımsız Hale Geldi */}
                 <SensorList
                     sensors={filteredSensors}
-                    sensorTypes={sensorTypes} // Tip eşleştirmesini gönderiyoruz
-                    role={role}
-                    companies={companies}
+                    sensorTypes={sensorTypes}
                     managers={filteredManagers}
-                    personals={filteredPersonals}
+                    role={role}
                     selectedCompany={selectedCompany}
-                    selectedManager={selectedManager}
-                    selectedPersonal={selectedPersonal}
-                    onDropdownChange={handleDropdownChange}
-                    onMapRedirect={handleMapRedirect}
                     onUpdateSensor={(id) => console.log('Güncelle:', id)}
                     onToggleActive={(id, isActive) => console.log('Aktif/Pasif:', id, isActive)}
                     onDefine={(id) => console.log('Tanımla:', id)}

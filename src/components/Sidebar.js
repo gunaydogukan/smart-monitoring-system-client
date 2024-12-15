@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaSun, FaMoon,FaRss,FaTag
+    FaPlus, FaSignOutAlt, FaSun, FaMoon, FaRss, FaTag
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +18,14 @@ export default function Sidebar() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSensorControlOpen, setIsSensorControlOpen] = useState(false);
 
-
     useEffect(() => {
         if (!user) navigate('/login');
     }, [user, navigate]);
+
+    const handleNavigation = (path) => {
+        navigate(path, { state: { reload: Date.now() } }); // Benzersiz bir state gönder
+    };
+
 
     const isPersonal = user?.role === 'personal';
 
@@ -30,15 +34,15 @@ export default function Sidebar() {
     return (
         <div className={`sidebar ${isDarkMode ? 'dark' : ''}`}>
             <div className="menu-group">
-                <div className="menu" onClick={() => navigate("/dashboard")}>
+                <div className="menu" onClick={() => handleNavigation("/dashboard")}>
                     <FaHome className="menu-icon" />
                     <span>Anasayfa</span>
                 </div>
-                <div className="menu" onClick={() => navigate("/profile")}>
+                <div className="menu" onClick={() => handleNavigation("/profile")}>
                     <FaUser className="menu-icon" />
                     <span>Profilim</span>
                 </div>
-                <div className="menu" onClick={() => navigate("/sensors")}>
+                <div className="menu" onClick={() => handleNavigation("/sensors")}>
                     <FaMicrochip className="menu-icon" />
                     <span>Sensörler</span>
                 </div>
@@ -51,13 +55,13 @@ export default function Sidebar() {
                         </div>
                         {isSensorControlOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => navigate("/sensorControl/kurulum")}>
+                                <li onClick={() => handleNavigation("/sensorControl/kurulum")}>
                                     <FaRss className="dropdown-icon" /> Kurum Kontrol
                                 </li>
-                                <li onClick={() => navigate("/sensorControl/ip")}>
+                                <li onClick={() => handleNavigation("/sensorControl/ip")}>
                                     <FaRss className="dropdown-icon" /> IP Kontrol
                                 </li>
-                                <li onClick={() => navigate("/sensorControl/data")}>
+                                <li onClick={() => handleNavigation("/sensorControl/data")}>
                                     <FaRss className="dropdown-icon" /> Veri Kontrol
                                 </li>
                             </ul>
@@ -67,25 +71,25 @@ export default function Sidebar() {
 
                 {!isPersonal && (
                     <>
-                        <div className={`menu ${isUsersOpen ? 'open' : ''}`}
-                             onClick={() => setIsUsersOpen(!isUsersOpen)}>
-                        <FaUser className="menu-icon" />
+                        <div className={`menu ${isUsersOpen ? 'open' : ''}`} onClick={() => setIsUsersOpen(!isUsersOpen)}>
+                            <FaUser className="menu-icon" />
                             <span>Kullanıcılar</span>
                         </div>
                         {isUsersOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => navigate('/users/managers')}>
-                                    <FaUser className="dropdown-icon" /> Managers
+                                <li onClick={() => handleNavigation('/users/managers')}>
+                                    <FaUser className="dropdown-icon"/> Managers
                                 </li>
-                                <li onClick={() => navigate('/users/personals')}>
-                                    <FaUser className="dropdown-icon" /> Personals
+                                <li onClick={() => handleNavigation('/users/personals')}>
+                                    <FaUser className="dropdown-icon"/> Personals
                                 </li>
                             </ul>
+
                         )}
                     </>
                 )}
-                <div className="menu" onClick={() => navigate("/companies")}>
-                    <FaBuilding className="menu-icon" />
+                <div className="menu" onClick={() => handleNavigation("/companies")}>
+                    <FaBuilding className="menu-icon"/>
                     <span>Kurumlar</span>
                 </div>
                 {!isPersonal && (
@@ -97,27 +101,27 @@ export default function Sidebar() {
                         {isAddOpen && (
                             <ul className="dropdown">
                                 {user?.role === 'administrator' && (
-                                    <li onClick={() => navigate('/register-manager', { state: { role: 'manager' } })}>
+                                    <li onClick={() => handleNavigation('/register-manager')}>
                                         <FaUser className="dropdown-icon" /> Manager Ekle
                                     </li>
                                 )}
                                 {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                    <li onClick={() => navigate('/register-personal', { state: { role: 'personal' } })}>
+                                    <li onClick={() => handleNavigation('/register-personal')}>
                                         <FaUser className="dropdown-icon" /> Personal Ekle
                                     </li>
                                 )}
                                 {user?.role === 'administrator' && (
-                                    <li onClick={() => navigate('/add-company')}>
+                                    <li onClick={() => handleNavigation('/add-company')}>
                                         <FaBuilding className="dropdown-icon" /> Kurum Ekle
                                     </li>
                                 )}
                                 {user?.role === 'administrator' && (
-                                    <li onClick={() => navigate('/add-sensor-type',{ state: { role: 'administrator' } })}> {/* Burada '/add-sensor-type' yolunu kullanın */}
-                                        <FaTag  className="dropdown-icon" /> Yeni Sensör Tipi Ekle
+                                    <li onClick={() => handleNavigation('/add-sensor-type')}>
+                                        <FaTag className="dropdown-icon" /> Yeni Sensör Tipi Ekle
                                     </li>
                                 )}
                                 {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                    <li onClick={() => navigate('/add-address')}>
+                                    <li onClick={() => handleNavigation('/add-address')}>
                                         <FaMicrochip className="dropdown-icon" /> Sensör Ekle
                                     </li>
                                 )}
