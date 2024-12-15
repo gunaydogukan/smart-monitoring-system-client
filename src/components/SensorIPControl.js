@@ -62,7 +62,11 @@ export default function SensorIPControl({
 
     const getTimeColorClass = async (updatedAt, sensorId,active) => {
         let isActive = true;
-        if (!updatedAt || updatedAt === "Zaman Yok") return styles.defaultBox;
+        if (!updatedAt || updatedAt === "Zaman Yok"){
+            isActive = false;
+            await isActiveForIP(sensorId,isActive);
+            return styles.defaultBox;
+        }
 
         let updatedTime = parseDate(updatedAt);
 
@@ -102,7 +106,7 @@ export default function SensorIPControl({
             if(active){
                 try {
                     isActive = false;
-                    await isActiveForIP(sensorId,isActive); // Asenkron kontrol
+                    await isActiveForIP(sensorId,isActive);
                 } catch (error) {
                     console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
                 }

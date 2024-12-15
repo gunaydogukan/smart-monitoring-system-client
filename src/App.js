@@ -19,6 +19,7 @@ import ChartPage from './pages/ChartPage';
 import SensorControl from './pages/sensorCheck/MapPage';
 import AddType from "./components/AddType";
 import SensorIpControlPage from "./pages/SensorIpControlPage";
+import SensorDataControllPage from "./pages/sensorDataControllPage";
 
 
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
                             <Route path="/charts" element={<ChartPage />} />
                             <Route path="/sensorControl/kurulum" element={<SensorControl />} />
                             <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
+                            <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
                             <Route path="/add-sensor-type" element={<AddType/>} />
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
