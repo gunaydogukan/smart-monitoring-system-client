@@ -8,6 +8,10 @@ import UpdateUserModal from "../components/UpdateUserModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
+
+
+
 export default function Users() {
    const location = useLocation();
     const { type } = useParams();
@@ -29,6 +33,12 @@ export default function Users() {
     const [notificationUser,setNotificationUser] = useState("");
     const [notificationMessage, setNotificationMessage] = useState("");
     const [undefinedCount, setUndefinedCount] = useState(0); // Tanımsız personel sayısını tutar
+    const [filteredManagers, setFilteredManagers] = useState([]); // Filtrelenmiş yöneticiler
+
+    const [changeManagerModalVisible, setChangeManagerModalVisible] = useState(false);
+    const [selectedPersonalForManagerChange, setSelectedPersonalForManagerChange] = useState(null);
+
+
 
     const fetchUndefinedUsersAndManagers = useCallback(async (companyCode) => {
         const currentCompany = companyCode || selectedCompany;
@@ -49,18 +59,30 @@ export default function Users() {
             }
 
             const data = await response.json();
-            const filteredUndefinedUsers = data.undefinedUsers.filter(
-                (user) => user.user.role === "personal"
-            );
 
-            setUndefinedUsers(filteredUndefinedUsers);
+            if (currentCompany) {
+                // Şirket seçildiyse sadece o şirkete ait personelleri filtrele
+                const filteredUndefinedUsers = data.undefinedUsers.filter(
+                    (user) => user.user.role === "personal" && user.user.companyCode === currentCompany
+                );
+                setUndefinedUsers(filteredUndefinedUsers);
+                setUndefinedCount(filteredUndefinedUsers.length);
+            } else {
+                // Tüm şirketler seçiliyse tüm personelleri alın
+                const allUndefinedUsers = data.undefinedUsers.filter(
+                    (user) => user.user.role === "personal"
+                );
+                setUndefinedUsers(allUndefinedUsers);
+                setUndefinedCount(allUndefinedUsers.length);
+            }
+
             setActiveManagers(data.activeManagers || []);
-            setUndefinedCount(filteredUndefinedUsers.length);
         } catch (error) {
             console.error("Undefined users veya active managers verisi çekilemedi:", error);
             toast.error("Veri çekme hatası.");
         }
     }, [selectedCompany]);
+
 
 
     const fetchCompanies = async () => {
@@ -104,16 +126,17 @@ export default function Users() {
 
     const handleCompanyChange = (e) => {
         const companyCode = e.target.value;
-        setSelectedCompany(companyCode); // Şirket kodunu güncelle
+        setSelectedCompany(companyCode);
 
         if (companyCode) {
-            fetchDataByCompany(type, companyCode); // Verileri getir
+            fetchDataByCompany(type, companyCode); // Şirket verilerini getir
             fetchUndefinedUsersAndManagers(companyCode); // Tanımsız personelleri getir
         } else {
-            fetchDataByCompany(type);
-            setUndefinedUsers([]); // Şirket seçilmezse tanımsızları sıfırla
+            fetchDataByCompany(type); // Tüm şirketler için verileri getir
+            fetchUndefinedUsersAndManagers(); // Tüm şirketler için tanımsızları getir
         }
     };
+
 
 
     const handleSearch = (e) => {
@@ -267,15 +290,47 @@ export default function Users() {
 
             // Veri yenileme
             fetchDataByCompany(type, selectedCompany); // Şirket verilerini güncelle
-           // toast.success(data.notification || "İşlem başarıyla tamamlandı.");
+            toast.success(data.notification || "İşlem başarıyla tamamlandı.");
         } catch (error) {
             console.error("İşlem hatası:", error.message);
-           // toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
+            toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
         } finally {
             setConfirmModalVisible(false);
             setSelectedUser(null);
         }
     };
+    const handleAssignNewManager = async () => {
+        if (!selectedManager || !selectedPersonalForManagerChange) {
+            toast.error("Lütfen bir yönetici seçin.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5000/api/assign-manager", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    personalId: selectedPersonalForManagerChange.id,
+                    managerId: selectedManager,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Yönetici değiştirme işlemi sırasında bir hata oluştu.");
+            }
+
+            toast.success("Yönetici başarıyla değiştirildi.");
+            closeChangeManagerModal(); // Modalı kapat
+            fetchDataByCompany(type, selectedCompany); // Tabloyu güncelle
+        } catch (error) {
+            console.error("Yönetici değiştirme hatası:", error);
+            toast.error("Yönetici atanamadı.");
+        }
+    };
+
 
 
 
@@ -288,6 +343,24 @@ export default function Users() {
         setModalVisible(false);
         setSelectedUser(null);
     };
+    const openChangeManagerModal = (personal) => {
+        const filteredManagers = activeManagers.filter(
+            (manager) =>
+                manager.companyCode === personal.companyCode && // Aynı şirkete ait yöneticiler
+                manager.id !== personal.creator_id // Mevcut yöneticiyi hariç tut
+        );
+        setFilteredManagers(filteredManagers); // Filtrelenmiş yöneticileri state'e ata
+        setSelectedPersonalForManagerChange(personal); // Seçilen personeli state'e ata
+        setChangeManagerModalVisible(true); // Modalı görünür yap
+    };
+
+
+
+    const closeChangeManagerModal = () => {
+        setSelectedPersonalForManagerChange(null);
+        setChangeManagerModalVisible(false); // Modalı kapat
+    };
+
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -361,11 +434,7 @@ export default function Users() {
                     <button
                         className={`${styles.actionButton} ${styles.undefinedButton}`}
                         onClick={() => {
-                            if (!selectedCompany) {
-                                toast.error("Lütfen bir şirket seçin.");
-                                return;
-                            }
-                            fetchUndefinedUsersAndManagers(selectedCompany);
+                            fetchUndefinedUsersAndManagers(selectedCompany || ""); // Tüm şirketler için verileri çek
                             setUndefinedUsersModalVisible(true);
                         }}
                     >
@@ -391,10 +460,12 @@ export default function Users() {
                                 <th>E-posta</th>
                                 <th>Şirket</th>
                                 <th>Durum</th>
-                                <th>Rol</th>
+                                {type === "personals" &&
+                                    <th>Yönetici</th>} {/* Yönetici sütunu sadece personals için görünür */}
                                 <th>İşlemler</th>
                             </tr>
                             </thead>
+
                             <tbody>
                             {filteredResults.map((person) => (
                                 <tr key={person.id}>
@@ -403,17 +474,23 @@ export default function Users() {
                                     <td>{person.email}</td>
                                     <td>{person.companyCode || "Kurum Yok"}</td>
                                     <td>
-                      <span
-                          className={
-                              person.isActive
-                                  ? styles.statusActive
-                                  : styles.statusInactive
-                          }
-                      >
-                        {person.isActive ? "Aktif" : "Pasif"}
-                      </span>
+                <span
+                    className={
+                        person.isActive
+                            ? styles.statusActive
+                            : styles.statusInactive
+                    }
+                >
+                    {person.isActive ? "Aktif" : "Pasif"}
+                </span>
                                     </td>
-                                    <td>{person.role}</td>
+                                    {type === "personals" && (
+                                        <td>
+                                            {activeManagers.find((manager) => manager.id === person.creator_id)
+                                                ? `${activeManagers.find((manager) => manager.id === person.creator_id).name} ${activeManagers.find((manager) => manager.id === person.creator_id).lastname}`
+                                                : "Atanmamış"}
+                                        </td>
+                                    )}
                                     <td>
                                         <button
                                             className={`${styles.actionButton} ${styles.updateButton}`}
@@ -435,6 +512,14 @@ export default function Users() {
                                             }
                                         >
                                             {person.isActive ? "Pasif Yap" : "Aktif Yap"}
+                                        </button>
+                                        {/* Yeni Yönetici Değiştir Butonu */}
+
+                                        <button
+                                            className={`${styles.actionButton} ${styles.changeManagerButton}`}
+                                            onClick={() => openChangeManagerModal(person)}
+                                        >
+                                            Yönetici Değiştir
                                         </button>
                                     </td>
                                 </tr>
@@ -581,7 +666,11 @@ export default function Users() {
                                         </tbody>
                                     </table>
                                 ) : (
-                                    <p className={styles.undefinedUsersEmpty}>Tanımsız personel bulunamadı.</p>
+                                    <div className={styles.undefinedUsersEmptyContainer}>
+                                        <p className={styles.undefinedUsersEmpty}>
+                                            <strong> Tanımsız personel bulunamadı. </strong>
+                                        </p>
+                                    </div>
                                 )}
                             </div>
                             <div className={styles.modalActions}>
@@ -597,6 +686,47 @@ export default function Users() {
                                     disabled={!selectedManager || selectedPersonals.length === 0}
                                 >
                                     Atama Yap
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {changeManagerModalVisible && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.changeManagerModal}>
+                            <h3>Yönetici Değiştir</h3>
+                            <p>
+                                <strong>{selectedPersonalForManagerChange?.name} {selectedPersonalForManagerChange?.lastname}</strong> adlı personelin
+                                yeni yöneticisini seçin.
+                            </p>
+                            <div className={styles.changeManagerDropdown}>
+                                <label htmlFor="manager-select">Yeni Yönetici Seç:</label>
+                                <select
+                                    id="manager-select"
+                                    value={selectedManager}
+                                    onChange={(e) => setSelectedManager(e.target.value)}
+                                >
+                                    <option value="">Manager Seç</option>
+                                    {filteredManagers.map((manager) => (
+                                        <option key={manager.id} value={manager.id}>
+                                            {manager.name} {manager.lastname}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.modalActions}>
+                                <button
+                                    className={`${styles.modalButton} ${styles.cancel}`}
+                                    onClick={closeChangeManagerModal}
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    className={`${styles.modalButton} ${styles.assign}`}
+                                    onClick={handleAssignNewManager}
+                                    disabled={!selectedManager}
+                                >
+                                    Yönetici Değiştir
                                 </button>
                             </div>
                         </div>

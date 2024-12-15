@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,8 @@ import {
     filterSensorsByPersonal
 } from '../services/FilterService';
 import styles from '../styles/AdminPage.module.css';
-import SensorsDropdowns from '../components/SensorsDropdowns'; // SensorsDropdowns'u import etmeyi unutmayın
+import SensorsDropdowns from '../components/SensorsDropdowns';
+import {toast} from "react-toastify"; // SensorsDropdowns'u import etmeyi unutmayın
 
 export default function AdminSensorPage({ role }) {
     const [companies, setCompanies] = useState([]);
@@ -28,42 +29,11 @@ export default function AdminSensorPage({ role }) {
     const [sensorForCompany, setSensorForCompany] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        fetchAdminData();
-    }, []);
 
-    const fetchAdminData = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/user-sensors', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-            const { allCompanies, managers, personals, sensors, sensorOwners } = await response.json();
-            setCompanies(allCompanies);
-            setManagers(managers);
-            setPersonals(personals);
-            setSensors(sensors);
-            setSensorOwners(sensorOwners);
-            setFilteredSensors(sensors);
 
-            // Tip verilerini ayrı bir API çağrısıyla al
-            const typesResponse = await fetch('http://localhost:5000/api/type', {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-            });
-            const typesData = await typesResponse.json();
-            const typesMap = typesData.reduce((acc, type) => {
-                acc[type.id] = type.type; // { 1: "Sıcaklık", 2: "Nem", vb. }
-                return acc;
-            }, {});
-            setSensorTypes(typesMap);
-        } catch (error) {
-            console.error('Veri çekme hatası:', error);
-        }
-    };
-
-    const handleDropdownChange = (type, value) => {
+    const handleDropdownChange = useCallback((type, value) => {
         if (type === 'company') {
+            if (selectedCompany === value) return; // Aynı değerle yeniden çağrılmasını önle
             setSelectedCompany(value);
             if (!value) {
                 setFilteredManagers([]);
@@ -106,11 +76,56 @@ export default function AdminSensorPage({ role }) {
             const filteredSensors = filterSensorsByPersonal(sensors, sensorOwners, value);
             setFilteredSensors(filteredSensors);
         }
-    };
+    }, [managers, personals, sensors, sensorOwners, sensorForCompany, selectedCompany, selectedManager]); // `selectedPersonal` çıkarıldı
+
+    const fetchAdminData = useCallback(async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/user-sensors', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            const { allCompanies, managers, personals, sensors, sensorOwners } = await response.json();
+            setCompanies(allCompanies);
+            setManagers(managers);
+            setPersonals(personals);
+            setSensors(sensors);
+            setSensorOwners(sensorOwners);
+
+            // Tip verilerini yükle
+            const typesResponse = await fetch('http://localhost:5000/api/type', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
+            const typesData = await typesResponse.json();
+            const typesMap = typesData.reduce((acc, type) => {
+                acc[type.id] = type.type;
+                return acc;
+            }, {});
+            setSensorTypes(typesMap);
+
+            // İlk yüklemede tüm sensörleri göster
+            if (!selectedCompany) {
+                setFilteredSensors(sensors); // Tüm sensörleri yükle
+            } else {
+                handleDropdownChange('company', selectedCompany); // Şirket filtresini uygula
+            }
+        } catch (error) {
+            console.error('Veri çekme hatası:', error);
+            toast.error(`Veri çekme hatası: ${error.message}`); // Hata mesajını göster
+        }
+    }, [selectedCompany, handleDropdownChange]); // `selectedCompany` ve `handleDropdownChange` bağımlılıkları eklendi
+
+
 
     const handleMapRedirect = () => {
         navigate('/map', { state: { sensors: sensors } });
     };
+
+// Bu useEffect yalnızca bir kez çalışacak, çünkü bağımlılık dizisi boş.
+    useEffect(() => {
+        fetchAdminData(); // Yalnızca ilk render'da çalışacak
+    }, [fetchAdminData]); // Bağımlılık dizisi boş bırakıldı
 
     return (
         <Layout>
@@ -142,6 +157,9 @@ export default function AdminSensorPage({ role }) {
                     onUpdateSensor={(id) => console.log('Güncelle:', id)}
                     onToggleActive={(id, isActive) => console.log('Aktif/Pasif:', id, isActive)}
                     onDefine={(id) => console.log('Tanımla:', id)}
+                    onReload={fetchAdminData} // Veriyi yeniden yükle
+                    onDropdownChange={handleDropdownChange} // Filtreleme fonksiyonu
+
                 />
             </div>
         </Layout>
