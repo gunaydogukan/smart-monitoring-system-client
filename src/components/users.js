@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect ,useCallback } from "react";
+import { useParams ,useLocation } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import styles from "../styles/Users.module.css";
 import Layout from "../layouts/Layout";
@@ -9,6 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Users() {
+   const location = useLocation();
+    const { type } = useParams();
     const [companies, setCompanies] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState("");
@@ -17,7 +19,6 @@ export default function Users() {
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [actionType, setActionType] = useState("");
-    const { type } = useParams();
     const { isDarkMode } = useTheme();
     const [role, setRole] = useState("");
     const [undefinedUsersModalVisible, setUndefinedUsersModalVisible] = useState(false);
@@ -27,15 +28,40 @@ export default function Users() {
     const [selectedPersonals, setSelectedPersonals] = useState([]);
     const [notificationUser,setNotificationUser] = useState("");
     const [notificationMessage, setNotificationMessage] = useState("");
+    const [undefinedCount, setUndefinedCount] = useState(0); // Tanımsız personel sayısını tutar
 
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user) {
-            setRole(user.role);
+    const fetchUndefinedUsersAndManagers = useCallback(async (companyCode) => {
+        const currentCompany = companyCode || selectedCompany;
+
+        try {
+            const url = currentCompany
+                ? `http://localhost:5000/api/company/${currentCompany}/undefined-users-and-managers`
+                : `http://localhost:5000/api/users/undefined-users-and-managers`;
+
+            const response = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Veri çekme hatası.");
+            }
+
+            const data = await response.json();
+            const filteredUndefinedUsers = data.undefinedUsers.filter(
+                (user) => user.user.role === "personal"
+            );
+
+            setUndefinedUsers(filteredUndefinedUsers);
+            setActiveManagers(data.activeManagers || []);
+            setUndefinedCount(filteredUndefinedUsers.length);
+        } catch (error) {
+            console.error("Undefined users veya active managers verisi çekilemedi:", error);
+            toast.error("Veri çekme hatası.");
         }
-        fetchCompanies();
-        fetchDataByCompany(type);
-    }, [type]);
+    }, [selectedCompany]);
+
 
     const fetchCompanies = async () => {
         try {
@@ -78,14 +104,17 @@ export default function Users() {
 
     const handleCompanyChange = (e) => {
         const companyCode = e.target.value;
-        setSelectedCompany(companyCode);
+        setSelectedCompany(companyCode); // Şirket kodunu güncelle
 
         if (companyCode) {
-            fetchDataByCompany(type, companyCode);
+            fetchDataByCompany(type, companyCode); // Verileri getir
+            fetchUndefinedUsersAndManagers(companyCode); // Tanımsız personelleri getir
         } else {
             fetchDataByCompany(type);
+            setUndefinedUsers([]); // Şirket seçilmezse tanımsızları sıfırla
         }
     };
+
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -173,36 +202,6 @@ export default function Users() {
         }
     };
 
-    const fetchUndefinedUsersAndManagers = async () => {
-        if (!selectedCompany) {
-            toast.error("Lütfen bir şirket seçin.");
-            return;
-        }
-
-        try {
-            const response = await fetch(
-                `http://localhost:5000/api/company/${selectedCompany}/undefined-users-and-managers`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-            const data = await response.json();
-
-            // Sadece "personal" rolündeki kullanıcıları al
-            const filteredUndefinedUsers = data.undefinedUsers.filter(
-                (user) => user.user.role === "personal"
-            );
-
-            setUndefinedUsers(filteredUndefinedUsers); // Yalnızca "personal" rolündeki kullanıcılar
-            setActiveManagers(data.activeManagers || []);
-        } catch (error) {
-            console.error("Undefined users veya active managers verisi çekilemedi:", error);
-            toast.error("Veri çekme hatası.");
-        }
-    };
-
     const handleConfirmAction = (userId, action) => {
         setActionType(action);
         setSelectedUser(userId);
@@ -232,19 +231,46 @@ export default function Users() {
                 throw new Error(data.message || "Bir hata oluştu. Lütfen tekrar deneyin.");
             }
 
-            // Güncellenen kullanıcının ismi ve mesajını ayarla
+            // Güncellenen kullanıcı için bilgilendirme
             setNotificationUser(data.user?.name + " " + data.user?.lastname || "Kullanıcı");
             setNotificationMessage(data.notification || data.message);
-            setRelatedPersonals(data.relatedPersonals || []);  // Bu kısım ilgili personelleri ayarlıyor
+            setRelatedPersonals(data.relatedPersonals || []); // Bağlı personelleri al
 
-            // Undefined users listesi yeniden alınıyor
-            fetchUndefinedUsersAndManagers();
+            // Eğer kullanıcı pasif hale getirildiyse sensör işlemleri API'sini çağır
+            if (actionType === "deactivate") {
+                console.log(selectedUser);
+                console.log(data.user.role);
+                try {
+                    const sensorResponse = await fetch("http://localhost:5000/api/user/sensor-operations", {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            userId: selectedUser,
+                            role: data.user.role,
+                        }),
+                    });
 
+                    if (!sensorResponse.ok) {
+                        throw new Error("Sensör işlemleri sırasında bir hata oluştu.");
+                    }
+
+                    const sensorData = await sensorResponse.json();
+                    console.log("Sensör işlemleri tamamlandı:", sensorData.message);
+                } catch (sensorError) {
+                    console.error("Sensör işlemleri hatası:", sensorError.message);
+                    //toast.error("Sensör işlemleri sırasında bir hata oluştu.");
+                }
+            }
+
+            // Veri yenileme
             fetchDataByCompany(type, selectedCompany); // Şirket verilerini güncelle
-
+           // toast.success(data.notification || "İşlem başarıyla tamamlandı.");
         } catch (error) {
             console.error("İşlem hatası:", error.message);
-            toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
+           // toast.error(`İşlem sırasında bir hata oluştu: ${error.message}`);
         } finally {
             setConfirmModalVisible(false);
             setSelectedUser(null);
@@ -262,6 +288,30 @@ export default function Users() {
         setModalVisible(false);
         setSelectedUser(null);
     };
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+            setRole(user.role);
+        }
+        fetchCompanies();
+        fetchDataByCompany(type);
+    }, [type]);
+
+    useEffect(() => {
+        fetchUndefinedUsersAndManagers(selectedCompany);
+    }, [selectedCompany, fetchUndefinedUsersAndManagers]);
+
+    useEffect(() => {
+        if (location.state?.reload) {
+            fetchDataByCompany(type, selectedCompany);
+            fetchUndefinedUsersAndManagers(selectedCompany);
+        }
+    }, [type, selectedCompany, location.state?.reload, fetchUndefinedUsersAndManagers]);
+
+    useEffect(() => {
+        setUndefinedCount(undefinedUsers.length);
+    }, [undefinedUsers]);
 
     return (
         <Layout>
@@ -306,6 +356,7 @@ export default function Users() {
                     </div>
 
                 </div>
+
                 {type === "personals" && (
                     <button
                         className={`${styles.actionButton} ${styles.undefinedButton}`}
@@ -314,16 +365,17 @@ export default function Users() {
                                 toast.error("Lütfen bir şirket seçin.");
                                 return;
                             }
-                            fetchUndefinedUsersAndManagers();
+                            fetchUndefinedUsersAndManagers(selectedCompany);
                             setUndefinedUsersModalVisible(true);
                         }}
                     >
                         Tanımsız Personeller
-                        {undefinedUsers.length > 0 && (
-                            <span className={styles.notificationBadge}>{undefinedUsers.length}</span>
+                        {undefinedCount > 0 && (
+                            <span className={styles.notificationBadge}>{undefinedCount}</span>
                         )}
                     </button>
                 )}
+
 
                 <div className={styles.tableContainer}>
                     {filteredResults.length > 0 ? (
@@ -454,84 +506,105 @@ export default function Users() {
 
                 {undefinedUsersModalVisible && (
                     <div className={styles.modalOverlay}>
-                <div className={styles.undefinedUsersModal}>
-                    <h3>Tanımsız Personelleri Atama</h3>
-                    <div className={styles.undefinedUsersDropdown}>
-                        <label htmlFor="manager-select">Aktif Manager Seç:</label>
-                        <select
-                            id="manager-select"
-                            value={selectedManager}
-                            onChange={(e) => setSelectedManager(e.target.value)}
-                        >
-                            <option value="">Manager Seç</option>
-                            {activeManagers.map((manager) => (
-                                <option key={manager.id} value={manager.id}>
-                                    {manager.name} {manager.lastname}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className={styles.undefinedUsersContainer}>
-                        {undefinedUsers.filter((undefinedUser) => undefinedUser.user.role === "personal").length > 0 ? (
-                            <table className={styles.undefinedUsersTable}>
-                                <thead>
-                                <tr>
-                                    <th>Seç</th>
-                                    <th>Ad</th>
-                                    <th>Soyad</th>
-                                    <th>Email</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {undefinedUsers
-                                    .filter((undefinedUser) => undefinedUser.user.role === "personal")
-                                    .map((undefinedUser) => (
-                                        <tr key={undefinedUser.user.id}>
-                                            <td>
+                        <div className={styles.undefinedUsersModal}>
+                            <h3>Tanımsız Personelleri Atama</h3>
+                            <div className={styles.undefinedUsersDropdown}>
+                                <label htmlFor="manager-select">Aktif Manager Seç:</label>
+                                <select
+                                    id="manager-select"
+                                    value={selectedManager}
+                                    onChange={(e) => setSelectedManager(e.target.value)}
+                                >
+                                    <option value="">Manager Seç</option>
+                                    {activeManagers.map((manager) => (
+                                        <option key={manager.id} value={manager.id}>
+                                            {manager.name} {manager.lastname}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.undefinedUsersContainer}>
+                                {undefinedUsers.filter((undefinedUser) => undefinedUser.user.role === "personal").length > 0 ? (
+                                    <table className={styles.undefinedUsersTable}>
+                                        <thead>
+                                        <tr>
+                                            <th>
                                                 <input
                                                     type="checkbox"
-                                                    value={undefinedUser.user.id}
                                                     onChange={(e) => {
                                                         const isChecked = e.target.checked;
-                                                        setSelectedPersonals((prev) =>
-                                                            isChecked
-                                                                ? [...prev, undefinedUser.user.id]
-                                                                : prev.filter((id) => id !== undefinedUser.user.id)
-                                                        );
+                                                        if (isChecked) {
+                                                            // Tüm undefinedUser'ların id'lerini seç
+                                                            setSelectedPersonals(undefinedUsers.map((u) => u.user.id));
+                                                        } else {
+                                                            // Tüm seçimleri kaldır
+                                                            setSelectedPersonals([]);
+                                                        }
                                                     }}
+                                                    checked={
+                                                        selectedPersonals.length > 0 &&
+                                                        selectedPersonals.length ===
+                                                        undefinedUsers.filter((u) => u.user.role === "personal").length
+                                                    }
                                                 />
-                                            </td>
-                                            <td>{undefinedUser.user.name}</td>
-                                            <td>{undefinedUser.user.lastname}</td>
-                                            <td>{undefinedUser.user.email}</td>
+                                            </th>
+                                            <th>Ad</th>
+                                            <th>Soyad</th>
+                                            <th>Email</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <p className={styles.undefinedUsersEmpty}>Pasif personel bulunamadı.</p>
-                        )}
+                                        </thead>
+                                        <tbody>
+                                        {undefinedUsers
+                                            .filter((undefinedUser) => undefinedUser.user.role === "personal")
+                                            .map((undefinedUser) => (
+                                                <tr key={undefinedUser.user.id}>
+                                                    <td>
+                                                        <input
+                                                            type="checkbox"
+                                                            value={undefinedUser.user.id}
+                                                            checked={selectedPersonals.includes(undefinedUser.user.id)}
+                                                            onChange={(e) => {
+                                                                const isChecked = e.target.checked;
+                                                                setSelectedPersonals((prev) =>
+                                                                    isChecked
+                                                                        ? [...prev, undefinedUser.user.id]
+                                                                        : prev.filter((id) => id !== undefinedUser.user.id)
+                                                                );
+                                                            }}
+                                                        />
+                                                    </td>
+                                                    <td>{undefinedUser.user.name}</td>
+                                                    <td>{undefinedUser.user.lastname}</td>
+                                                    <td>{undefinedUser.user.email}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <p className={styles.undefinedUsersEmpty}>Tanımsız personel bulunamadı.</p>
+                                )}
+                            </div>
+                            <div className={styles.modalActions}>
+                                <button
+                                    className={`${styles.modalButton} ${styles.cancel}`}
+                                    onClick={() => setUndefinedUsersModalVisible(false)}
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    className={`${styles.modalButton} ${styles.assign}`}
+                                    onClick={handleAssignPersonals}
+                                    disabled={!selectedManager || selectedPersonals.length === 0}
+                                >
+                                    Atama Yap
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div className={styles.modalActions}>
-                        <button
-                            className={`${styles.modalButton} ${styles.cancel}`}
-                            onClick={() => setUndefinedUsersModalVisible(false)}
-                        >
-                            İptal
-                        </button>
-                        <button
-                            className={`${styles.modalButton} ${styles.assign}`}
-                            onClick={handleAssignPersonals}
-                            disabled={!selectedManager || selectedPersonals.length === 0}
-                        >
-                            Atama Yap
-                        </button>
-                    </div>
-                </div>
-            </div>
-            )}
+                )}
 
-            <ToastContainer
+
+                <ToastContainer
                     position="top-right"
                     autoClose={3000}
                     hideProgressBar={false}

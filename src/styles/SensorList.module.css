@@ -70,7 +70,7 @@ body, html {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     max-width: 300px; /* Arama kutusunun genişliği */
     margin-left: auto; /* Sağ üst köşeye yerleşir */
-    margin-bottom: 5px; /* Alt boşluk */
+    margin-top: 18px; /* Alt boşluk */
 }
 
 /* Search Input */
@@ -237,15 +237,6 @@ body, html {
         min-width: 600px; /* Tablo genişliği kaydırılabilir */
     }
 
-    .searchBar {
-        max-width: 200px;
-        padding: 8px 12px;
-    }
-
-    .searchIcon {
-        width: 20px;
-        height: 20px;
-    }
 
     .actionButton {
         font-size: 0.75rem;
@@ -284,4 +275,274 @@ body, html {
 }
 
 
+
+
+.searchAndButtonContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+.undefinedSensorButton {
+    position: relative;
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-left: 15px; /* Sağ tarafa hizalanması için margin ekliyoruz */
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.undefinedSensorButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+}
+
+.undefinedSensorBadge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Overlay */
+.undefinedSensorModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Yarı saydam arka plan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal */
+.undefinedSensorsModal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    max-width: 700px; /* Daha geniş modal */
+    width: 90%;
+    text-align: left;
+    max-height: 80vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+/* Modal Title */
+.undefinedSensorsModalTitle {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Dropdown Style */
+.undefinedSensorsDropdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.undefinedSensorsDropdown label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #333;
+}
+
+/* Select Dropdown */
+.undefinedSensorsDropdown select {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+/* Focus state for select dropdown */
+.undefinedSensorsDropdown select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Table Container */
+.undefinedSensorsTableContainer {
+    max-height: 60vh; /* Max height for table */
+    overflow-y: auto; /* Scrollable content if needed */
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Slight shadow */
+    padding: 10px;
+}
+
+/* Table Styles */
+.undefinedSensorsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    text-align: left;
+    table-layout: fixed; /* Ensures even column widths */
+}
+
+/* Table Headers */
+.undefinedSensorsTable th,
+.undefinedSensorsTable td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+/* Table Header Background */
+.undefinedSensorsTable th {
+    background-color: #34495e;
+    color: white;
+    font-weight: bold;
+}
+
+/* Table Row Styling */
+.undefinedSensorsTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.undefinedSensorsTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Table Checkbox */
+.undefinedSensorsTable input[type="checkbox"] {
+    margin: 0 auto;
+    display: block;
+}
+
+/* Modal Buttons */
+.undefinedSensorsModalActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.undefinedSensorsModalButton {
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Cancel Button */
+.undefinedSensorsModalButton.cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.undefinedSensorsModalButton.cancel:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+
+/* Assign Button */
+.undefinedSensorsModalButton.assign {
+    background-color: #27ae60;
+    color: white;
+}
+
+.undefinedSensorsModalButton.assign:hover {
+    background-color: #1e8449;
+    transform: scale(1.05);
+}
+
+/* Tanımsız Sensör Bulunamadı */
+.undefinedSensorsEmpty {
+    text-align: center;
+    font-size: 18px;
+    color: #2082ca;
+    margin-top: 20px;
+}
+
+.undefinedSensorsEmptyContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #888;
+    font-size: 16px;
+    font-style: italic;
+}
+
+/* Modal Actions Buttons */
+.undefinedSensorsModalButton {
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+
+.undefinedWarning {
+    color: white;
+    background-color: red;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+    animation: blinkingEffect 1.5s infinite; /* Yanıp sönme efekti */
+    font-size: 14px;
+}
+
+@keyframes blinkingEffect {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
