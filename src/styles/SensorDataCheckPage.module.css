@@ -1,0 +1,162 @@
+/* Ana Container */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Sensor List Container */
+.sensorListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100vh;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* Table Container */
+.tableContainer {
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: calc(100vh - 100px); /* Scroll bar sınırı */
+}
+
+/* Tablo Temel Stili */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    table-layout: auto;
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.table th {
+    background-color: #34495e;
+    color: white;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Search Bar */
+.searchBar {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    margin-left: auto;
+}
+
+.searchInput {
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: #34495e;
+    background-color: transparent;
+    flex-grow: 1;
+    padding: 0;
+}
+
+.searchInput::placeholder {
+    color: #aaa;
+}
+
+/* Durum Stilleri */
+.activeStatus {
+    background-color: #27ae60;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.inactiveStatus {
+    background-color: #e74c3c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Renklendirme Stilleri */
+.greenBox {
+    background-color: green;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.yellowBox {
+    background-color: yellow;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.redBox {
+    background-color: red;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.defaultBox {
+    background-color: lightgray;
+    color: black;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+/* Buton Stili */
+.mapButton {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mapButton:hover {
+    background-color: #003d80;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.9rem;
+        min-width: 600px;
+    }
+
+    .searchBar {
+        max-width: 200px;
+        padding: 8px 12px;
+    }
+
+    .tableContainer {
+        overflow-x: auto;
+    }
+}

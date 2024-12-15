@@ -1,7 +1,16 @@
 import axios from 'axios';
+import {
+    filterManagersByCompany,
+    filterSensorsByCompany,
+    filterPersonalsByCompany,
+    filterPersonalsByManager,
+    filterSensorsByManager,
+    filterSensorsByPersonal
+} from './FilterService';
 
 const userSensorAPI = 'http://localhost:5000/api/user-sensors';
 const sensorTypeAPI = 'http://localhost:5000/api/type';
+const sensorTimeAPI = 'http://localhost:5000/log/data-time-check';
 
 // Sensör verilerini kullanıcıya göre çekme
 export const sensorIpServices = async (role, userId) => {
@@ -84,6 +93,7 @@ export const getIPData = async (sensors) => {
         throw error; // Hata durumunda üst bileşene hatayı ilet
     }
 };
+
 // Sensör tiplerini çekme
 export const fetchSensorTypes = async () => {
     try {
@@ -104,3 +114,101 @@ export const fetchSensorTypes = async () => {
         throw error;
     }
 };
+
+export const checkSensorDataTime = async (role, userId, companyCode = null, managerId = null, personalId = null) => {
+    try {
+        if (!userId) {
+            throw new Error('Kullanıcı yok......');
+        }
+
+        //ilgili kullanıcıyı getir
+        const response = await axios.get(userSensorAPI, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        let allCompanies = [];
+        let managers = [];
+        let personals = [];
+        let sensors = [];
+        let sensorOwners = [];
+
+        if (role === 'administrator') {
+            const data = response.data;
+            allCompanies = data.allCompanies || [];
+            managers = data.managers || [];
+            personals = data.personals || [];
+            sensors = data.sensors || [];
+            sensorOwners = data.sensorOwners || [];
+
+
+        } else if (role === 'manager') {
+            const data = response.data;
+
+            // Manager bilgileri ve bağlı personeller
+            const manager = data.managers.find(m => m.id === userId);
+            if (!manager) {
+                throw new Error('Manager bulunamadı.');
+            }
+
+            personals = data.personals.filter(personal => personal.creator_id === manager.id);
+            sensors = data.sensors.filter(sensor =>
+                data.sensorOwners.some(owner => owner.sensor_owner === manager.id && owner.sensor_id === sensor.id)
+            );
+
+        } else if (role === 'personal') {
+            const data = response.data;
+            sensors = data.sensors.filter(sensor =>
+                data.sensorOwners.some(owner => owner.sensor_owner === userId && owner.sensor_id === sensor.id)
+            );
+        }
+
+        const times = await getTimes(sensors);
+        const types = await fetchSensorTypes();
+
+
+        // Erişim denetimi sonrası dönen veri
+        return { allCompanies, managers, personals, sensors,times,sensorOwners,types };
+    } catch (err) {
+        console.log("Sensor verilerinin zaman kontrol hatası = (checkSensorDataTime metotu)", err);
+        throw err;
+    }
+};
+
+export const getTimes = async (sensors) => {
+    try {
+        // Datacodları al
+        const sensorDatacodes = sensors.map(s => s.datacode);
+
+        // Query string oluştur
+        const queryString = sensorDatacodes
+            .map(code => `sensors[]=${encodeURIComponent(code)}`)
+            .join('&');
+
+        // Fetch isteği
+        const response = await fetch(`${sensorTimeAPI}?${queryString}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+
+        // Yanıt durumu kontrolü
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+        }
+
+        // JSON yanıtını parse et
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.error("API Hatası (getTimes):", err);
+        throw err;
+    }
+};
+
+
+
+
+
