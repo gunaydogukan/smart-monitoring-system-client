@@ -22,9 +22,10 @@ export default function Sidebar() {
         if (!user) navigate('/login');
     }, [user, navigate]);
 
-    const handleNavigation = (path) => {
-        navigate(path, { state: { reload: Date.now() } }); // Benzersiz bir state gönder
+    const handleNavigation = (path, state = {}) => {
+        navigate(path, { state }); // 'state' parametresini ekledik
     };
+
 
 
     const isPersonal = user?.role === 'personal';
@@ -101,12 +102,12 @@ export default function Sidebar() {
                         {isAddOpen && (
                             <ul className="dropdown">
                                 {user?.role === 'administrator' && (
-                                    <li onClick={() => handleNavigation('/register-manager')}>
+                                    <li onClick={() => handleNavigation('/register-manager', { role: 'manager' })}>
                                         <FaUser className="dropdown-icon" /> Manager Ekle
                                     </li>
                                 )}
                                 {(user?.role === 'manager' || user?.role === 'administrator') && (
-                                    <li onClick={() => handleNavigation('/register-personal')}>
+                                    <li onClick={() => handleNavigation('/register-personal', { role: 'personal' })}>
                                         <FaUser className="dropdown-icon" /> Personal Ekle
                                     </li>
                                 )}

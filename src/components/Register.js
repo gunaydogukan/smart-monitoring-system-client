@@ -92,8 +92,9 @@ export default function Register() {
 
             const data = await response.json();
             if (response.ok) {
-                toast.success('Kayıt başarılı!', { autoClose: 3000 });
-                setTimeout(() => navigate('/dashboard'), 3000);
+                toast.success('Kayıt başarılı!', { autoClose: 2500 });
+                setTimeout(() => navigate(`/users/${role}s`), 3500);
+
             } else {
                 toast.error(data.error || 'Kayıt başarısız. Lütfen tekrar deneyin.');
             }

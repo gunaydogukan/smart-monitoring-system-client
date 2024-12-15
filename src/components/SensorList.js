@@ -82,7 +82,7 @@ export default function SensorList({
                 },
                 body: JSON.stringify({
                     managerId: selectedManager,
-                    sensorIds: selectedSensors,  // Bu dizinin sensörlerin `id`'lerini içerdiğinden emin olun
+                    sensorIds: selectedSensors,
                 }),
             });
 
@@ -91,18 +91,23 @@ export default function SensorList({
             }
 
             toast.success('Sensörler başarıyla atandı.');
-            setUndefinedSensors((prev) =>
-                prev.filter((sensor) => !selectedSensors.includes(sensor.id))
-            );
-            setSelectedSensors([]);
-            setUndefinedSensorsModalVisible(false);
 
+            // Tanımsız sensörleri yeniden yükle
+            await fetchUndefinedSensors();
+
+            // Veriyi yeniden yükleme işlemi yalnızca burada çağrılmalı
+            if (onReload) {
+                await onReload(); // Parent'tan gelen veri yenileme fonksiyonu
+            }
+
+            setSelectedSensors([]); // Seçilen sensörleri sıfırla
+            setUndefinedSensorsModalVisible(false); // Modalı kapat
         } catch (error) {
-            console.error("Atama işlemi hatası:", error); // Detaylı hata logu
+            console.error("Atama işlemi hatası:", error);
             toast.error(`Atama işlemi hatası: ${error.message}`);
-            console.error(error.stack);
         }
     };
+
 
 
     const openUpdateModal = (sensor) => {
@@ -172,14 +177,17 @@ export default function SensorList({
         setSelectedSensor(null);
     };
 
-    const filteredSensors = sensorList.filter(
-        (sensor) =>
-            sensor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            sensorTypes[sensor.type]?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (sensor.isActive ? 'aktif' : 'pasif').includes(searchQuery.toLowerCase())
-    );
+    const filteredSensors = sensorList.filter((sensor) => {
+        const name = sensor?.name?.toLowerCase() || '';
+        const type = sensorTypes[sensor?.type]?.toLowerCase() || '';
+        const status = sensor?.isActive ? 'aktif' : 'pasif';
 
-
+        return (
+            name.includes(searchQuery.toLowerCase()) ||
+            type.includes(searchQuery.toLowerCase()) ||
+            status.includes(searchQuery.toLowerCase())
+        );
+    });
     useEffect(() => {
         setSensorList(sensors);
     }, [sensors]);
@@ -189,8 +197,7 @@ export default function SensorList({
     }, [fetchUndefinedSensors]);
 
     const activeManagers = managers.filter((manager) => manager.isActive); // Sadece aktif yöneticiler
-    console.log(managers);
-    console.log(activeManagers);
+
     return (
 
         <div className={styles.sensorListContainer}>
@@ -274,8 +281,8 @@ export default function SensorList({
                                 </button>
                             </td>
                             <td className={styles.buttonGroup}>
-                                {undefinedSensorIds.includes(sensor.id) ? ( // Sensör undefined mı kontrolü
-                                    <div className={`${styles.undefinedWarning} ${styles.blinking}`}>
+                                {undefinedSensorIds.includes(sensor.id) ? (
+                                    <div className={styles.undefinedWarning}>
                                         Tanımsız Sensör
                                     </div>
                                 ) : (
@@ -319,12 +326,14 @@ export default function SensorList({
                         </h3>
                         <div className={styles.undefinedSensorsDropdown}>
                             <label htmlFor="manager-select">Aktif Manager Seç:</label>
-
                             <select
                                 id="manager-select"
                                 value={selectedManager}
                                 onChange={handleManagerChange}
                             >
+                                <option value="" disabled>
+                                    Manager seçin
+                                </option>
                                 {activeManagers.length > 0 ? (
                                     activeManagers.map((manager) => (
                                         <option key={manager.id} value={manager.id}>
@@ -337,88 +346,87 @@ export default function SensorList({
                             </select>
                         </div>
 
-
-                            <div className={styles.undefinedSensorsTableContainer}>
-                                {undefinedSensors.length > 0 ? (
-                                    <table className={styles.undefinedSensorsTable}>
-                                        <thead>
-                                        <tr>
-                                            <th>
+                        <div className={styles.undefinedSensorsTableContainer}>
+                            {undefinedSensors.length > 0 ? (
+                                <table className={styles.undefinedSensorsTable}>
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedSensors.length === undefinedSensors.length}
+                                                onChange={(e) => {
+                                                    const isChecked = e.target.checked;
+                                                    setSelectedSensors(
+                                                        isChecked
+                                                            ? undefinedSensors.map((s) => s.id)
+                                                            : []
+                                                    );
+                                                }}
+                                            />
+                                        </th>
+                                        <th>Ad</th>
+                                        <th>Tip</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {undefinedSensors.map((sensor) => (
+                                        <tr key={sensor.id}>
+                                            <td>
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedSensors.length === undefinedSensors.length}
+                                                    checked={selectedSensors.includes(sensor.id)}
+                                                    value={sensor.id}
                                                     onChange={(e) => {
                                                         const isChecked = e.target.checked;
-                                                        setSelectedSensors(
+                                                        setSelectedSensors((prev) =>
                                                             isChecked
-                                                                ? undefinedSensors.map((s) => s.id)
-                                                                : []
+                                                                ? [...prev, sensor.id]
+                                                                : prev.filter((id) => id !== sensor.id)
                                                         );
                                                     }}
                                                 />
-                                            </th>
-                                            <th>Ad</th>
-                                            <th>Tip</th>
+                                            </td>
+                                            <td>{sensor.sensorName}</td>
+                                            <td>{sensor.sensorType}</td>
                                         </tr>
-                                        </thead>
-                                        <tbody>
-                                        {undefinedSensors.map((sensor) => (
-                                            <tr key={sensor.id}>
-                                                <td>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedSensors.includes(sensor.id)}
-                                                        value={sensor.id}
-                                                        onChange={(e) => {
-                                                            const isChecked = e.target.checked;
-                                                            setSelectedSensors((prev) =>
-                                                                isChecked
-                                                                    ? [...prev, sensor.id]
-                                                                    : prev.filter((id) => id !== sensor.id)
-                                                            );
-                                                        }}
-                                                    />
-                                                </td>
-                                                <td>{sensor.sensorName}</td>
-                                                <td>{sensor.sensorType}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <div className={styles.undefinedSensorsEmptyContainer}>
-                                        <p className={styles.undefinedSensorsEmpty}>
-                                            <strong> Tanımsız sensör bulunamadı. </strong>
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className={styles.undefinedSensorsEmptyContainer}>
+                                    <p className={styles.undefinedSensorsEmpty}>
+                                        <strong> Tanımsız sensör bulunamadı. </strong>
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
 
-                            <div className={styles.undefinedSensorsModalActions}>
-                                <button
-                                    className={`${styles.undefinedSensorsModalButton} ${styles.cancel}`}
-                                    onClick={() => setUndefinedSensorsModalVisible(false)}
-                                >
-                                    İptal
-                                </button>
-                                <button
-                                    className={`${styles.undefinedSensorsModalButton} ${styles.assign}`}
-                                    onClick={handleAssignSensors}
-                                    disabled={!selectedManager || selectedSensors.length === 0}
-                                >
-                                    Atama Yap
-                                </button>
-                            </div>
+                        <div className={styles.undefinedSensorsModalActions}>
+                            <button
+                                className={`${styles.undefinedSensorsModalButton} ${styles.cancel}`}
+                                onClick={() => setUndefinedSensorsModalVisible(false)}
+                            >
+                                İptal
+                            </button>
+                            <button
+                                className={`${styles.undefinedSensorsModalButton} ${styles.assign}`}
+                                onClick={handleAssignSensors}
+                                disabled={!selectedManager || selectedSensors.length === 0}
+                            >
+                                Atama Yap
+                            </button>
                         </div>
                     </div>
+                </div>
 
 
-                    )}
+            )}
 
 
-                    {isUpdateModalOpen && (
-                        <UpdateSensorModal
+            {isUpdateModalOpen && (
+                <UpdateSensorModal
                     sensor={selectedSensor}
                     isOpen={isUpdateModalOpen}
                     onClose={closeUpdateModal}

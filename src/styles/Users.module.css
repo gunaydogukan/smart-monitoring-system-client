@@ -19,20 +19,18 @@ body, html {
 
 /* Konteyner */
 .container {
-    padding: 30px; /* İçerik boşluklarını arttırdık */
+    padding: 30px;
     margin: auto;
-    width: 95%; /* Maksimum genişliği büyüttük */
+    width: 95%;
     background-color: #ffffff;
     color: #333333;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease, color 0.3s ease;
-    max-height: calc(100vh - 120px); /* Yükseklik sınırlaması */
+    max-height: calc(100vh - 50px); /* Sayfa yüksekliği ayarı */
+    overflow: hidden; /* Ana container kaydırmayı engeller */
+}
 
-}
-.darkContainer {
-    background-color: #2e2e2e;
-}
 
 /* Başlık */
 .title {
@@ -126,15 +124,35 @@ body, html {
 /* Tablo Alanı */
 .tableContainer {
     margin-top: 20px;
-    overflow-x: auto;
     border-radius: 8px;
     border: 1px solid #ddd;
     background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-height: calc(100vh - 120px); /* Yükseklik sınırlaması */
-    overflow-y: auto; /* Dikey kaydırma */
+    max-height: calc(100vh - 300px); /* Tablo için dikey sınır */
+    overflow-y: auto; /* Dikey kaydırmayı etkinleştir */
+    overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
+    padding: 10px; /* İç boşluk */
+}
+/* Scroll Bar Stili */
+.tableContainer::-webkit-scrollbar {
+    width: 10px; /* Scroll bar genişliği */
+    height: 10px; /* Scroll bar yüksekliği */
 }
 
+.tableContainer::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Scroll bar arka planı */
+    border-radius: 8px;
+}
+
+.tableContainer::-webkit-scrollbar-thumb {
+    background: #34495e; /* Scroll bar kaydırıcısı */
+    border-radius: 8px;
+}
+
+.tableContainer::-webkit-scrollbar-thumb:hover {
+    background: #456685; /* Scroll bar hover rengi */
+}
+/* Tablo */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -145,11 +163,6 @@ body, html {
     overflow: hidden;
 }
 
-.darkTable {
-    background-color: #2e2e2e;
-    color: #e3e3e3;
-}
-
 /* Tablo Başlıkları */
 .table th {
     background-color: #34495e;
@@ -157,7 +170,6 @@ body, html {
     font-weight: bold;
     padding: 12px;
     text-transform: capitalize;
-    border-bottom: 1px solid #ddd;
     text-align: center;
 }
 
@@ -191,6 +203,18 @@ body, html {
     background-color: #555;
 }
 
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .tableContainer {
+        max-height: 50vh; /* Mobil cihazlarda daha küçük yükseklik */
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+}
 /* Durum Stilleri */
 .statusActive,
 .statusInactive {
@@ -340,6 +364,33 @@ body, html {
     outline: none;
 }
 
+.undefinedUsersContainer {
+    max-height: 400px; /* Maksimum yüksekliği belirler */
+    overflow-y: auto; /* Dikey kaydırma ekler */
+    border: 1px solid #ddd; /* Kenarlık */
+    border-radius: 8px;
+    padding: 10px; /* İç boşluk */
+    background-color: #f9f9f9; /* Hafif gri arka plan */
+}
+
+/* Scrollbar stili */
+.undefinedUsersContainer::-webkit-scrollbar {
+    width: 8px; /* Scrollbar genişliği */
+}
+
+.undefinedUsersContainer::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Scrollbar arka plan rengi */
+    border-radius: 8px;
+}
+
+.undefinedUsersContainer::-webkit-scrollbar-thumb {
+    background: #34495e; /* Scrollbar kaydırıcı rengi */
+    border-radius: 8px;
+}
+
+.undefinedUsersContainer::-webkit-scrollbar-thumb:hover {
+    background: #456685; /* Hover sırasında scrollbar rengi */
+}
 
 .undefinedUsersTable {
     width: 100%;
@@ -534,7 +585,25 @@ body, html {
     align-items: center;
     justify-content: center;
 }
+.undefinedUsersEmpty {
+    text-align: center;
+    font-size: 18px;
+    color: #2082ca;
+    margin-top: 20px;
+}
 
+.undefinedUsersEmptyContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    color: #888;
+    font-size: 16px;
+    font-style: italic;
+}
 .undefinedButton:hover {
     background-color: #0056b3;
     transform: scale(1.05);
@@ -592,4 +661,47 @@ body, html {
     .notificationInstruction {
         font-size: 14px;
     }
+}
+.changeManagerModal {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    overflow: hidden;
+}
+
+.changeManagerModal h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+.changeManagerDropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.changeManagerDropdown label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.changeManagerDropdown select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.changeManagerDropdown select:focus {
+    border-color: #007bff;
+    outline: none;
 }
