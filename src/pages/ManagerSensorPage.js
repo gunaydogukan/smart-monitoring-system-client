@@ -9,13 +9,13 @@ export default function ManagerPage({ role }) {
     const [sensors,setSensors] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
     const [selectedPersonal, setSelectedPersonal] = useState('');
-
+    const [sensorTypes, setSensorTypes] = useState({}); // Tip eşleştirmesi için eklenen state
     const navigate = useNavigate();
-
 
     useEffect(() => {
         fetchManagerSensors();  // Sayfa ilk yüklendiğinde verileri çekiyoruz
     }, []);
+
 
     const fetchManagerSensors = async () => {
         try {
@@ -25,9 +25,22 @@ export default function ManagerPage({ role }) {
                 },
             });
             const data = await response.json();
+
             setManagerData(data);
+
             setFilteredSensors(data.managerSensors); // Başlangıçta manager sensörlerini göster
             setSensors(data.managerSensors);
+            console.log(data)
+            // Tip verilerini yükle
+            const typesResponse = await fetch('http://localhost:5000/api/type', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
+            const typesData = await typesResponse.json();
+            const typesMap = typesData.reduce((acc, type) => {
+                acc[type.id] = type.type;
+                return acc;
+            }, {});
+            setSensorTypes(typesMap);
         } catch (error) {
             console.error('Veri çekme hatası:', error);
         }
@@ -51,6 +64,7 @@ export default function ManagerPage({ role }) {
         }
     };
 
+
     if (!managerData) {
         return <p>Veriler yükleniyor...</p>;  // Veri yüklenene kadar
     }
@@ -58,6 +72,8 @@ export default function ManagerPage({ role }) {
     const handleMapRedirect = () => {
         navigate('/map', { state: { sensors: sensors } });
     };
+
+
 
     return (
         <Layout>
@@ -76,7 +92,14 @@ export default function ManagerPage({ role }) {
                 />
 
                 {/* Sensör Listesi */}
-                <SensorList sensors={filteredSensors}/>
+                <SensorList
+                   manager={managerData.manager}
+                    selectedCompany={managerData.manager.companyCode}
+                    role={role}
+                    sensors={filteredSensors}
+                    sensorTypes={sensorTypes}
+                   onReload={fetchManagerSensors}
+                />
             </div>
         </Layout>
     );

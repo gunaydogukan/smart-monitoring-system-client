@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function SensorList({
+                                       manager,
                                        sensors = [],
                                        sensorTypes = {},
                                        role,
@@ -34,7 +35,8 @@ export default function SensorList({
     const [undefinedSensors, setUndefinedSensors] = useState([]);
     const [undefinedSensorsModalVisible, setUndefinedSensorsModalVisible] = useState(false);
     const [selectedSensors, setSelectedSensors] = useState([]);
-    const [selectedManager,setSelectedManager] = useState('');
+    const [selectedManager, setSelectedManager] = useState(role === 'manager' ? manager.id : '');
+
 
 
     const [undefinedSensorIds, setUndefinedSensorIds] = useState([]); // Yeni state tanımı
@@ -62,6 +64,7 @@ export default function SensorList({
             // Undefined sensörlerin ID'lerini bir listeye çıkar ve ayrı bir state'e kaydet
             const ids = result.data.map((sensor) => sensor.originalSensorId);
             setUndefinedSensorIds(ids); // Sadece ID'leri state'e kaydediyoruz
+
         } catch (error) {
             console.error('Tanımsız sensörler getirilirken hata:', error);
             toast.error('Tanımsız sensörler getirilirken bir hata oluştu.');
@@ -196,30 +199,38 @@ export default function SensorList({
         fetchUndefinedSensors();
     }, [fetchUndefinedSensors]);
 
-    const activeManagers = managers.filter((manager) => manager.isActive); // Sadece aktif yöneticiler
-
+    let activeManagers;
+    if(role === "administrator") {
+        activeManagers = managers.filter((manager) => manager.isActive); // Sadece aktif yöneticiler
+    }
     return (
 
         <div className={styles.sensorListContainer}>
             <ToastContainer />
 
             <div className={styles.tableContainer}>
+
                 <div className={styles.searchAndButtonContainer}>
-                    <button
-                        className={styles.undefinedSensorButton}
-                        onClick={() => {
-                            if (!selectedCompany) {
-                                toast.error("Lütfen bir kurum seçin."); // Kurum seçilmeden bildirim
-                            } else {
-                                setUndefinedSensorsModalVisible(true); // Tanımsız sensörleri modalda göster
-                            }
-                        }}
-                    >
-                        Tanımsız Sensörler
-                        {undefinedSensors.length > 0 && (
-                            <span className={styles.undefinedSensorBadge}>{undefinedSensors.length}</span>
-                        )}
-                    </button>
+
+                    {(role === 'administrator' || role === 'manager') &&  (
+                        <button
+                            className={styles.undefinedSensorButton}
+                            onClick={() => {
+                                if (!selectedCompany) {
+                                    toast.error("Lütfen bir kurum seçin."); // Kurum seçilmeden bildirim
+                                } else {
+
+                                    setUndefinedSensorsModalVisible(true); // Tanımsız sensörleri modalda göster
+                                }
+                            }}
+                        >
+                            Tanımsız Sensörler
+                            {undefinedSensors.length > 0 && (
+                                <span className={styles.undefinedSensorBadge}>{undefinedSensors.length}</span>
+                            )}
+                        </button>
+                    )}
+
 
                     <div className={styles.searchBar}>
                         <input
@@ -245,6 +256,7 @@ export default function SensorList({
                     </tr>
                     </thead>
                     <tbody>
+
                     {filteredSensors.map((sensor) => (
                         <tr
                             key={sensor.id}
@@ -318,6 +330,7 @@ export default function SensorList({
                     </tbody>
                 </table>
             </div>
+
             {undefinedSensorsModalVisible && (
                 <div className={styles.undefinedSensorModalOverlay}>
                     <div className={styles.undefinedSensorsModal}>
@@ -328,23 +341,33 @@ export default function SensorList({
                             <label htmlFor="manager-select">Aktif Manager Seç:</label>
                             <select
                                 id="manager-select"
-                                value={selectedManager}
+                                value={role === 'manager' ? manager.id : selectedManager}
                                 onChange={handleManagerChange}
+                                disabled={role === 'manager'} // Rol manager ise seçimi kilitle
                             >
                                 <option value="" disabled>
                                     Manager seçin
                                 </option>
-                                {activeManagers.length > 0 ? (
+                                {role === 'administrator' && activeManagers.length > 0 ? (
                                     activeManagers.map((manager) => (
                                         <option key={manager.id} value={manager.id}>
                                             {manager.name} {manager.lastname}
                                         </option>
                                     ))
+                                ) : role === 'manager' ? (
+                                    // Manager rolü için mevcut manager bilgisini göster
+                                    <option value={manager.id}>
+                                        {manager.name} {manager.lastname}
+
+                                    </option>
                                 ) : (
-                                    <option value="" disabled>Aktif manager bulunamadı</option>
+                                    <option value="" disabled>
+                                        Aktif manager bulunamadı
+                                    </option>
                                 )}
                             </select>
                         </div>
+
 
                         <div className={styles.undefinedSensorsTableContainer}>
                             {undefinedSensors.length > 0 ? (
