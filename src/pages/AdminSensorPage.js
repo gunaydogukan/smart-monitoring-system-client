@@ -125,7 +125,7 @@ export default function AdminSensorPage({ role }) {
 // Bu useEffect yalnızca bir kez çalışacak, çünkü bağımlılık dizisi boş.
     useEffect(() => {
         fetchAdminData(); // Yalnızca ilk render'da çalışacak
-    }, [fetchAdminData]); // Bağımlılık dizisi boş bırakıldı
+    }, []); // Bağımlılık dizisi boş bırakıldı
 
     return (
         <Layout>
