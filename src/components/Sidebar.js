@@ -23,7 +23,7 @@ export default function Sidebar() {
     }, [user, navigate]);
 
     const handleNavigation = (path, state = {}) => {
-        navigate(path, { state }); // 'state' parametresini ekledik
+        navigate(path, { state:{role:user.role} }); // 'state' parametresini ekledik
     };
 
 

@@ -514,13 +514,13 @@ export default function Users() {
                                             {person.isActive ? "Pasif Yap" : "Aktif Yap"}
                                         </button>
                                         {/* Yeni Yönetici Değiştir Butonu */}
-
+                                        {type === "personals" && (
                                         <button
                                             className={`${styles.actionButton} ${styles.changeManagerButton}`}
                                             onClick={() => openChangeManagerModal(person)}
                                         >
                                             Yönetici Değiştir
-                                        </button>
+                                        </button> )}
                                     </td>
                                 </tr>
                             ))}
