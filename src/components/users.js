@@ -8,12 +8,8 @@ import UpdateUserModal from "../components/UpdateUserModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
-
-
 export default function Users() {
-   const location = useLocation();
+    const location = useLocation();
     const { type } = useParams();
     const [companies, setCompanies] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -121,6 +117,7 @@ export default function Users() {
 
             const data = await response.json();
             setFilteredData(data || []);
+            console.log(data);
         } catch (error) {
             console.error(`${type} verisi çekilemedi:`, error);
         }
@@ -275,6 +272,7 @@ export default function Users() {
                         body: JSON.stringify({
                             userId: selectedUser,
                             role: data.user.role,
+                            companyCode:data.user.companyCode
                         }),
                     });
 
