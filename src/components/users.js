@@ -59,8 +59,9 @@ export default function Users() {
             }
 
             const data = await response.json();
-
+            console.log("fetchUndefinedUsersAndManagers metotu");
             if (currentCompany) {
+                console.log("if")
                 // Şirket seçildiyse sadece o şirkete ait personelleri filtrele
                 const filteredUndefinedUsers = data.undefinedUsers.filter(
                     (user) => user.user.role === "personal" && user.user.companyCode === currentCompany
@@ -68,6 +69,7 @@ export default function Users() {
                 setUndefinedUsers(filteredUndefinedUsers);
                 setUndefinedCount(filteredUndefinedUsers.length);
             } else {
+                console.log("else");
                 // Tüm şirketler seçiliyse tüm personelleri alın
                 const allUndefinedUsers = data.undefinedUsers.filter(
                     (user) => user.user.role === "personal"
@@ -434,8 +436,12 @@ export default function Users() {
                     <button
                         className={`${styles.actionButton} ${styles.undefinedButton}`}
                         onClick={() => {
-                            fetchUndefinedUsersAndManagers(selectedCompany || ""); // Tüm şirketler için verileri çek
-                            setUndefinedUsersModalVisible(true);
+                            if (!selectedCompany) {
+                                toast.error("Lütfen bir kurum seçin."); // Kurum seçilmeden bildirim göster
+                            } else {
+                                fetchUndefinedUsersAndManagers(selectedCompany); // Seçilen şirket için verileri çek
+                                setUndefinedUsersModalVisible(true); // Modalı aç
+                            }
                         }}
                     >
                         Tanımsız Personeller

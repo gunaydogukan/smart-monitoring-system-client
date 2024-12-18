@@ -23,7 +23,7 @@ export default function Register() {
 
     // Role'ü location'dan çekiyoruz
     const role = location.state?.role;
-
+    console.log(role);
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -76,6 +76,7 @@ export default function Register() {
 
         if (role === 'administrator') {
             alert('Administrator ekleyemezsiniz!');
+            console.log("deneme");
             return;
         }
 

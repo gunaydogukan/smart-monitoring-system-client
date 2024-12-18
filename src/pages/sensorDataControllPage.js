@@ -25,6 +25,7 @@ export default function SensorDataControllPage() {
     const [filteredPersonals, setFilteredPersonals] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
     const [times, setTimes] = useState([]); // Times verisini saklamak için state eklendi
+    const [resultData, setResultData] = useState(null);  // result'dan gelen veriler için state
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
@@ -33,7 +34,19 @@ export default function SensorDataControllPage() {
         async function fetchData() {
             try {
                 const fetchedData = await checkSensorDataTime(user.role, user.id);
-                const { allCompanies, managers, personals, sensors, sensorOwners, types, times } = fetchedData;
+                const { allCompanies, managers, personals, sensors, sensorOwners, types, result } = fetchedData;
+
+                // getTimes metotu
+                const timeResults = result.map(item => ({
+                    datacode: item.datacode,
+                    lastUpdatedTime: item.result?.lastUpdatedTime || "Zaman verisi yok"
+                }));
+
+                const dataResults = result.map(item => ({
+                    datacode: item.datacode,
+                    data: item.result?.data || "Veri yok"
+                }));
+
                 setCompanies(allCompanies);
                 setManagers(managers);
                 setPersonals(personals);
@@ -41,7 +54,10 @@ export default function SensorDataControllPage() {
                 setSensorOwners(sensorOwners);
                 setFilteredSensors(sensors);
                 setSensorTypes(types);
-                setTimes(times); // Gelen 'times' verisini state'e kaydet
+
+                setTimes(timeResults); // Gelen 'times' verisini state'e kaydet
+                setResultData(dataResults); //sensör verilerini alı
+
             } catch (error) {
                 console.error('Veri çekilirken hata oluştu:', error);
             }
@@ -119,6 +135,7 @@ export default function SensorDataControllPage() {
                     sensors={filteredSensors}
                     sensorTypes={sensorTypes}
                     times={times} // Times verisini burada gönderiyoruz
+                    data = {resultData}
                 />
             </div>
         </Layout>
