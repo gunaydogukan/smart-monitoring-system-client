@@ -20,7 +20,7 @@ import SensorControl from './pages/sensorCheck/MapPage';
 import AddType from "./components/AddType";
 import SensorIpControlPage from "./pages/SensorIpControlPage";
 import SensorDataControllPage from "./pages/sensorDataControllPage";
-
+import SensorsDefination from "./pages/Sensors_definitionPage";
 
 export default function App() {
     const { user, loading } = useAuth();
@@ -50,6 +50,7 @@ export default function App() {
                             <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
                             <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
                             <Route path="/add-sensor-type" element={<AddType/>} />
+                            <Route path="/sensor-definition" element={<SensorsDefination/>}/>
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (
