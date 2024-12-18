@@ -23,8 +23,14 @@ export default function Sidebar() {
         if (!user) navigate('/login');
     }, [user, navigate]);
 
-    const handleNavigation = (path, state = {}) => {
-        navigate(path, { state:{role:user.role} }); // 'state' parametresini ekledik
+    const handleNavigation = (path, role) => {
+        if (typeof role === 'string') {
+            navigate(path, { state: { role } });
+        } else if (typeof role === 'object') {
+            navigate(path, { state: role });
+        } else {
+            navigate(path, { state: { role: user?.role } });
+        } // 'state' parametresini role ile ve tipe göre gönderip,  geçiriyoruz
     };
 
 
@@ -131,8 +137,10 @@ export default function Sidebar() {
                                     </li>
                                 )}
                                 {user?.role === 'administrator' && (
-                                    <li onClick={() => handleNavigation('/add-sensor-type')}>
-                                        <FaTag className="dropdown-icon"/> Yeni Sensör Tipi Ekle
+
+                                    <li onClick={() => handleNavigation('/add-sensor-type', { role: user.role })}>
+                                        <FaTag className="dropdown-icon" /> Yeni Sensör Tipi Ekle
+
                                     </li>
                                 )}
                                 {(user?.role === 'manager' || user?.role === 'administrator') && (
