@@ -2,18 +2,21 @@ import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/SensorDataCheckPage.module.css";
 import { useNavigate } from "react-router-dom";
 
-export default function SensorDataControll({ sensors = [], sensorTypes = [], times = [] }) {
+export default function SensorDataControll({ sensors = [], sensorTypes = [], times = [], data = [] }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [sensorColorClasses, setSensorColorClasses] = useState({});
     const navigate = useNavigate();
 
     // Sensör ve zaman eşleştirme
+    // Sensör ve zaman eşleştirme
     const enrichedSensors = useMemo(() => {
         return sensors.map((sensor) => {
+            // 'times' içerisindeki sensöre ait zaman bilgisini buluyoruz
             const matchingTime = times.find((time) => time.datacode === sensor.datacode);
+
             return {
                 ...sensor,
-                timestamp: matchingTime?.time || null, // Eşleşen zaman varsa al, yoksa null
+                timestamp: matchingTime?.lastUpdatedTime || "Zaman Yok", // Eşleşen zaman varsa al, yoksa "Zaman verisi yok"
             };
         });
     }, [sensors, times]);
@@ -67,12 +70,33 @@ export default function SensorDataControll({ sensors = [], sensorTypes = [], tim
 
     // Zamanı formatlama
     const formatTime = (time) => {
-        if (!time) return "Zaman Yok";
+        if ((time === "Zaman verisi yok") || !time) return "Zaman Yok";
+
         if (typeof time === "string" || typeof time === "number") {
             return new Date(time).toLocaleString(); // Tarih ve saat formatlama
         }
         return "Geçersiz Zaman"; // Eğer zaman formatı beklenmeyen bir yapıdaysa
     };
+
+    const lastData = useMemo(() => {
+        return sensors.map((sensor) => {
+            // 'data' içerisindeki sensöre ait veri bilgisini buluyoruz
+            const matchingData = data.find((dataItem) => dataItem.datacode === sensor.datacode);
+
+            // Eğer veri varsa, nesne ise her bir özelliğini metne çeviriyoruz
+            const dataValue = matchingData?.data || "Veri Yok"; // Veri varsa al, yoksa "Veri Yok"
+
+            // Eğer veri bir nesne ise, nesnenin her bir özelliğini metin olarak yazdır
+            const formattedDataValue = typeof dataValue === "object" && dataValue !== null
+                ? Object.entries(dataValue).map(([key, value]) => `${key}: ${value}`).join(", ")
+                : dataValue;
+
+            return {
+                ...sensor,
+                dataValue: formattedDataValue, // Veri değerini düz metin olarak alıyoruz
+            };
+        });
+    }, [sensors, data]);
 
     return (
         <div className={styles.sensorListContainer}>
@@ -96,6 +120,7 @@ export default function SensorDataControll({ sensors = [], sensorTypes = [], tim
                         <th>Tip</th>
                         <th>Durum</th>
                         <th>Zaman</th>
+                        <th>Son Veri</th>
                         <th>Haritada Göster</th>
                     </tr>
                     </thead>
@@ -103,6 +128,9 @@ export default function SensorDataControll({ sensors = [], sensorTypes = [], tim
                     {filteredSensors.map((sensor) => {
                         const timeData = sensor.timestamp;
                         const isActive = sensor.isActive;
+                        const matchingLastData =
+                            lastData.find((s) => s.id === sensor.id); // Veriyi sensör ile eşleştiriyoruz
+
                         return (
                             <tr key={sensor.id}>
                                 <td>{sensor.name || "Ad Yok"}</td>
@@ -123,6 +151,14 @@ export default function SensorDataControll({ sensors = [], sensorTypes = [], tim
                                             {formatTime(timeData)}
                                         </span>
                                 </td>
+                                <td>
+                                    {matchingLastData
+                                        ? typeof matchingLastData.dataValue === "object"
+                                            ? JSON.stringify(matchingLastData.dataValue) // Nesne ise metne çevir
+                                            : matchingLastData.dataValue
+                                        : "Veri Yok"}
+                                </td>
+
                                 <td>
                                     <button
                                         className={styles.mapButton}

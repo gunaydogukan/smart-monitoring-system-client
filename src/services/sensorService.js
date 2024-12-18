@@ -164,12 +164,11 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
             );
         }
 
-        const times = await getTimes(sensors);
+        const result = await getTimes(sensors);
         const types = await fetchSensorTypes();
 
-
         // Erişim denetimi sonrası dönen veri
-        return { allCompanies, managers, personals, sensors,times,sensorOwners,types };
+        return { allCompanies, managers, personals, sensors,result,sensorOwners,types };
     } catch (err) {
         console.log("Sensor verilerinin zaman kontrol hatası = (checkSensorDataTime metotu)", err);
         throw err;
