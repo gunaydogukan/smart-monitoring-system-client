@@ -1,7 +1,7 @@
 import {get} from "axios";
 
 export const fetchSensorData = async (sensor, interval) => {
-
+    console.log("Gönderilen sensör başarıyla fethSensorData metotuna iletildi = ",sensor);
     if (!sensor || !sensor.datacode) {
         throw new Error("Geçersiz sensör veya datacode bilgisi.");
     }
@@ -34,8 +34,11 @@ export const fetchSensorData = async (sensor, interval) => {
         const text = await response.text();
         try {
             const data = JSON.parse(text);
-            console.log(data);
-            return { type, data: data.data };
+            console.log("Alınan veri(fetchSensorData) = ",data);
+
+            const ortalama = await ortalamaHesabi(data.data);
+
+            return { type, data: data.data, ortalama};
         } catch (error) {
             console.error("Beklenmedik yanıt formatı:", text); // Beklenmeyen yanıtı loglayın
             throw new Error("Geçersiz JSON formatında yanıt alındı.");
@@ -46,6 +49,29 @@ export const fetchSensorData = async (sensor, interval) => {
         throw error;
     }
 };
+
+const ortalamaHesabi = async (data) => {
+    const ort = {};
+
+    // Verileri her bir sütun için işlemeye başla
+    data.forEach(item => {
+        Object.keys(item).forEach(key => {
+            if (key !== "time") {
+                // Eğer key daha önce eklenmemişse, yeni bir dizi başlatıyoruz
+                if (!ort[key]) ort[key] = [];
+                ort[key].push(item[key]);
+            }
+        });
+    });
+
+    // Ortalamaları hesapla
+    Object.keys(ort).forEach(key => {
+        ort[key] = ort[key].reduce((acc, value) => acc + value, 0) / ort[key].length;
+    });
+
+    return ort;
+};
+
 
 const getType = async (sensorType) => {
     if (!sensorType) {

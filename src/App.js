@@ -31,7 +31,7 @@ export default function App() {
         <ThemeProvider>
             <Router>
                 <Routes>
-                    <Route path="/login" element={<Login />} />
+
                     {user ? (
                         <>
                             <Route path="/dashboard" element={<Dashboard />} />
@@ -54,7 +54,11 @@ export default function App() {
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         </>
                     ) : (
-                        <Route path="*" element={<Navigate to="/login" />} />
+                        <>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="*" element={<Navigate to="/login" />} />
+                        </>
+
                     )}
                 </Routes>
             </Router>
