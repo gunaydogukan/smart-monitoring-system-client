@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import { useLocation } from 'react-router-dom';
-import '../styles/DisplayMap.css'; // CSS dosyamızı ekliyoruz
+import { fetchSensorData } from '../services/dataService';
+import '../styles/DisplayMap.css';
 
 const containerStyle = {
     width: "100%",
@@ -15,13 +16,19 @@ const DisplayMap = () => {
     const sensors = Array.isArray(state?.sensors) ? state.sensors : [state?.sensor];
 
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: "AIzaSyD_SgDBoNntGbcwChUDreSgHCwjDbld8xU", // Google API Key'inizi buraya ekleyin
+        googleMapsApiKey: "AIzaSyD_SgDBoNntGbcwChUDreSgHCwjDbld8xU",
         libraries,
     });
 
     const [selectedSensor, setSelectedSensor] = useState(null);
     const [map, setMap] = useState(null);
-    const [sidebarExpanded, setSidebarExpanded] = useState(false); // Sidebar genişletme durumu
+    const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+    const [sensorType, setSensorType] = useState(null);
+    const [sensorData, setSensorData] = useState({});
+    const [averages, setAverages] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const getMarkerIcon = (sensor) => {
         switch (sensor.type) {
@@ -41,11 +48,42 @@ const DisplayMap = () => {
         window.open(directionsUrl, "_blank");
     };
 
-    // Haritayı seçilen sensöre odaklamak için useEffect
     useEffect(() => {
         if (selectedSensor && map) {
             map.setCenter({ lat: parseFloat(selectedSensor.lat), lng: parseFloat(selectedSensor.lng) });
-            map.setZoom(12); // Yakınlaştırma seviyesini ayarlayabilirsiniz
+            map.setZoom(12);
+        }
+
+        if (selectedSensor) {
+            setLoading(true);
+            setError(null);
+
+            Promise.all([
+                fetchSensorData(selectedSensor, "1 Gün"),
+                fetchSensorData(selectedSensor, "1 Hafta"),
+                fetchSensorData(selectedSensor, "1 Ay"),
+            ])
+                .then(([data1Day, data1Week, data1Month]) => {
+                    setSensorData({
+                        dayData: data1Day.data,
+                        weekData: data1Week.data,
+                        monthData: data1Month.data,
+                    });
+                    setAverages({
+                        avg1Day: data1Day.ortalama,
+                        avg1Week: data1Week.ortalama,
+                        avg1Month: data1Month.ortalama,
+                    });
+                    setSensorType(data1Day.type.type);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    setError(err.message);
+                    setLoading(false);
+                });
+        } else {
+            setSensorData({});
+            setAverages({});
         }
     }, [selectedSensor, map]);
 
@@ -66,6 +104,24 @@ const DisplayMap = () => {
         }
     }, [map, sensors]);
 
+    const sonUcVeri = (data) => {
+        if (!data) return [];
+        const lastThreeData = data.slice(-3);
+
+        return lastThreeData.map((item) => {
+            const dataFields = [];
+            Object.keys(item).forEach((key) => {
+                if (key !== "time") {
+                    dataFields.push({
+                        label: key,
+                        value: item[key] || "Veri yok",
+                    });
+                }
+            });
+            return dataFields;
+        });
+    };
+
     if (loadError) {
         return <div>Harita yüklenirken bir hata oluştu.</div>;
     }
@@ -76,18 +132,17 @@ const DisplayMap = () => {
 
     return (
         <div style={{ display: "flex", width: '100%', height: '100vh' }}>
-            {/* Sidebar */}
             <div style={{
-                width: sidebarExpanded ? '15%' : '25px',
+                width: sidebarExpanded ? '12%' : '35px',
                 backgroundColor: '#f0f0f0',
-                padding: '20px',
+                padding: sidebarExpanded ? '20px' : '5px',
                 boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
                 transition: 'width 0.3s ease',
                 overflowY: 'auto'
             }}>
                 <div onClick={() => setSidebarExpanded(!sidebarExpanded)}
                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" style={{ width: '20px', height: '20px' }} alt="Toggle Sidebar" />
+                    <img src="https://img.icons8.com/ios-filled/50/000000/menu.png" style={{ width: '34px', height: '34px' }} alt="Toggle Sidebar" />
                     {sidebarExpanded && <h2 style={{ marginLeft: '10px' }}>Sensörler</h2>}
                 </div>
                 {sidebarExpanded && (
@@ -100,14 +155,14 @@ const DisplayMap = () => {
                                 border: '1px solid #ccc',
                                 borderRadius: '5px'
                             }}>
-                                {sensor.name} , {sensor.def} , (ID: {sensor.id})
+                                {sensor.name} , Kod: {sensor.datacode}
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
 
-            <div style={{ width: '96%', height: '100%' }}>
+            <div style={{ flex: 1, height: '100%' }}>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={{
@@ -127,25 +182,61 @@ const DisplayMap = () => {
                     ))}
                 </GoogleMap>
 
-                {/* Sensör bilgilerini gösteren üst bilgi kartı */}
                 {selectedSensor && (
-                    <div className="sensor-info-overlay">
-                        <div className="sensor-info-header">
-                            <h2>Sensör Bilgileri</h2>
-                            <button className="close-button" onClick={() => setSelectedSensor(null)}>×</button>
-                        </div>
-                        <div className="sensor-info-content">
-                            <p><strong>ID:</strong> {selectedSensor.id}</p>
-                            <p><strong>Açıklama:</strong> {selectedSensor.def}</p>
-                            <p><strong>Enlem:</strong> {selectedSensor.lat}</p>
-                            <p><strong>Boylam:</strong> {selectedSensor.lng}</p>
-                            <button className="sensor-info-button"
-                                    onClick={() => handleDirections(selectedSensor.lat, selectedSensor.lng)}>
-                                Yol Tarifi Al
-                            </button>
+                    <div className="modal-overlay">
+                        <div className="modal-content large-modal">
+                            <div className="modal-header">
+                                <h2>Sensör Bilgileri</h2>
+                                <div className="sensor-details">
+                                    <p><strong>İsim:</strong> {selectedSensor.name}</p>
+                                    <p><strong>DataCode:</strong> {selectedSensor.datacode}</p>
+                                    <p><strong>Enlem, Boylam::</strong> {selectedSensor.lat}, {selectedSensor.lng}</p>
+                                    <p><strong>Açıklama:</strong> {selectedSensor.def}</p>
+                                    <p><strong>Sensör Tipi:</strong> {sensorType}</p>
+                                </div>
+                                <button className="close-button" onClick={() => setSelectedSensor(null)}>×</button>
+                            </div>
+                            <div className="modal-body">
+                                {/* Son Üç Veri Bölümü */}
+                                <div className="veri-section">
+                                    <h4>Son Üç Veri</h4>
+                                    <div className="veri-container">
+                                        {sonUcVeri(sensorData.dayData).map((item, index) => (
+                                            <div key={index} className="veri-box">
+                                            {item.map((field, i) => (
+                                                    <p key={i}><strong>{field.label}:</strong> {field.value}</p>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Ortalamalar Bölümü */}
+                                <div className="veri-section">
+                                    <h4>Ortalamalar</h4>
+                                    <div className="veri-container">
+                                        {Object.keys(averages).map((key, index) => (
+                                            <div key={index} className="veri-box">
+                                                <h5>{key.replace('avg', '')} Ortalama</h5>
+                                                <ul>
+                                                    {Object.entries(averages[key]).map(([subKey, value], i) => (
+                                                        <li key={i}><strong>{subKey}:</strong> {value.toFixed(2)}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="sensor-info-button" onClick={() => handleDirections(selectedSensor.lat, selectedSensor.lng)}>
+                                    Yol Tarifi Al
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
+
             </div>
         </div>
     );
