@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FaRss, FaPlus } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
 import styles from "../styles/Sensors_definitionPage.module.css";
 import Layout from "../layouts/Layout";
 
@@ -8,7 +10,10 @@ export default function SensorsDefinitionPage() {
     const [companies, setCompanies] = useState([]); // Kurumlar
     const [sensors, setSensors] = useState([]); // Kuruma ait sensörler
     const [activeManagers, setActiveManagers] = useState([]); // Aktif yöneticiler
+    const [selectedSensors, setSelectedSensors] = useState([]); // Seçilen sensörler
+    const [selectedManagers, setSelectedManagers] = useState([]); // Seçilen yöneticiler
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal görünürlük durumu
+    const [error] = useState('');
 
     // API'den kurumları çekme
     useEffect(() => {
@@ -31,7 +36,7 @@ export default function SensorsDefinitionPage() {
 
     // API'den sensörler ve yöneticiler verisini çekme
     const fetchSensorsAndManagers = useCallback(async () => {
-        if (!selectedCompany) return; // Eğer kurum seçilmemişse veriyi çekme
+        if (!selectedCompany) return;
 
         try {
             const sensorsResponse = await fetch(`http://localhost:5000/api/company/${selectedCompany}/sensors`, {
@@ -53,41 +58,127 @@ export default function SensorsDefinitionPage() {
             const sensorsData = await sensorsResponse.json();
             const managersData = await managersResponse.json();
 
-            setSensors(sensorsData.sensors); // typeName dahil sensör verilerini al
+            setSensors(sensorsData.sensors);
             setActiveManagers(managersData.managers);
         } catch (error) {
             console.error("Veri çekme hatası:", error);
         }
     }, [selectedCompany]);
 
-    // Kurum seçimi değiştiğinde sensörler ve yöneticileri çek
     useEffect(() => {
         fetchSensorsAndManagers();
     }, [selectedCompany, fetchSensorsAndManagers]);
 
-    // Kurum seçimi için modal açma
+    const handleSensorCheckboxChange = (sensorId) => {
+        setSelectedSensors((prevSelectedSensors) => {
+            if (prevSelectedSensors.includes(sensorId)) {
+                return prevSelectedSensors.filter((id) => id !== sensorId);
+            } else {
+                return [...prevSelectedSensors, sensorId];
+            }
+        });
+    };
+
+    const handleManagerCheckboxChange = (managerId) => {
+        setSelectedManagers((prevSelectedManagers) => {
+            if (prevSelectedManagers.includes(managerId)) {
+                return prevSelectedManagers.filter((id) => id !== managerId);
+            } else {
+                return [...prevSelectedManagers, managerId];
+            }
+        });
+    };
+
+    const handleSelectAllSensors = () => {
+        if (sensors.length === selectedSensors.length) {
+            setSelectedSensors([]); // Eğer tüm sensörler seçiliyse, hepsini kaldır
+        } else {
+            setSelectedSensors(sensors.map((sensor) => sensor.id)); // Tüm sensörleri seç
+        }
+    };
+
+    const handleSelectAllManagers = () => {
+        if (activeManagers.length === selectedManagers.length) {
+            setSelectedManagers([]); // Eğer tüm yöneticiler seçiliyse, hepsini kaldır
+        } else {
+            setSelectedManagers(activeManagers.map((manager) => manager.id)); // Tüm yöneticileri seç
+        }
+    };
+
     const openModal = () => {
         if (!selectedCompany) {
-            alert("Lütfen bir kurum seçin!");
+            toast.error("Lütfen bir kurum seçin!", {
+                position: "top-center",
+                autoClose: 2500,
+                hideProgressBar: true,
+            });
             return;
         }
-        setIsModalOpen(true); // Modal'ı aç
+        setIsModalOpen(true);
     };
 
-    // Modal kapama
     const closeModal = () => {
-        setIsModalOpen(false); // Modal'ı kapat
+        setIsModalOpen(false);
     };
 
-    // Kurum seçimi değiştiğinde
     const handleCompanyChange = (e) => {
         setSelectedCompany(e.target.value);
     };
+    const handleAssign = async () => {
+        if (selectedSensors.length === 0 || selectedManagers.length === 0) {
+            toast.error('Lütfen hem sensör hem de yönetici seçin!', {
+                position: "top-center",
+                autoClose: 3000,
+            });
+            return;
+        }
+
+        try {
+            // Backend API çağrısı
+            const response = await fetch("http://localhost:5000/api/assign-random-sensors", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    sensorIds: selectedSensors,
+                    managerIds: selectedManagers,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(data.message || "Sensörler başarıyla tanımlandı!", {
+                    position: "top-center",
+                    autoClose: 3000,
+                });
+                // Seçimleri sıfırla
+                setSelectedSensors([]);
+                setSelectedManagers([]);
+                setIsModalOpen(false);
+            } else {
+                toast.error(data.message || "Tanımlama işlemi başarısız oldu.", {
+                    position: "top-center",
+                    autoClose: 3000,
+                });
+            }
+        } catch (error) {
+            console.error("Tanımlama sırasında hata:", error);
+            toast.error("Sunucuyla bağlantı kurulamadı.", {
+                position: "top-center",
+                autoClose: 3000,
+            });
+        }
+    };
+
+
 
     return (
         <Layout>
             <div className={styles.sensorsDefinitionPage}>
-                {/* Kurum Seçimi Dropdown */}
+                <ToastContainer />
                 <div className={styles.institutionSelect}>
                     <select
                         className={styles.select}
@@ -103,14 +194,12 @@ export default function SensorsDefinitionPage() {
                     </select>
                 </div>
 
-                {/* Title Section */}
                 <h1 className={styles.pageTitle}>Sensör Tanımla</h1>
 
                 <div className={styles.mainContent}>
-                    {/* Manager Card */}
                     <div
                         className={`${styles.card} ${styles.managerCard}`}
-                        onClick={openModal} // Modal'ı aç
+                        onClick={openModal}
                     >
                         <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
                             <FaRss />
@@ -120,10 +209,9 @@ export default function SensorsDefinitionPage() {
                         <p>Managerler için yeni sensörler ekle ve düzenle.</p>
                     </div>
 
-                    {/* Personal Card */}
                     <div
                         className={`${styles.card} ${styles.personalCard}`}
-                        onClick={openModal} // Modal'ı aç
+                        onClick={openModal}
                     >
                         <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
                             <FaRss />
@@ -142,55 +230,120 @@ export default function SensorsDefinitionPage() {
                         <button className={styles.closeButton} onClick={closeModal}>
                             X
                         </button>
-                        <h2>{selectedCompany} İçin Sensörler ve Managerler</h2>
-                        <div className={styles.modalBody}>
-                            {/* Left Table: Sensors */}
-                            <div className={styles.tableContainer}>
-                                <h3>Kuruma Ait Sensörler</h3>
-                                <table>
-                                    <thead>
-                                    <tr>
-                                        <th>Sensor ID</th>
-                                        <th>Sensor Name</th>
-                                        <th>Type</th> {/* Type column ekliyoruz */}
+                        <h2 className={styles.customHeader}>
+                            {selectedCompany} Şirketi Sensörler ve Yöneticiler
+                        </h2>
+
+                        {/* Sensörler Tablosu */}
+                        <div className={styles.tableContainer}>
+                            <h3>Kuruma Ait Sensörler</h3>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedSensors.length === sensors.length}
+                                            onChange={handleSelectAllSensors}
+                                        />
+                                        Seç
+                                    </th>
+                                    <th>Sensor Adı</th>
+                                    <th>Sensör Tipi</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {sensors.map((sensor) => (
+                                    <tr key={sensor.id}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedSensors.includes(sensor.id)}
+                                                onChange={() => handleSensorCheckboxChange(sensor.id)}
+                                            />
+                                        </td>
+                                        <td>{sensor.name}</td>
+                                        <td>{sensor.typeName}</td>
                                     </tr>
-                                    </thead>
-                                    <tbody>
-                                    {sensors.map((sensor) => (
-                                        <tr key={sensor.id}>
-                                            <td>{sensor.id}</td>
-                                            <td>{sensor.name}</td>
-                                            <td>{sensor.typeName}</td> {/* typeName'yi burada gösteriyoruz */}
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Managerler Tablosu */}
+                        <div className={styles.tableContainer}>
+                            <h3>Aktif Managerler</h3>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedManagers.length === activeManagers.length}
+                                            onChange={handleSelectAllManagers}
+                                        />
+                                        Seç
+                                    </th>
+                                    <th>Ad</th>
+                                    <th>Soyad</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {activeManagers.map((manager) => (
+                                    <tr key={manager.id}>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedManagers.includes(manager.id)}
+                                                onChange={() => handleManagerCheckboxChange(manager.id)}
+                                            />
+                                        </td>
+                                        <td>{manager.name}</td>
+                                        <td>{manager.lastname}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Seçilen Öğeler */}
+                        <div>
+                            <h3>Seçilen Sensörler:</h3>
+                            <div className={styles.selectedListContainer}>
+                                <ul>
+                                    {selectedSensors.map((id) => {
+                                        const sensor = sensors.find((sensor) => sensor.id === id);
+                                        return <li key={id}>{sensor?.name}</li>;
+                                    })}
+                                </ul>
                             </div>
 
-                            {/* Right Table: Active Managers */}
-                            <div className={styles.tableContainer}>
-                                <h3>Aktif Managerler</h3>
-                                <table>
-                                    <thead>
-                                    <tr>
-                                        <th>Manager ID</th>
-                                        <th>Manager Name</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {activeManagers.map((manager) => (
-                                        <tr key={manager.id}>
-                                            <td>{manager.id}</td>
-                                            <td>{manager.name}</td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
+                            <h3>Seçilen Yöneticiler:</h3>
+                            <div className={styles.selectedListContainer}>
+                                <ul>
+                                    {selectedManagers.map((id) => {
+                                        const manager = activeManagers.find((manager) => manager.id === id);
+                                        return (
+                                            <li key={id}>
+                                                {manager?.name} {manager?.lastname}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                             </div>
                         </div>
+
+                        <div className={styles.actionContainer}>
+                            <button className={styles.assignButton} onClick={handleAssign}>
+                                Tanımla
+                            </button>
+                            {error && <p className={styles.errorMessage}>{error}</p>}
+                        </div>
+
                     </div>
                 </div>
             )}
+
         </Layout>
     );
 }
