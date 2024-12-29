@@ -1,59 +1,94 @@
-/* styles/Sensors_definitionPage.module.css */
 
-.sensorsDefinitionPage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f8f9fa; /* Very light gray background */
-    padding: 2rem; /* Consistent padding */
-    box-sizing: border-box;
-    flex-direction: column; /* Added to stack the content vertically */
+html, body {
+    margin: 0; /* Sayfa etrafındaki boşlukları sıfırlıyoruz */
+    padding: 0; /* Sayfa etrafındaki boşlukları sıfırlıyoruz */
+    width: 100%; /* Sayfa genişliğini tam olarak ayarlıyoruz */
+    height: 100%; /* Sayfa yüksekliği */
 }
+.sensorsDefinitionPage {
+    background: linear-gradient(to bottom, #f9f9f9, #e9ecef);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem; /* Eşit boşluk, ama kenar boşluklarını kontrol et */
+    width: 100%; /* Sayfa genişliğini %100 yapalım */
+    box-sizing: border-box; /* İçerik ve padding hesaplamalarını doğru yap */
+    margin: 0; /* Kenar boşluğunu sıfırla */
+}
+
 
 .pageTitle {
-    font-size: 2.5rem; /* Large font size for title */
+    font-size: 3rem;
     font-weight: 700;
-    color: #2c3e50; /* A sophisticated dark color */
+    color: #2c3e50;
     text-align: center;
-    margin-bottom: 2rem; /* Space between title and content */
-    letter-spacing: 2px; /* Adds letter spacing for an elegant look */
-    text-transform: uppercase; /* Makes the title uppercase for emphasis */
-    position: absolute;
-    top: 3rem; /* Position the title at the top */
-    width: 100%;
+    margin-bottom: 2rem;
+    position: relative;
 }
+
+.pageTitle::after {
+    content: "";
+    display: block;
+    width: 150px;
+    height: 5px;
+    background-color: #3498db;
+    margin: 1rem auto;
+    border-radius: 3px;
+}
+
+.pageTitle::before {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #3498db, transparent);
+    opacity: 0.8;
+}
+
+
+
+
 
 .mainContent {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
-    grid-gap: 2rem; /* Consistent gap */
-    max-width: 1200px;
-    width: 95%; /* Slightly wider on larger screens */
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responsive düzen */
+    gap: 2rem; /* Kartlar arasındaki boşluk */
+    max-width: 1200px; /* Maksimum genişlik belirle */
+    width: 100%; /* Genişlik %100 olacak şekilde ayarla */
+    margin: 0 auto; /* Ortalamak için */
+    padding: 1rem 0; /* Yalnızca dikey boşluk, kenarlarda boşluk olmayacak */
 }
 
+
+
 .card {
+    position: relative;
     background-color: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    padding: 3rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     text-align: center;
     cursor: pointer;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    border: 1px solid #eee;
-    overflow: hidden;
-    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid #eee;
     display: flex;
     flex-direction: column;
-    min-height: 220px; /* Increased min-height */
+    min-height: 350px; /* Kart yüksekliği */
+    max-width: 500px; /* Kartın genişliğini sınırlama */
+    width: 100%; /* Kartların genişliği tam sayfa genişliği kadar */
+    margin: 0 auto; /* Ortalamak için */
 }
 
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-    border-color: #ddd; /* Slightly darker border on hover */
+    transform: translateY(-8px); /* Hover animasyonu */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Daha belirgin hover gölgesi */
+    border-color: #ddd;
 }
+
 
 .card:active {
     transform: translateY(2px);
@@ -135,21 +170,80 @@
 .card.personalCard .cardIcon { /* Add a class to the personal card */
     color: #4a90e2; /* Example: Green color for personal icon */
 }
+.card::after {
+    content: "";
+    display: block;
+    width: 100px; /* Çizgi genişliği */
+    height: 4px; /* Çizgi kalınlığı */
+    background-color: #3498db; /* Mavi renk */
+    margin: 1rem auto 0; /* Ortalamak için otomatik boşluk */
+    border-radius: 2px; /* Yuvarlak uçlar */
+    transition: width 0.3s ease; /* Hover sırasında animasyon */
+}
+
+.card:hover::after {
+    width: 120px; /* Hover durumunda çizgi genişliğini artır */
+}
+
 /* styles/Sensors_definitionPage.module.css */
 
 /* Institution Dropdown */
 .institutionSelect {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    width: 260px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.institutionSelect:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
 }
 
 .select {
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 8px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
     border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.select:hover {
+    background-color: #f9fcff;
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        grid-template-columns: 1fr; /* Küçük ekranlarda tek sütun */
+    }
+    .card {
+        max-width: 95%; /* Küçük ekranlarda genişlik kontrolü */
+    }
+}
+
+.singleCardPosition {
+    position: absolute; /* Kartın üstüne konumlandır */
+    top: -40px; /* Dropdown’ın daha aşağıda görünmesi için */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* Dropdown’ın üstte kalmasını sağla */
+}
+
+
 
 
 /* Modal kaplama */
