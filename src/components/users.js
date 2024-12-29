@@ -30,11 +30,11 @@ export default function Users() {
     const [notificationMessage, setNotificationMessage] = useState("");
     const [undefinedCount, setUndefinedCount] = useState(0); // Tanımsız personel sayısını tutar
     const [filteredManagers, setFilteredManagers] = useState([]); // Filtrelenmiş yöneticiler
+    const [user,setUser] = useState(null);
+
 
     const [changeManagerModalVisible, setChangeManagerModalVisible] = useState(false);
     const [selectedPersonalForManagerChange, setSelectedPersonalForManagerChange] = useState(null);
-
-
 
     const fetchUndefinedUsersAndManagers = useCallback(async (companyCode) => {
         const currentCompany = companyCode || selectedCompany;
@@ -55,9 +55,9 @@ export default function Users() {
             }
 
             const data = await response.json();
-            console.log("fetchUndefinedUsersAndManagers metotu");
+
             if (currentCompany) {
-                console.log("if")
+                console.log("seçili şirket alt personel filtreleme")
                 // Şirket seçildiyse sadece o şirkete ait personelleri filtrele
                 const filteredUndefinedUsers = data.undefinedUsers.filter(
                     (user) => user.user.role === "personal" && user.user.companyCode === currentCompany
@@ -65,7 +65,7 @@ export default function Users() {
                 setUndefinedUsers(filteredUndefinedUsers);
                 setUndefinedCount(filteredUndefinedUsers.length);
             } else {
-                console.log("else");
+                console.log("şirket seçili değil tüm personeller ");
                 // Tüm şirketler seçiliyse tüm personelleri alın
                 const allUndefinedUsers = data.undefinedUsers.filter(
                     (user) => user.user.role === "personal"
@@ -80,8 +80,6 @@ export default function Users() {
             toast.error("Veri çekme hatası.");
         }
     }, [selectedCompany]);
-
-
 
     const fetchCompanies = async () => {
         try {
@@ -116,15 +114,36 @@ export default function Users() {
             }
 
             const data = await response.json();
-            setFilteredData(data || []);
-            console.log(data);
+            console.log(selectedCompany," şirketinin personelleri = ",data);
+            //eğer rol manager ise sadece o managerin personel bilgileri gelecek.
+            console.log(user);
+            if (role === "manager" && user?.id) {
+                console.log("içerdeyim");
+                const filteredPersonals = data.filter(
+                    (person) => person.creator_id === user.id
+                );
+                setFilteredData(filteredPersonals);
+                console.log("Manager personelleri:", filteredPersonals);
+            } else {
+                setFilteredData(data || []);
+            }
+
         } catch (error) {
             console.error(`${type} verisi çekilemedi:`, error);
         }
     };
 
     const handleCompanyChange = (e) => {
-        const companyCode = e.target.value;
+        let companyCode;
+        console.log("companycode değiştirme alanı");
+
+        //e.target varsa bir DOM olayı olur
+        if (e && e.target) {
+            companyCode = e.target.value;
+        } else {
+            companyCode = e; // Eğer e bir string ise doğrudan companyCode olarak ata
+        }
+        console.log("company code değişkeni değiştirlid = ",companyCode);
         setSelectedCompany(companyCode);
 
         if (companyCode) {
@@ -135,8 +154,6 @@ export default function Users() {
             fetchUndefinedUsersAndManagers(); // Tüm şirketler için tanımsızları getir
         }
     };
-
-
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -331,9 +348,6 @@ export default function Users() {
         }
     };
 
-
-
-
     const handleUpdateClick = (user) => {
         setSelectedUser(user);
         setModalVisible(true);
@@ -354,22 +368,65 @@ export default function Users() {
         setChangeManagerModalVisible(true); // Modalı görünür yap
     };
 
-
-
     const closeChangeManagerModal = () => {
         setSelectedPersonalForManagerChange(null);
         setChangeManagerModalVisible(false); // Modalı kapat
     };
 
-
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user) {
-            setRole(user.role);
-        }
-        fetchCompanies();
-        fetchDataByCompany(type);
+        const fetchData = async () => {
+            try {
+                const usr = JSON.parse(localStorage.getItem("user"));
+                const data = await getUserData();
+                console.log("Kullanıcı bilgileri:", data);
+                if(!user){
+                    setUser(data);
+                }
+
+                if (usr) {
+                    setRole(usr.role); // rolü ayarla
+                    setSelectedCompany(data.companyCode);
+                }
+
+                if(usr.role ==="manager"){
+                    console.log("Rol = manager");
+                    handleCompanyChange(data.companyCode);
+                    fetchDataByCompany(type);
+                    return;
+                }
+
+                fetchCompanies();
+                fetchDataByCompany(type);
+            } catch (err) {
+                console.error("Hata fetchData içinde:", err.message);
+            }
+        };
+
+        fetchData();
     }, [type]);
+
+    const getUserData = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/profile', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Profil bilgisi alınırken hata oluştu.');
+            }
+
+            const data = await response.json();
+            setUser(data);
+            return data;
+        } catch (err) {
+            console.error("Hata getUserData içinde:", err);
+            throw err;
+        }
+    };
 
     useEffect(() => {
         fetchUndefinedUsersAndManagers(selectedCompany);
@@ -401,20 +458,22 @@ export default function Users() {
                 />
 
                 <div className={styles.filterContainer}>
-                    <select
-                        className={`${styles.select} ${
-                            isDarkMode ? styles.darkSelect : ""
-                        }`}
-                        value={selectedCompany}
-                        onChange={handleCompanyChange}
-                    >
-                        <option value="">Tüm Şirketler</option>
-                        {companies.map((company) => (
-                            <option key={company.code} value={company.code}>
-                                {company.name}
-                            </option>
-                        ))}
-                    </select>
+                    {role === "administrator" ? (
+                        <select
+                            className={`${styles.select} ${
+                                isDarkMode ? styles.darkSelect : ""
+                            }`}
+                            value={selectedCompany}
+                            onChange={handleCompanyChange}
+                        >
+                            <option value="">Tüm Şirketler</option>
+                            {companies.map((company) => (
+                                <option key={company.code} value={company.code}>
+                                    {company.name}
+                                </option>
+                            ))}
+                        </select>
+                    ) : null}
                     <div className={styles.searchContainer}>
                         <FaSearch className={styles.searchIcon}/>
                         <input
