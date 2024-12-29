@@ -33,8 +33,6 @@ export default function Sidebar() {
         } // 'state' parametresini role ile ve tipe göre gönderip,  geçiriyoruz
     };
 
-
-
     const isPersonal = user?.role === 'personal';
 
     if (!user) return null;
@@ -50,28 +48,24 @@ export default function Sidebar() {
                     <FaUser className="menu-icon"/>
                     <span>Profilim</span>
                 </div>
-
-
-                {user?.role === "administrator" && (
-                    <>
-                        <div className="menu" onClick={() => setIsSensorControlOpen(!isSensorControlOpen)}>
-                            <FaRss className="menu-icon" style={{fontSize: "23px"}}/>
-                            <span>Sensör Kontrol</span>
-                        </div>
-                        {isSensorControlOpen && (
-                            <ul className="dropdown">
-                                <li onClick={() => handleNavigation("/sensorControl/kurulum")}>
-                                    <FaRss className="dropdown-icon"/> Kurum Kontrol
-                                </li>
-                                <li onClick={() => handleNavigation("/sensorControl/ip")}>
-                                    <FaRss className="dropdown-icon"/> IP Kontrol
-                                </li>
-                                <li onClick={() => handleNavigation("/sensorControl/data")}>
-                                    <FaRss className="dropdown-icon"/> Veri Kontrol
-                                </li>
-                            </ul>
+                    <div className="menu" onClick={() => setIsSensorControlOpen(!isSensorControlOpen)}>
+                        <FaRss className="menu-icon" style={{fontSize: "23px"}}/>
+                        <span>Sensör Kontrol</span>
+                    </div>
+                {isSensorControlOpen && (
+                    <ul className="dropdown">
+                        {user?.role === 'administrator' && (
+                            <li onClick={() => handleNavigation("/sensorControl/kurulum")}>
+                                <FaRss className="dropdown-icon"/> Kurum Kontrol
+                            </li>
                         )}
-                    </>
+                        <li onClick={() => handleNavigation("/sensorControl/ip")}>
+                            <FaRss className="dropdown-icon"/> IP Kontrol
+                        </li>
+                        <li onClick={() => handleNavigation("/sensorControl/data")}>
+                            <FaRss className="dropdown-icon"/> Veri Kontrol
+                        </li>
+                    </ul>
                 )}
 
                 <div className="menu" onClick={() => setSensorMenuOpen(!isSensorMenuOpen)}>
@@ -98,9 +92,11 @@ export default function Sidebar() {
                         </div>
                         {isUsersOpen && (
                             <ul className="dropdown">
-                                <li onClick={() => handleNavigation('/users/managers')}>
-                                    <FaUser className="dropdown-icon"/> Managers
-                                </li>
+                                {user?.role  !== 'manager' && (
+                                    <li onClick={() => handleNavigation('/users/managers')}>
+                                        <FaUser className="dropdown-icon"/> Managers
+                                    </li>
+                                )}
                                 <li onClick={() => handleNavigation('/users/personals')}>
                                     <FaUser className="dropdown-icon"/> Personals
                                 </li>
@@ -109,10 +105,12 @@ export default function Sidebar() {
                         )}
                     </>
                 )}
-                <div className="menu" onClick={() => handleNavigation("/companies")}>
-                    <FaBuilding className="menu-icon"/>
-                    <span>Kurumlar</span>
-                </div>
+                {user?.role === 'administrator' && (
+                    <div className="menu" onClick={() => handleNavigation("/companies")}>
+                        <FaBuilding className="menu-icon"/>
+                        <span>Kurumlar</span>
+                    </div>
+                )}
                 {!isPersonal && (
                     <>
                         <div className={`menu ${isAddOpen ? 'open' : ''}`} onClick={() => setIsAddOpen(!isAddOpen)}>

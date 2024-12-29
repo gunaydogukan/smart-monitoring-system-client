@@ -39,11 +39,16 @@ export const sensorIpServices = async (role, userId) => {
             sensors = data.sensors || [];
             sensorOwners = data.sensorOwners || [];
         } else if (role === 'manager') {
-            // DEĞİŞECEK FİLTER SERVİS İLE
             const data = response.data;
-            managers = data.managers?.filter((m) => m.managerId === userId) || [];
-            sensors = data.sensors?.filter((sensor) => sensor.ownerId === userId) || [];
-            sensorOwners = data.sensorOwners || [];
+            managers = data.manager;
+            if(!managers){
+                throw new Error("Manager bulunamadı");
+            }
+            sensors = data.managerSensors;
+            if(!sensors){
+                throw new Error("Sensör bulunamadı");
+            }
+            sensorOwners = sensors; // ?
         } else {
             // FİİLTER SERVİS KULLANILACAK
             sensors = response.data.sensors?.filter((sensor) => sensor.assignedTo === userId) || [];
@@ -117,6 +122,7 @@ export const fetchSensorTypes = async () => {
 
 export const checkSensorDataTime = async (role, userId, companyCode = null, managerId = null, personalId = null) => {
     try {
+        console.log(userId);
         if (!userId) {
             throw new Error('Kullanıcı yok......');
         }
@@ -145,18 +151,25 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
 
         } else if (role === 'manager') {
             const data = response.data;
+            console.log("data = (checkSensorDataTime)",data);
 
             // Manager bilgileri ve bağlı personeller
-            const manager = data.managers.find(m => m.id === userId);
-            if (!manager) {
-                throw new Error('Manager bulunamadı.');
+            let manager = data.manager
+            if (data.manager.id === userId) {
+                manager = data.manager;
+            }
+            else {
+                throw new Error("Manager ile user aynı değil");
             }
 
-            personals = data.personals.filter(personal => personal.creator_id === manager.id);
-            sensors = data.sensors.filter(sensor =>
-                data.sensorOwners.some(owner => owner.sensor_owner === manager.id && owner.sensor_id === sensor.id)
-            );
+            personals = data.personals;
 
+            for (const personal of personals) {
+                if (personal.creator_id !== manager.id) {
+                    throw new Error("Manager ile user aynı değil");
+                }
+            }
+            sensors = data.managerSensors;
         } else if (role === 'personal') {
             const data = response.data;
             sensors = data.sensors.filter(sensor =>
