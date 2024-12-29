@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
-import '../styles/Layout.css'; // CSS dosyasını ekliyoruz
-import { useTheme } from "../contexts/ThemeContext"; // Tema bağlamını ekliyoruz
+import '../styles/Layout.css';
 
 export default function Layout({ children }) {
-    const { isDarkMode } = useTheme(); // Tema bağlamından dark mode durumunu alıyoruz
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className={`layout ${isDarkMode ? 'dark-layout' : ''}`}>
-            <Sidebar />
-            <div className={`content ${isDarkMode ? 'dark-content' : ''}`}>
-                {children}
-            </div>
+        <div className={`layout ${isSidebarOpen ? "" : "sidebar-closed"}`}>
+            <Sidebar isSidebarOpen={isSidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <div className="content">{children}</div>
         </div>
     );
 }

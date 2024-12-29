@@ -1,25 +1,24 @@
 import React, { useContext } from 'react';
 import Charts from '../components/Charts';
 import { ChartContext, ChartProvider } from '../contexts/ChartContext';
-import { useTheme } from '../contexts/ThemeContext'; // Tema bağlamını ekleyin
+
 
 const ChartPageContent = ({ sensor }) => {
     const { sensorData,sensorType ,loading, error, setInterval, interval } = useContext(ChartContext);
-    const { isDarkMode } = useTheme(); // Tema bağlamını kullanarak karanlık modu alın
     const handleIntervalChange = (event) => {
         setInterval(event.target.value); // Seçilen zaman aralığını context’e güncelle
     };
 
     if (loading) {
-        return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Yükleniyor...</p>;
+        return <p style={{ color:'#000' }}>Yükleniyor...</p>;
     }
 
     if (error) {
-        return <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Veri yüklenirken bir hata oluştu(chartspage): {error.message}</p>;
+        return <p style={{ color:'#000' }}>Veri yüklenirken bir hata oluştu(chartspage): {error.message}</p>;
     }
 
     return (
-        <div style={{ backgroundColor: isDarkMode ? '#333' : '#fff', color: isDarkMode ? '#fff' : '#000', padding: '20px', borderRadius: '10px' }}>
+        <div style={{ backgroundColor: '#fff', color: '#000', padding: '20px', borderRadius: '10px' }}>
 
 
             {/* Zaman Aralığı Seçici */}
@@ -29,9 +28,9 @@ const ChartPageContent = ({ sensor }) => {
                 onChange={handleIntervalChange}
                 value={interval}
                 style={{
-                    backgroundColor: isDarkMode ? '#555' : '#fff',
-                    color: isDarkMode ? '#fff' : '#000',
-                    border: isDarkMode ? '1px solid #fff' : '1px solid #000',
+                    backgroundColor:'#fff',
+                    color: '#000',
+                    border:'1px solid #000',
                     marginBottom: '10px',
                     padding: '5px'
                 }}
@@ -49,7 +48,7 @@ const ChartPageContent = ({ sensor }) => {
             {sensorData.length > 0 ? (
                 <Charts sensorType={sensorType} data={sensorData} interval={interval} />
             ) : (
-                <p style={{ color: isDarkMode ? '#fff' : '#000' }}>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
+                <p style={{ color: '#000' }}>Grafik verisi yok. Lütfen sensör verisi ekleyin.</p>
             )}
         </div>
     );

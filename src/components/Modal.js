@@ -1,19 +1,16 @@
 // src/components/Modal.js
 import React from 'react';
 import ChartPage from '../pages/ChartPage'; // ChartPage bileşenini içe aktar
-import { useTheme } from '../contexts/ThemeContext'; // Tema bağlamını içe aktar
 
 const Modal = ({ isOpen, onClose, sensor }) => {
-    const { isDarkMode } = useTheme(); // Temayı al
-
     if (!isOpen) return null; // Modal kapalıysa hiçbir şey render etme
     console.log(sensor);
 
     return (
         <div style={styles.overlay}>
-            <div style={isDarkMode ? styles.modalDark : styles.modalLight}>
+            <div style={styles.modal}>
                 <div style={styles.header}>
-                    <h2 className={isDarkMode ? styles.titleDark : styles.titleLight}>
+                    <h2 style={styles.title}>
                         {sensor ? `${sensor.name} - Grafiği` : 'Grafik'}
                     </h2>
 
@@ -43,22 +40,10 @@ const styles = {
         alignItems: 'center',
         zIndex: 999, // Diğer içeriklerin üstünde
     },
-    modalLight: {
+    modal: {
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#fff', // Aydınlık modda beyaz arka plan
-        borderRadius: '10px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-        width: '90%',
-        maxWidth: '800px',
-        maxHeight: '80vh',
-        overflowY: 'auto',
-        padding: '20px',
-    },
-    modalDark: {
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#333', // Karanlık modda koyu gri arka plan
+        backgroundColor: '#fff', // Beyaz arka plan
         borderRadius: '10px',
         boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
         width: '90%',
@@ -74,15 +59,10 @@ const styles = {
         borderBottom: '2px solid #f0f0f0',
         paddingBottom: '10px',
     },
-    titleLight: {
+    title: {
         margin: 0,
         fontSize: '1.5rem',
-        color: '#333', // Aydınlık modda metin rengi
-    },
-    titleDark: {
-        margin: 0,
-        fontSize: '1.5rem',
-        color: '#fff', // Karanlık modda beyaz metin rengi
+        color: '#333', // Metin rengi
     },
     closeButton: {
         backgroundColor: 'transparent',

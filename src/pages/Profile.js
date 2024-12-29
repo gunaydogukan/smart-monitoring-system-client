@@ -4,15 +4,14 @@ import Layout from "../layouts/Layout";
 import { FaEnvelope, FaPhone, FaBuilding } from 'react-icons/fa';
 import userIcon from '../assets/profile-icon.avif';
 import styles from '../styles/Profile.module.css';
-import { useTheme } from '../contexts/ThemeContext'; // ThemeContext'i içe aktar
 import UpdateModal from '../components/profileUpdateModal';
+
 export default function Profile() {
     const { token } = useAuth();
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false); // Modal görünürlüğünü kontrol eden state
-    const { isDarkMode } = useTheme();
 
     useEffect(() => {
         const fetchProfileData = async () => {
@@ -51,7 +50,7 @@ export default function Profile() {
 
     return (
         <Layout>
-            <div className={`${styles.content} ${isDarkMode ? styles.dark : ''}`}>
+            <div className={styles.content}>
                 <div className={styles.profileContent}>
                     <div className={styles.avatarContainer}>
                         <img src={userIcon} alt="User Icon" className={styles.avatarImage} />
