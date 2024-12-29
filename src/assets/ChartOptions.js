@@ -6,7 +6,7 @@ export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
         console.warn("Grafik için geçerli veri yok.");
         return [{ title: { text: "Veri Yok" }, series: [] }];
     }
-
+    console.log("asdasdsad",sensorTypeDetails)
     if (!sensorTypeDetails) {
         console.error("Sensör tipi bilgileri eksik.");
         return [{ title: { text: "Geçersiz Sensör Tipi Bilgisi" }, series: [] }];
@@ -105,17 +105,29 @@ export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
 
         // Veriyi işliyoruz
         const selectedData = validData.map(item => {
+            const normalizedKeys = Object.keys(item).reduce((acc, key) => {
+                acc[key.toLowerCase()] = key; // Anahtarları küçük harfe çevirip asıl değerle eşleştir
+                return acc;
+            }, {});
+
+            const normalizedDataName = dataName.toLowerCase(); // dataName'i küçük harfe çevir
+            const actualKey = normalizedKeys[normalizedDataName]; // Orijinal anahtarı bul
+            let value = actualKey ? item[actualKey] : undefined;
+
+            console.log("Original Data Name:", dataName);
+            console.log("Normalized Data Name:", normalizedDataName);
+            console.log("Actual Key:", actualKey);
+            console.log("Value:", value);
+
             const selectedDataItem = {
-                time: item.time, // Zaman bilgisini olduğu gibi alıyoruz
+                time: item.time,
+                [dataName]: value !== undefined ? value : "N/A", // Varsayılan değer
             };
 
-            // Veriyi doğrudan alıyoruz, herhangi bir dönüştürme yapmıyoruz
-            let value = item[dataName];
-
-            selectedDataItem[dataName] = value; // parsedItem'e ekliyoruz
-
-            return selectedDataItem; // Sonuçları döndürüyoruz
+            return selectedDataItem;
         });
+
+
 
         charts.push({
             ...commonOptions,
