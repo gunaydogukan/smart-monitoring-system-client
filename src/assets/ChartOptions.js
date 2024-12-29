@@ -1,7 +1,7 @@
 export const getSensorChartOptions = (sensorTypeDetails, data, interval) => {
     const validData = Array.isArray(data) ? data : [];
     console.log(validData);
-
+    console.log("deneme");
     if (!validData.length) {
         console.warn("Grafik için geçerli veri yok.");
         return [{ title: { text: "Veri Yok" }, series: [] }];
