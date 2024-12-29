@@ -3,7 +3,7 @@ import { useParams ,useLocation } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import styles from "../styles/Users.module.css";
 import Layout from "../layouts/Layout";
-import { useTheme } from "../contexts/ThemeContext";
+
 import UpdateUserModal from "../components/UpdateUserModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,7 +19,7 @@ export default function Users() {
     const [modalVisible, setModalVisible] = useState(false);
     const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [actionType, setActionType] = useState("");
-    const { isDarkMode } = useTheme();
+
     const [role, setRole] = useState("");
     const [undefinedUsersModalVisible, setUndefinedUsersModalVisible] = useState(false);
     const [undefinedUsers, setUndefinedUsers] = useState([]);
@@ -423,13 +423,16 @@ export default function Users() {
 
     return (
         <Layout>
-            <div className={`${styles.container} ${isDarkMode ? styles.dark : ""}`}>
-                <h2 className={`${styles.title} ${isDarkMode ? styles.darkTitle : ""}`}>
+            <div className={styles.container}>
+                <h2 className={styles.title}>
                     {type === "managers" ? " Managers" : " Personals"}
                 </h2>
-                <UpdateUserModal
-                    modalVisible={modalVisible}
-                    handleCloseModal={handleCloseModal}
+
+
+            <UpdateUserModal
+                modalVisible={modalVisible}
+                handleCloseModal={handleCloseModal}
+
                     selectedUser={selectedUser}
                     handleUpdateUser={handleModifyUserDetails}
                 />
@@ -437,9 +440,7 @@ export default function Users() {
                 <div className={styles.filterContainer}>
                     {role === "administrator" ? (
                         <select
-                            className={`${styles.select} ${
-                                isDarkMode ? styles.darkSelect : ""
-                            }`}
+                            className={`${styles.select}`}
                             value={selectedCompany}
                             onChange={handleCompanyChange}
                         >
@@ -455,9 +456,7 @@ export default function Users() {
                         <FaSearch className={styles.searchIcon}/>
                         <input
                             type="text"
-                            className={`${styles.searchInput} ${
-                                isDarkMode ? styles.darkInput : ""
-                            }`}
+                            className={`${styles.searchInput}`}
                             placeholder="Ara"
                             value={searchTerm}
                             onChange={handleSearch}
@@ -489,9 +488,7 @@ export default function Users() {
                 <div className={styles.tableContainer}>
                     {filteredResults.length > 0 ? (
                         <table
-                            className={`${styles.table} ${
-                                isDarkMode ? styles.darkTable : ""
-                            }`}
+                            className={`${styles.table} `}
                         >
                             <thead>
                             <tr>
@@ -788,7 +785,7 @@ export default function Users() {
                     closeOnClick
                     pauseOnHover
                     draggable
-                    theme={isDarkMode ? "dark" : "light"}
+
                 />
             </div>
         </Layout>

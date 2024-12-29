@@ -3,13 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 import { filterManagersByCompany } from '../services/FilterService';
 import styles from '../styles/SensorForm.module.css';
-import { useTheme } from '../contexts/ThemeContext';
 import Modal from '../components/MessageModal';
 
 export default function SensorForm() {
     const location = useLocation();
     const { villageId, villageName } = location.state || {};
-    const { isDarkMode } = useTheme();
 
     const [datacode, setDatacode] = useState('');
     const [name, setName] = useState('');
@@ -139,7 +137,7 @@ export default function SensorForm() {
 
     return (
         <Layout>
-            <div className={`${styles.sensorFormContainer} ${isDarkMode ? styles.dark : ''}`}>
+            <div className={styles.sensorFormContainer}>
                 <h1>Yeni Sensör Ekle</h1>
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>

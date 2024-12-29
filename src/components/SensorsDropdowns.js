@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../contexts/ThemeContext';
 import styles from '../styles/SensorsDropdowns.module.css';
 
 export default function SensorsDropdowns({
@@ -13,13 +12,11 @@ export default function SensorsDropdowns({
                                              onChange,
                                              onMapRedirect,
                                          }) {
-    const { isDarkMode } = useTheme();
-
     return (
         <div className={styles.sensorDropdownContainer}>
             {role === 'administrator' && (
                 <select
-                    className={`${styles.dropdown} ${isDarkMode ? styles.dark : ''}`}
+                    className={styles.dropdown}
                     onChange={(e) => onChange('company', e.target.value)}
                     value={selectedCompany}
                 >
@@ -33,7 +30,7 @@ export default function SensorsDropdowns({
             )}
             {role === 'administrator' && (
                 <select
-                    className={`${styles.dropdown} ${isDarkMode ? styles.dark : ''}`}
+                    className={styles.dropdown}
                     value={selectedManager}
                     onChange={(e) => onChange('manager', e.target.value)}
                     disabled={!selectedCompany}
@@ -47,7 +44,7 @@ export default function SensorsDropdowns({
                 </select>
             )}
             <select
-                className={`${styles.dropdown} ${isDarkMode ? styles.dark : ''}`}
+                className={styles.dropdown}
                 value={selectedPersonal}
                 onChange={(e) => onChange('personal', e.target.value)}
                 disabled={role === 'administrator' && !selectedManager}
@@ -61,7 +58,7 @@ export default function SensorsDropdowns({
             </select>
             <button
                 onClick={onMapRedirect}
-                className={`${styles.mapButton} ${isDarkMode ? styles.buttonDark : styles.buttonLight}`}
+                className={styles.mapButton}
             >
                 Tüm Haritayı Görüntüle
             </button>

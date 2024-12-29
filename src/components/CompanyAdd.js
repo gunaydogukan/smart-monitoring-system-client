@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 
 
+
 export default function CompanyAdd() {
     const [formData, setFormData] = useState({
         name: '',

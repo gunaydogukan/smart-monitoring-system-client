@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
+
 import "./styles/App.css";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -28,7 +28,7 @@ export default function App() {
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
     return (
-        <ThemeProvider>
+
             <Router>
                 <Routes>
 
@@ -62,6 +62,6 @@ export default function App() {
                     )}
                 </Routes>
             </Router>
-        </ThemeProvider>
+
     );
 }

@@ -1,6 +1,5 @@
-// src/pages/MapPage.js
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleMap, Marker,useLoadScript } from '@react-google-maps/api';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import SensorCheckBoxForm from '../../components/sensorCheck/sensorCheckBoxForm';
 import LegendCard from '../../components/sensorCheck/LegendCard'; // Import the LegendCard component
 import '../../styles/sensorCheck/MapPage.css';
@@ -50,35 +49,33 @@ function MapPage() {
 
     return (
         <Layout>
-
-
-        <div>
-            <h2>Toplam Sensör Sayısı: {sensors.length}</h2>
-            <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={center}
-                options={mapOptions}
-                onLoad={map => (mapRef.current = map)}
-            >
-                {sensors.map(sensor => (
-                    <Marker
-                        key={sensor.id}
-                        position={{ lat: sensor.lat, lng: sensor.lng }}
-                        icon={getMarkerIcon(sensor)}
-                        onClick={() => setSelectedSensor(sensor)}
-                    />
-                ))}
-            </GoogleMap>
-            {selectedSensor && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={handleCloseModal}>&times;</span>
-                        <SensorCheckBoxForm selectedSensor={selectedSensor} onClose={handleCloseModal} />
+            <div>
+                <h2>Toplam Sensör Sayısı: {sensors.length}</h2>
+                <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    center={center}
+                    options={mapOptions}
+                    onLoad={map => (mapRef.current = map)}
+                >
+                    {sensors.map(sensor => (
+                        <Marker
+                            key={sensor.id}
+                            position={{ lat: sensor.lat, lng: sensor.lng }}
+                            icon={getMarkerIcon(sensor)}
+                            onClick={() => setSelectedSensor(sensor)}
+                        />
+                    ))}
+                </GoogleMap>
+                {selectedSensor && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <span className="close" onClick={handleCloseModal}>&times;</span>
+                            <SensorCheckBoxForm selectedSensor={selectedSensor} onClose={handleCloseModal} />
+                        </div>
                     </div>
-                </div>
-            )}
-            <LegendCard /> {/* LegendCard bileşenini ekledik */}
-        </div>
+                )}
+                <LegendCard /> {/* LegendCard bileşenini ekledik */}
+            </div>
         </Layout>
     );
 }

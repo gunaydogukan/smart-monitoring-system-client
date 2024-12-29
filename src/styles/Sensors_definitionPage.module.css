@@ -1,20 +1,25 @@
-
 html, body {
-    margin: 0; /* Sayfa etrafındaki boşlukları sıfırlıyoruz */
-    padding: 0; /* Sayfa etrafındaki boşlukları sıfırlıyoruz */
-    width: 100%; /* Sayfa genişliğini tam olarak ayarlıyoruz */
-    height: 100%; /* Sayfa yüksekliği */
+    width: 100%;
+    height: 100%;
+    overflow-x: auto; /* Yatay kaydırma */
+    overflow-y: auto; /* Dikey kaydırma */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Kutuları düzgün hesaplama */
+    font-size: 16px; /* Temel yazı boyutu */
 }
+
 .sensorsDefinitionPage {
     background: linear-gradient(to bottom, #f9f9f9, #e9ecef);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem; /* Eşit boşluk, ama kenar boşluklarını kontrol et */
-    width: 100%; /* Sayfa genişliğini %100 yapalım */
-    box-sizing: border-box; /* İçerik ve padding hesaplamalarını doğru yap */
-    margin: 0; /* Kenar boşluğunu sıfırla */
+    padding: 2rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: auto; /* Sayfa kaydırılabilirliği */
 }
 
 
@@ -23,18 +28,20 @@ html, body {
     font-weight: 700;
     color: #2c3e50;
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     position: relative;
+
 }
 
 .pageTitle::after {
     content: "";
     display: block;
-    width: 150px;
+
     height: 5px;
     background-color: #3498db;
     margin: 1rem auto;
     border-radius: 3px;
+    width: 120px; /* Alt çizginin genişliği küçültüldü */
 }
 
 .pageTitle::before {
@@ -77,8 +84,8 @@ html, body {
     border: 2px solid #eee;
     display: flex;
     flex-direction: column;
-    min-height: 350px; /* Kart yüksekliği */
-    max-width: 500px; /* Kartın genişliğini sınırlama */
+    min-height: 300px; /* Kart yüksekliği */
+    max-width: 400px; /* Kartın genişliğini sınırlama */
     width: 100%; /* Kartların genişliği tam sayfa genişliği kadar */
     margin: 0 auto; /* Ortalamak için */
 }
@@ -198,8 +205,10 @@ html, body {
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
-    width: 260px;
+
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 35%; /* Küçük ekranlarda genişlik kontrolü */
+    max-width: 400px; /* Maksimum genişlik */
 }
 
 .institutionSelect:hover {
@@ -226,22 +235,7 @@ html, body {
     background-color: #f9fcff;
 }
 
-@media (max-width: 768px) {
-    .mainContent {
-        grid-template-columns: 1fr; /* Küçük ekranlarda tek sütun */
-    }
-    .card {
-        max-width: 95%; /* Küçük ekranlarda genişlik kontrolü */
-    }
-}
 
-.singleCardPosition {
-    position: absolute; /* Kartın üstüne konumlandır */
-    top: -40px; /* Dropdown’ın daha aşağıda görünmesi için */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10; /* Dropdown’ın üstte kalmasını sağla */
-}
 
 
 
@@ -559,4 +553,20 @@ html, body {
         height: 30px;
         font-size: 14px;
     }
+}
+@media (max-width: 768px) {
+    .mainContent {
+        grid-template-columns: 1fr; /* Küçük ekranlarda tek sütun */
+    }
+    .card {
+        max-width: 95%; /* Küçük ekranlarda genişlik kontrolü */
+    }
+}
+
+.singleCardPosition {
+    position: absolute; /* Kartın üstüne konumlandır */
+    top: -40px; /* Dropdown’ın daha aşağıda görünmesi için */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10; /* Dropdown’ın üstte kalmasını sağla */
 }

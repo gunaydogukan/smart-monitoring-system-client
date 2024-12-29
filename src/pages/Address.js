@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
-import { useTheme } from "../contexts/ThemeContext"; // ThemeContext'i içe aktar
 import styles from '../styles/Address.module.css'; // CSS dosyasını içe aktar
 
 export default function Address() {
-    const { isDarkMode } = useTheme(); // Dark mode durumunu al
     const [provinces, setProvinces] = useState([]);
     const [filteredProvinces, setFilteredProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -152,7 +150,7 @@ export default function Address() {
 
     return (
         <Layout>
-            <div className={`${styles.addressContainer} ${isDarkMode ? styles.dark : ''}`}>
+            <div className={styles.addressContainer}>
                 <h1>Adres Bilgisi</h1>
                 <form onSubmit={handleSubmit}>
                     <div className={styles['form-group']}>
