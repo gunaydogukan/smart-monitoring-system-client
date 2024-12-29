@@ -9,7 +9,7 @@
 .content {
     flex: 1;
     margin-left: 220px; /* Sidebar genişliğini uygun şekilde ayarla */
-    padding: 20px;
+    padding: 0;
     overflow-y: auto;
     box-sizing: border-box;
     background-color: var(--background-color);

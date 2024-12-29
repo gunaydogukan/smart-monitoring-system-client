@@ -14,6 +14,31 @@ export default function SensorsDefinitionPage() {
     const [selectedManagers, setSelectedManagers] = useState([]); // Seçilen yöneticiler
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal görünürlük durumu
     const [error] = useState('');
+    const [userRole, setUserRole] = useState(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser);
+                return user.role; // "administrator" veya "manager"
+            } catch (error) {
+                console.error("LocalStorage'daki kullanıcı verisi okunamadı:", error);
+                return ""; // Hata durumunda varsayılan bir değer döndür
+            }
+        }
+        return ""; // Eğer localStorage'da veri yoksa varsayılan değer
+    });
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser); // JSON formatını parse et
+                setUserRole(user.role); // Rolü state'e kaydet
+            } catch (error) {
+                console.error("LocalStorage'daki kullanıcı verisi okunamadı:", error);
+            }
+        }
+    }, []);
 
     // API'den kurumları çekme
     useEffect(() => {
@@ -175,53 +200,79 @@ export default function SensorsDefinitionPage() {
 
 
 
+
     return (
         <Layout>
             <div className={styles.sensorsDefinitionPage}>
-                <ToastContainer />
-                <div className={styles.institutionSelect}>
-                    <select
-                        className={styles.select}
-                        value={selectedCompany}
-                        onChange={handleCompanyChange}
-                    >
-                        <option value="">Kurum Seçin</option>
-                        {companies.map((company) => (
-                            <option key={company.code} value={company.code}>
-                                {company.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <ToastContainer/>
 
+                {/* Başlık */}
                 <h1 className={styles.pageTitle}>Sensör Tanımla</h1>
 
-                <div className={styles.mainContent}>
-                    <div
-                        className={`${styles.card} ${styles.managerCard}`}
-                        onClick={openModal}
-                    >
-                        <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
-                            <FaRss />
-                            <FaPlus className={styles.plusIcon} />
-                        </div>
-                        <h3>Managerlere Sensör Tanımla</h3>
-                        <p>Managerler için yeni sensörler ekle ve düzenle.</p>
+                {/* Dropdown */}
+                {(userRole === "administrator" || userRole === "manager") && (
+                    <div className={styles.institutionSelect}>
+                        <select
+                            className={styles.select}
+                            value={selectedCompany}
+                            onChange={handleCompanyChange}
+                        >
+                            <option value="">Kurum Seçin</option>
+                            {companies.map((company) => (
+                                <option key={company.code} value={company.code}>
+                                    {company.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+                )}
 
-                    <div
-                        className={`${styles.card} ${styles.personalCard}`}
-                        onClick={openModal}
-                    >
-                        <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
-                            <FaRss />
-                            <FaPlus className={styles.plusIcon} />
+                {/* Kartlar */}
+                <div className={styles.mainContent}>
+                    {userRole === "administrator" && (
+                        <>
+                            <div
+                                className={`${styles.card} ${styles.managerCard}`}
+                                onClick={openModal}
+                            >
+                                <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
+                                    <FaRss/>
+                                    <FaPlus className={styles.plusIcon}/>
+                                </div>
+                                <h3>Managerlere Sensör Tanımla</h3>
+                                <p>Managerler için yeni sensörler ekle ve düzenle.</p>
+                            </div>
+
+                            <div
+                                className={`${styles.card} ${styles.personalCard}`}
+                                onClick={openModal}
+                            >
+                                <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
+                                    <FaRss/>
+                                    <FaPlus className={styles.plusIcon}/>
+                                </div>
+                                <h3>Personellere Sensör Tanımla</h3>
+                                <p>Personeller için yeni sensörler tanımla ve düzenle.</p>
+                            </div>
+                        </>
+                    )}
+
+                    {userRole === "manager" && (
+                        <div
+                            className={`${styles.card} ${styles.personalCard}`}
+                            onClick={openModal}
+                        >
+                            <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
+                                <FaRss/>
+                                <FaPlus className={styles.plusIcon}/>
+                            </div>
+                            <h3>Personellere Sensör Tanımla</h3>
+                            <p>Personeller için yeni sensörler tanımla ve düzenle.</p>
                         </div>
-                        <h3>Personellere Sensör Tanımla</h3>
-                        <p>Personeller için yeni sensörler tanımla ve düzenle.</p>
-                    </div>
+                    )}
                 </div>
             </div>
+
 
             {/* Modal Section */}
             {isModalOpen && (
