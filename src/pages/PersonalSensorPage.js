@@ -9,6 +9,7 @@ export default function PersonalPage() {
     const [sensors, setSensors] = useState([]); // Sensörler başlangıçta boş dizi
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [sensorTypes, setSensorTypes] = useState({}); // Tip eşleştirmesi için eklenen state
 
     const navigate = useNavigate();
 
@@ -27,6 +28,17 @@ export default function PersonalPage() {
                 const { personal, sensors } = await response.json(); // Kullanıcı bilgilerini ve sensörleri alıyoruz
                 setPersonalInfo(personal); // Kullanıcı bilgileri
                 setSensors(sensors); // Sensör verileri
+
+                const typesResponse = await fetch('http://localhost:5000/api/type', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                });
+                const typesData = await typesResponse.json();
+                const typesMap = typesData.reduce((acc, type) => {
+                    acc[type.id] = type.type;
+                    return acc;
+                }, {});
+                setSensorTypes(typesMap);
+
             } catch (error) {
                 setError('Sensör verileri alınırken bir hata oluştu.');
                 console.error('Hata:', error);
@@ -66,7 +78,10 @@ export default function PersonalPage() {
                 </button>
 
                 {/* Sensör listesi */}
-                <SensorList sensors={sensors}/>
+                <SensorList
+                    sensors={sensors}
+                    sensorTypes={sensorTypes}
+                />
             </div>
         </Layout>
     );
