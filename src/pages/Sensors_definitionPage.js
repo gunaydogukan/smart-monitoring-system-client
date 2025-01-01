@@ -71,8 +71,14 @@ export default function SensorsDefinitionPage() {
             const sensorsData = await sensorsResponse.json();
             const usersData = await usersResponse.json();
 
+            let filteredUsers = usersData.users;
+            if (userRole === "manager") {
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                filteredUsers = usersData.users.filter(user => user.creator_id === storedUser.id);
+            } //Eğer kullanıcı manager ise o managerin personelleri gelir
+
             setSensors(sensorsData.sensors); // Sensörleri state'e kaydet
-            setActiveUsers(usersData.users); // Kullanıcıları state'e kaydet
+            setActiveUsers(filteredUsers);  // Kullanıcıları state'e kaydet
         } catch (error) {
             console.error("Veri çekme hatası:", error);
         }
@@ -157,6 +163,21 @@ export default function SensorsDefinitionPage() {
         }
     };
 
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser);
+                if (userRole === "manager") {
+                    setSelectedCompany(user.companyCode || ""); // Manager için varsayılan şirket
+                }
+            } catch (error) {
+                console.error("LocalStorage'daki kullanıcı verisi okunamadı:", error);
+            }
+        }
+    }, [userRole]);
+
+
     return (
         <Layout>
             <div className={styles.sensorsDefinitionPage}>
@@ -176,17 +197,28 @@ export default function SensorsDefinitionPage() {
                                 setIsModalOpen(false); // Modalı kapalı hale getir
                                 setSelectedRole(""); // Role sıfırla
                             }}
+                            disabled={userRole === "manager"} // Eğer kullanıcı manager ise seçim yapılamaz
                         >
-                            <option value="">Kurum Seçin</option>
-                            {companies.map((company) => (
-                                <option key={company.code} value={company.code}>
-                                    {company.name}
+                            {userRole === "administrator" ? (
+                                <>
+                                    <option value="">Kurum Seçin</option>
+                                    {companies.map((company) => (
+                                        <option key={company.code} value={company.code}>
+                                            {company.name}
+                                        </option>
+                                    ))}
+                                </>
+                            ) : (
+                                // Manager için yalnızca kendi kurumunun adı
+                                <option value={selectedCompany}>
+                                    {companies.find((company) => company.code === selectedCompany)?.name || "Kurumunuz"}
                                 </option>
-                            ))}
+                            )}
                         </select>
-
                     </div>
                 )}
+
+
 
                 <div className={styles.mainContent}>
                     {userRole === "administrator" && (

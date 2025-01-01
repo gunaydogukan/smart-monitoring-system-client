@@ -30,7 +30,7 @@ export default function ManagerPage({ role }) {
 
             setFilteredSensors(data.managerSensors); // Başlangıçta manager sensörlerini göster
             setSensors(data.managerSensors);
-            console.log(data)
+            console.log("Manager sensör bilgileri = ",data)
             // Tip verilerini yükle
             const typesResponse = await fetch('http://localhost:5000/api/type', {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -55,14 +55,25 @@ export default function ManagerPage({ role }) {
 
     const filterSensorsByPersonal = (personalId) => {
         if (personalId) {
-            // Personelin sensörlerini bul
-            const personalSensorData = managerData.personalSensors.find(p => p.personalId === parseInt(personalId));
-            setFilteredSensors(personalSensorData ? personalSensorData.sensors : []);  // Sensörleri ayarla
+            const personalSensorData = managerData.personalSensors.find(
+                (p) => p.personalId === parseInt(personalId)
+            );
+
+            console.log("Personel sensor data", personalSensorData);
+
+            // Sadece sensörleri dönüştür
+            const sensorsArray = Array.isArray(personalSensorData?.sensors)
+                ? personalSensorData.sensors // Eğer zaten dizi ise aynen kullan
+                : Object.values(personalSensorData?.sensors || {}).flat(); // Nesneyi diziye çevir
+
+            console.log("Converted Sensors Array:", sensorsArray);
+
+            setFilteredSensors(sensorsArray);
         } else {
-            // Personel seçimi iptal edilirse, manager sensörlerini göster
-            setFilteredSensors(managerData.managerSensors);
+            setFilteredSensors(managerData.managerSensors || []); // Eğer personel seçilmediyse varsayılan sensörler
         }
     };
+
 
 
     if (!managerData) {

@@ -50,8 +50,9 @@ export const sensorIpServices = async (role, userId) => {
             }
             sensorOwners = sensors; // ?
         } else {
+            const data = response.data;
             // FİİLTER SERVİS KULLANILACAK
-            sensors = response.data.sensors?.filter((sensor) => sensor.assignedTo === userId) || [];
+            sensors = data.sensors; //buradaki filtreleme işlemi kaldırıldı. backendden gelen filtreme kullanılıyor
         }
 
         const IP_Data = await getIPData(sensors);
@@ -122,7 +123,6 @@ export const fetchSensorTypes = async () => {
 
 export const checkSensorDataTime = async (role, userId, companyCode = null, managerId = null, personalId = null) => {
     try {
-        console.log(userId);
         if (!userId) {
             throw new Error('Kullanıcı yok......');
         }
@@ -172,9 +172,7 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
             sensors = data.managerSensors;
         } else if (role === 'personal') {
             const data = response.data;
-            sensors = data.sensors.filter(sensor =>
-                data.sensorOwners.some(owner => owner.sensor_owner === userId && owner.sensor_id === sensor.id)
-            );
+            sensors = data.sensors;  //buradaki filtreleme işlemi kaldırıldı. backendden gelen filtreme kullanılıyor
         }
 
         const result = await getTimes(sensors);
