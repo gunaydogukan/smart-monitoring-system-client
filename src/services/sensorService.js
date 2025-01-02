@@ -186,6 +186,48 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
     }
 };
 
+export const sensorOwners = async (role,userId) =>{
+    try {
+        if (!userId) {
+            throw new Error('Kullanıcı yok......');
+        }
+
+        //ilgili kullanıcıyı getir
+        const response = await axios.get(userSensorAPI, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        if (!response || !response.data) {
+            throw new Error('API yanıtı eksik veya hatalı(sensorOwners metot).');
+        }
+        const data = response.data;
+        console.log("data",data);
+        let sensors = [];
+
+        if(role==="manager"){
+            sensors = data.managerSensors || [];
+        }else if(role==="administrator"){
+            const managerSensors = data.sensorOwners
+                .filter(owner => owner.sensor_owner === userId)
+                .map(owner => owner.sensor_id);  //sadece sensörlerin id'leri alındı
+            const filteredSensors = data.sensors.filter(sensor =>
+                managerSensors.includes(sensor.id)
+            ); // alınan idler datanın içindeki sensörlerle eşleşiyorsa sensörlere atama işlemi yapıldı
+
+            sensors = Array.isArray(filteredSensors) ? [...filteredSensors] : []; // state array oldugu için arraye çevirdik
+        }
+
+
+        console.log("sensorOwners fonksiyonu çalışyo, sensörler:", sensors);
+        return { success: true, sensors };
+    }catch (err){
+        console.log("SensorOwners metot hatası ", err);
+        throw err;
+    }
+}
+
 export const getTimes = async (sensors) => {
     try {
         // Datacodları al
