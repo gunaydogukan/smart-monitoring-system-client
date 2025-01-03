@@ -61,18 +61,20 @@ export default function ManagerPage({ role }) {
 
             console.log("Personel sensor data", personalSensorData);
 
-            // Sadece sensörleri dönüştür
+            // Sadece geçerli sensörleri filtrele
             const sensorsArray = Array.isArray(personalSensorData?.sensors)
-                ? personalSensorData.sensors // Eğer zaten dizi ise aynen kullan
-                : Object.values(personalSensorData?.sensors || {}).flat(); // Nesneyi diziye çevir
+                ? personalSensorData.sensors.filter(sensor => sensor?.id && sensor?.datacode) // Sensör kontrolü
+                : Object.values(personalSensorData?.sensors || {}).flat().filter(sensor => sensor?.id && sensor?.datacode);
 
-            console.log("Converted Sensors Array:", sensorsArray);
+            console.log("Filtered Sensors Array:", sensorsArray);
 
             setFilteredSensors(sensorsArray);
         } else {
-            setFilteredSensors(managerData.managerSensors || []); // Eğer personel seçilmediyse varsayılan sensörler
+            // Eğer personel seçilmemişse, tüm sensörleri getir
+            setFilteredSensors(managerData.managerSensors || []);
         }
     };
+
 
 
 

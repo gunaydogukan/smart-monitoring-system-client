@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
 import styles from "../styles/Sensors_definitionPage.module.css";
 import Layout from "../layouts/Layout";
+import {sensorOwners} from "../services/sensorService";
 
 export default function SensorsDefinitionPage() {
     const [selectedCompany, setSelectedCompany] = useState(""); // Seçilen kurum
@@ -68,14 +69,15 @@ export default function SensorsDefinitionPage() {
                 throw new Error("Veri çekme hatası.");
             }
 
-            const sensorsData = await sensorsResponse.json();
+            let sensorsData = await sensorsResponse.json();
             const usersData = await usersResponse.json();
 
             let filteredUsers = usersData.users;
             if (userRole === "manager") {
                 const storedUser = JSON.parse(localStorage.getItem("user"));
+                sensorsData = await sensorOwners(userRole,storedUser.id);
                 filteredUsers = usersData.users.filter(user => user.creator_id === storedUser.id);
-            } //Eğer kullanıcı manager ise o managerin personelleri gelir
+            } //Eğer kullanıcı manager ise o managerin personelleri gelir ve maangerin sensörleri gelir.
 
             setSensors(sensorsData.sensors); // Sensörleri state'e kaydet
             setActiveUsers(filteredUsers);  // Kullanıcıları state'e kaydet
@@ -163,6 +165,16 @@ export default function SensorsDefinitionPage() {
         }
     };
 
+    const filterSensorsByCreatorPersonal = async (userRole, userId) => {
+        try {
+            const response = await sensorOwners(userRole, userId);
+            return response.sensors || [];
+        } catch (error) {
+            console.error("Sensör filtreleme hatası:", error);
+            return [];
+        }
+    };
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -218,8 +230,6 @@ export default function SensorsDefinitionPage() {
                     </div>
                 )}
 
-
-
                 <div className={styles.mainContent}>
                     {userRole === "administrator" && (
                         <>
@@ -228,8 +238,8 @@ export default function SensorsDefinitionPage() {
                                 onClick={() => openModal("manager")}
                             >
                                 <div className={`${styles.cardIcon} ${styles.fullHeight}`}>
-                                    <FaRss/>
-                                    <FaPlus className={styles.plusIcon}/>
+                                    <FaRss />
+                                    <FaPlus className={styles.plusIcon} />
                                 </div>
                                 <h3>Managerlere Sensör Tanımla</h3>
                             </div>
@@ -273,6 +283,105 @@ export default function SensorsDefinitionPage() {
                             ve {selectedRole === "manager" ? "Managerler" : "Personeller"}
                         </h2>
 
+                        {/* Kullanıcılar Tablosu */}
+                        <div className={styles.tableContainer}>
+                            <h3>Aktif {selectedRole === "manager" ? "Managerler" : "Personeller"}</h3>
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedUsers.length === activeUsers.length}
+                                            onChange={handleSelectAllUsers}
+                                        />
+                                        Seç
+                                    </th>
+                                    <th>Ad</th>
+                                    <th>Soyad</th>
+                                    {selectedRole === "personal" && <th>Manager</th>} {/* Personal için Manager sütunu */}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {activeUsers.map((user) => (
+                                    <tr key={user.id}>
+                                        <td>
+                                            {/* ADMİN PERSONELE SENSÖR ATARKEN ÖZELLEŞTİRİLDİ... */}
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedUsers.includes(user.id)}
+                                                disabled={
+                                                    userRole === "administrator" &&
+                                                    selectedRole === "personal" && // Sadece personel atamada geçerli
+                                                    selectedUsers.length > 0 &&
+                                                    user.creator_id !== activeUsers.find((u) => u.id === selectedUsers[0])?.creator_id
+                                                }
+                                                onChange={async () => {
+                                                    if (userRole === "administrator" && selectedRole === "personal") {
+                                                        try {
+                                                            const selectedUser = activeUsers.find((u) => u.id === user.id);
+
+                                                            if (selectedUser && selectedUser.creator_id) {
+                                                                const creatorId = selectedUser.creator_id;
+
+                                                                // **1. Sensörleri Filtrele (Sadece Personel İçin)**
+                                                                const filteredSensors = await filterSensorsByCreatorPersonal(
+                                                                    userRole, // Rol
+                                                                    creatorId // Manager ID (creator_id)
+                                                                );
+                                                                console.log("Filtrelenmiş sensörler:", filteredSensors);
+                                                                setSensors([...filteredSensors]);
+
+                                                                // **2. Personeli Seç veya Çıkar**
+                                                                setSelectedUsers((prevSelectedUsers) => {
+                                                                    if (prevSelectedUsers.includes(user.id)) {
+                                                                        return prevSelectedUsers.filter((id) => id !== user.id);
+                                                                    } else {
+                                                                        return [...prevSelectedUsers, user.id];
+                                                                    }
+                                                                });
+                                                            } else {
+                                                                console.warn("Geçerli bir kullanıcı seçiniz.");
+                                                                setSensors([]); // Sensörleri sıfırla
+                                                            }
+                                                        } catch (error) {
+                                                            console.error("Sensör veya personel filtreleme hatası:", error);
+                                                            setSensors([]); // Hata durumunda sensör listesini temizle
+                                                        }
+                                                    } else if (userRole === "administrator" && selectedRole === "manager") {
+                                                        // Manager için sadece seçme işlemi yapılır, filtreleme yok
+                                                        setSelectedUsers((prev) =>
+                                                            prev.includes(user.id)
+                                                                ? prev.filter((id) => id !== user.id)
+                                                                : [...prev, user.id]
+                                                        );
+                                                    } else if (userRole === "manager") {
+                                                        // Manager rolü için standart seçim işlemi
+                                                        setSelectedUsers((prev) =>
+                                                            prev.includes(user.id)
+                                                                ? prev.filter((id) => id !== user.id)
+                                                                : [...prev, user.id]
+                                                        );
+                                                    }
+                                                }}
+                                            />
+
+                                        </td>
+                                        <td>{user.name}</td>
+                                        <td>{user.lastname}</td>
+                                        {selectedRole === "personal" && (
+                                            <td>
+                                                {user.manager
+                                                    ? `${user.manager.name} ${user.manager.lastname}`
+                                                    : "Yönetici Yok"}
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+
                         {/* Sensörler Tablosu */}
                         <div className={styles.tableContainer}>
                             <h3>Kuruma Ait Sensörler</h3>
@@ -298,64 +407,17 @@ export default function SensorsDefinitionPage() {
                                             <input
                                                 type="checkbox"
                                                 checked={selectedSensors.includes(sensor.id)}
-                                                onChange={() => setSelectedSensors((prev) =>
-                                                    prev.includes(sensor.id)
-                                                        ? prev.filter((id) => id !== sensor.id)
-                                                        : [...prev, sensor.id]
-                                                )}
+                                                onChange={() =>
+                                                    setSelectedSensors((prev) =>
+                                                        prev.includes(sensor.id)
+                                                            ? prev.filter((id) => id !== sensor.id)
+                                                            : [...prev, sensor.id]
+                                                    )
+                                                }
                                             />
                                         </td>
                                         <td>{sensor.name}</td>
                                         <td>{sensor.typeName}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Kullanıcılar Tablosu */}
-                        <div className={styles.tableContainer}>
-                            <h3>Aktif {selectedRole === "manager" ? "Managerler" : "Personeller"}</h3>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedUsers.length === activeUsers.length}
-                                            onChange={handleSelectAllUsers}
-                                        />
-                                        Seç
-                                    </th>
-                                    <th>Ad</th>
-                                    <th>Soyad</th>
-                                    {selectedRole === "personal" &&
-                                        <th>Manager</th>} {/* Personal için Manager sütunu */}
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {activeUsers.map((user) => (
-                                    <tr key={user.id}>
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedUsers.includes(user.id)}
-                                                onChange={() => setSelectedUsers((prev) =>
-                                                    prev.includes(user.id)
-                                                        ? prev.filter((id) => id !== user.id)
-                                                        : [...prev, user.id]
-                                                )}
-                                            />
-                                        </td>
-                                        <td>{user.name}</td>
-                                        <td>{user.lastname}</td>
-                                        {selectedRole === "personal" && (
-                                            <td>
-                                                {user.manager
-                                                    ? `${user.manager.name} ${user.manager.lastname}`
-                                                    : "Yönetici Yok"}
-                                            </td>
-                                        )}
                                     </tr>
                                 ))}
                                 </tbody>
@@ -384,7 +446,6 @@ export default function SensorsDefinitionPage() {
                                 </ul>
                             </div>
                         </div>
-
 
                         <div className={styles.actionContainer}>
                             <button className={styles.assignButton} onClick={handleAssign}>
