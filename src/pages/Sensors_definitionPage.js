@@ -17,6 +17,8 @@ export default function SensorsDefinitionPage() {
     const [userRole, setUserRole] = useState(""); // Kullanıcı rolü
     const [selectedRole, setSelectedRole] = useState(""); // Modal için hedef role (manager veya personal)
 
+    const [originalSensors, setOriginalSensors] = useState([]);
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -70,6 +72,8 @@ export default function SensorsDefinitionPage() {
             }
 
             let sensorsData = await sensorsResponse.json();
+            setOriginalSensors(sensorsData.sensors); // Tam listeyi de saklıyoruz
+
             const usersData = await usersResponse.json();
 
             let filteredUsers = usersData.users;
@@ -175,6 +179,7 @@ export default function SensorsDefinitionPage() {
         }
     };
 
+
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
@@ -189,6 +194,48 @@ export default function SensorsDefinitionPage() {
         }
     }, [userRole]);
 
+    useEffect(() => {
+        if (selectedUsers.length === 0) {
+            setSensors(originalSensors); // Kullanıcı seçilmediyse tüm sensörler
+            return;
+        }
+
+        if (userRole === "administrator" && selectedRole === "personal") {
+            const selectedUserId = selectedUsers[0];
+            const selectedUser = activeUsers.find((u) => u.id === selectedUserId);
+
+            if (selectedUser && selectedUser.creator_id) {
+                filterSensorsByCreatorPersonal(userRole, selectedUser.creator_id)
+                    .then((filteredSensors) => {
+                        setSensors(filteredSensors);
+                    })
+                    .catch((error) => {
+                        console.error("Sensör filtreleme hatası:", error);
+                        setSensors([]);
+                    });
+            } else {
+                setSensors([]);
+            }
+        } else if (userRole === "administrator" && selectedRole === "manager") {
+            setSensors(originalSensors); // Manager seçiliyken filtreleme yok
+        } else if (userRole === "manager") {
+            const selectedUserId = selectedUsers[0];
+            const selectedUser = activeUsers.find((u) => u.id === selectedUserId);
+
+            if (selectedUser && selectedUser.creator_id) {
+                filterSensorsByCreatorPersonal(userRole, selectedUser.creator_id)
+                    .then((filteredSensors) => {
+                        setSensors(filteredSensors);
+                    })
+                    .catch((error) => {
+                        console.error("Manager sensör filtreleme hatası:", error);
+                        setSensors([]);
+                    });
+            } else {
+                setSensors([]);
+            }
+        }
+    }, [selectedUsers, userRole, selectedRole, activeUsers, originalSensors]);
 
     return (
         <Layout>
@@ -316,54 +363,19 @@ export default function SensorsDefinitionPage() {
                                                     selectedUsers.length > 0 &&
                                                     user.creator_id !== activeUsers.find((u) => u.id === selectedUsers[0])?.creator_id
                                                 }
-                                                onChange={async () => {
-                                                    if (userRole === "administrator" && selectedRole === "personal") {
-                                                        try {
-                                                            const selectedUser = activeUsers.find((u) => u.id === user.id);
-
-                                                            if (selectedUser && selectedUser.creator_id) {
-                                                                const creatorId = selectedUser.creator_id;
-
-                                                                // **1. Sensörleri Filtrele (Sadece Personel İçin)**
-                                                                const filteredSensors = await filterSensorsByCreatorPersonal(
-                                                                    userRole, // Rol
-                                                                    creatorId // Manager ID (creator_id)
-                                                                );
-                                                                console.log("Filtrelenmiş sensörler:", filteredSensors);
-                                                                setSensors([...filteredSensors]);
-
-                                                                // **2. Personeli Seç veya Çıkar**
-                                                                setSelectedUsers((prevSelectedUsers) => {
-                                                                    if (prevSelectedUsers.includes(user.id)) {
-                                                                        return prevSelectedUsers.filter((id) => id !== user.id);
-                                                                    } else {
-                                                                        return [...prevSelectedUsers, user.id];
-                                                                    }
-                                                                });
-                                                            } else {
-                                                                console.warn("Geçerli bir kullanıcı seçiniz.");
-                                                                setSensors([]); // Sensörleri sıfırla
-                                                            }
-                                                        } catch (error) {
-                                                            console.error("Sensör veya personel filtreleme hatası:", error);
-                                                            setSensors([]); // Hata durumunda sensör listesini temizle
+                                                onChange={() => {
+                                                    setSelectedUsers((prevSelectedUsers) => {
+                                                        if (prevSelectedUsers.includes(user.id)) {
+                                                            // Kullanıcıyı kaldır
+                                                            return prevSelectedUsers.filter((id) => id !== user.id);
+                                                        } else {
+                                                            // Kullanıcıyı ekle
+                                                            return [...prevSelectedUsers, user.id];
                                                         }
-                                                    } else if (userRole === "administrator" && selectedRole === "manager") {
-                                                        // Manager için sadece seçme işlemi yapılır, filtreleme yok
-                                                        setSelectedUsers((prev) =>
-                                                            prev.includes(user.id)
-                                                                ? prev.filter((id) => id !== user.id)
-                                                                : [...prev, user.id]
-                                                        );
-                                                    } else if (userRole === "manager") {
-                                                        // Manager rolü için standart seçim işlemi
-                                                        setSelectedUsers((prev) =>
-                                                            prev.includes(user.id)
-                                                                ? prev.filter((id) => id !== user.id)
-                                                                : [...prev, user.id]
-                                                        );
-                                                    }
+                                                    });
                                                 }}
+
+
                                             />
 
                                         </td>

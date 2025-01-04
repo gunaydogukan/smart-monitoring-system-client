@@ -16,7 +16,7 @@ body, html {
     height: 100vh; /* Sayfa yüksekliğini tamamen kapsar */
     padding: 10px;
     box-sizing: border-box;
-    max-height: calc(100vh - 100px); /* Yükseklik sınırlaması */
+    max-height: calc(100vh); /* Yükseklik sınırlaması */
 }
 
 /* Table Wrapper */
@@ -28,7 +28,7 @@ body, html {
     border-radius: 8px;
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-height: calc(100vh - 100px);/*Tablo alanını sınırlar */
+    max-height: calc(100vh - 230px);/*Tablo alanını sınırlar */
     margin-bottom: 10px; /* Alt boşluk */
     white-space: nowrap; /* İçeriğin sığmaması durumunda kaydırma */
 }

@@ -186,13 +186,30 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
     }
 };
 
-export const sensorOwners = async (role,userId) =>{
+export const sensorOwners = async (role, userId) => {
     try {
         if (!userId) {
             throw new Error('Kullanıcı yok......');
         }
 
-        //ilgili kullanıcıyı getir
+        // 1. Sensör tiplerini al
+        const typeResponse = await axios.get(sensorTypeAPI, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        if (!typeResponse || !typeResponse.data) {
+            throw new Error('API yanıtı eksik veya hatalı (sensorTypeAPI).');
+        }
+
+        // Sensör tiplerini mapping tablosu oluştur
+        const sensorTypeMapping = {};
+        typeResponse.data.forEach((type) => {
+            sensorTypeMapping[type.id] = type.type; // Örnek: { 1: "Sıcaklık & Nem", 2: "Mesafe", ... }
+        });
+
+        // 2. Kullanıcıya ait sensörleri al
         const response = await axios.get(userSensorAPI, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -202,31 +219,39 @@ export const sensorOwners = async (role,userId) =>{
         if (!response || !response.data) {
             throw new Error('API yanıtı eksik veya hatalı(sensorOwners metot).');
         }
+
         const data = response.data;
-        console.log("data",data);
         let sensors = [];
 
-        if(role==="manager"){
+        if (role === "manager") {
             sensors = data.managerSensors || [];
-        }else if(role==="administrator"){
+        } else if (role === "administrator") {
             const managerSensors = data.sensorOwners
                 .filter(owner => owner.sensor_owner === userId)
-                .map(owner => owner.sensor_id);  //sadece sensörlerin id'leri alındı
+                .map(owner => owner.sensor_id);
+
             const filteredSensors = data.sensors.filter(sensor =>
                 managerSensors.includes(sensor.id)
-            ); // alınan idler datanın içindeki sensörlerle eşleşiyorsa sensörlere atama işlemi yapıldı
+            );
 
-            sensors = Array.isArray(filteredSensors) ? [...filteredSensors] : []; // state array oldugu için arraye çevirdik
+            sensors = Array.isArray(filteredSensors) ? [...filteredSensors] : [];
         }
 
+        // 3. Sensörlere typeName ekle
+        sensors = sensors.map(sensor => ({
+            ...sensor,
+            typeName: sensorTypeMapping[sensor.type] || "Bilinmeyen Tip" // `type` eşleşmesini yap
+        }));
 
-        console.log("sensorOwners fonksiyonu çalışyo, sensörler:", sensors);
+        console.log("sensorOwners çalışıyor, sensörler:", sensors);
         return { success: true, sensors };
-    }catch (err){
-        console.log("SensorOwners metot hatası ", err);
+    } catch (err) {
+        console.error("SensorOwners metot hatası ", err);
         throw err;
     }
-}
+};
+
+
 
 export const getTimes = async (sensors) => {
     try {

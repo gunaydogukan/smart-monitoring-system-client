@@ -3,19 +3,20 @@
     display: flex;
     justify-content: space-evenly; /* Eşit boşluklarla yayar */
     align-items: center; /* Dikey hizalama */
-    padding: 15px;
-    width: 98%;
+    padding: 10px;
+    margin-left: 11px;
+    width: 97%;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
-    gap: 20px; /* Elemanlar arasında ekstra boşluk */
+    gap: 15px; /* Elemanlar arasında ekstra boşluk */
     flex-wrap: wrap; /* Küçük ekranlarda elemanlar alt alta geçer */
 }
 
 /* Dropdown Style */
 .dropdown {
     flex: 1 1 200px; /* Elemanlar aynı genişlikte ve esnek */
-    max-width: 250px; /* Maksimum genişlik */
+    max-width: 200px; /* Maksimum genişlik */
     padding: 10px 15px;
     border-radius: 8px;
     border: 1px solid #ccc;

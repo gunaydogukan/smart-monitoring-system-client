@@ -1,0 +1,51 @@
+/* Ana konteyner */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1a1a1a; /* Arka plan rengi */
+    color: #ffffff; /* Yazı rengi */
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}
+
+/* Noktaların hareketi */
+.dots {
+    display: flex;
+    gap: 10px; /* Noktalar arasındaki boşluk */
+    margin-bottom: 20px;
+}
+
+.dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    animation: bounce 1.5s infinite ease-in-out;
+}
+
+.dot.red {
+    background-color: #ff6b6b;
+    animation-delay: 0s;
+}
+
+.dot.green {
+    background-color: #6bff6b;
+    animation-delay: 0.2s;
+}
+
+.dot.blue {
+    background-color: #6b6bff;
+    animation-delay: 0.4s;
+}
+
+/* Animasyon */
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0); /* Küçük nokta */
+    }
+    40% {
+        transform: scale(1); /* Büyük nokta */
+    }
+}

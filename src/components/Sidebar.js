@@ -66,9 +66,12 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                     </div>
                     {isSensorControlOpen && (
                         <ul className="dropdown">
+
+
                             {userRole?.role === 'administrator' && (
                                 <li onClick={() => handleNavigation("/sensorControl/kurulum")}>
                                     <FaRss className="dropdown-icon"/> Kurum Kontrol
+
                                 </li>
                             )}
                             <li onClick={() => handleNavigation("/sensorControl/ip")}>

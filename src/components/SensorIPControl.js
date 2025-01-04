@@ -60,11 +60,11 @@ export default function SensorIPControl({
         return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
     };
 
-    const getTimeColorClass = async (updatedAt, sensorId,active) => {
+    const getTimeColorClass = async (updatedAt, sensorId, active) => {
         let isActive = true;
-        if (!updatedAt || updatedAt === "Zaman Yok"){
+        if (!updatedAt || updatedAt === "Zaman Yok") {
             isActive = false;
-            await isActiveForIP(sensorId,isActive);
+            await isActiveForIP(sensorId, isActive);
             return styles.defaultBox;
         }
 
@@ -79,10 +79,10 @@ export default function SensorIPControl({
         const timeDifferenceInMinutes = (now - updatedTime) / (1000 * 60);
 
         //eğer 24 saatten az sürede ip geldiyse active durumuna geçir
-        if (timeDifferenceInMinutes <= 5){
-            if(!active){
+        if (timeDifferenceInMinutes <= 5) {
+            if (!active) {
                 try {
-                    await isActiveForIP(sensorId,isActive);
+                    await isActiveForIP(sensorId, isActive);
                 } catch (error) {
                     console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
                 }
@@ -90,10 +90,10 @@ export default function SensorIPControl({
             //tekrar aktif olacak
             return styles.greenBox;
         }
-        if (timeDifferenceInMinutes <= 1440){
-            if(!active){
+        if (timeDifferenceInMinutes <= 1440) {
+            if (!active) {
                 try {
-                    await isActiveForIP(sensorId,isActive);
+                    await isActiveForIP(sensorId, isActive);
                 } catch (error) {
                     console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
                 }
@@ -102,22 +102,22 @@ export default function SensorIPControl({
         }
 
         // 1440 dakikadan fazla geçmişse sensör pasiv yapılacak
-        if (timeDifferenceInMinutes > 1440 ) {
-            if(active){
+        if (timeDifferenceInMinutes > 1440) {
+            if (active) {
                 try {
                     isActive = false;
-                    await isActiveForIP(sensorId,isActive);
+                    await isActiveForIP(sensorId, isActive);
                 } catch (error) {
                     console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
                 }
             }
             return styles.redBox;
         }
-        console.log("time ",timeDifferenceInMinutes);
+        console.log("time ", timeDifferenceInMinutes);
         return styles.defaultBox;
     };
 
-    const isActiveForIP = async (sensorId,isActive) => {
+    const isActiveForIP = async (sensorId, isActive) => {
         try {
             const response = await fetch(
                 `http://localhost:5000/api/sensor-logs/update/isActiveForIP/${sensorId}/${isActive}`,
@@ -183,7 +183,7 @@ export default function SensorIPControl({
             const colorClasses = {};
             for (const sensor of enrichedSensors) {
                 try {
-                    const colorClass = await getTimeColorClass(sensor.timestamp, sensor.id,sensor.isActive);
+                    const colorClass = await getTimeColorClass(sensor.timestamp, sensor.id, sensor.isActive);
                     colorClasses[sensor.id] = colorClass;
                 } catch (error) {
                     console.error(`Error calculating color for sensor ID ${sensor.id}:`, error.message);
@@ -233,7 +233,7 @@ export default function SensorIPControl({
     const handleDropdownChange = (type, value) => {
         if (type === "company") {
             setSelectedCompany(value);
-            managers = filterManagersByCompany(managers,selectedCompany);
+            managers = filterManagersByCompany(managers, selectedCompany);
             console.log(managers);
             setSelectedManager("");
             setSelectedPersonal("");
@@ -254,11 +254,14 @@ export default function SensorIPControl({
 
     // Harita yönlendirme
     const handleViewOnMap = (sensor) => {
-        navigate("/map", { state: { sensor } });
+        navigate("/map", {state: {sensor}});
     };
 
     return (
-        <div className={styles.sensorListContainer}>
+        <>
+            <div className={styles.mainContainerIP}>
+
+            <h2 className={styles.header}>Sensor IP Kontrol Paneli</h2>
             <div className={styles.filterArea}>
                 <SensorsDropdowns
                     role={role}
@@ -271,36 +274,37 @@ export default function SensorIPControl({
                     onChange={handleDropdownChange}
                 />
             </div>
+            <div className={styles.sensorListContainer}>
 
-            <div className={styles.tableContainer}>
-                <div className={styles.searchBar}>
-                    <input
-                        type="text"
-                        placeholder="Ara..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={styles.searchInput}
-                    />
-                </div>
+                <div className={styles.tableContainer}>
+                    <div className={styles.searchBar}>
+                        <input
+                            type="text"
+                            placeholder="Ara..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={styles.searchInput}
+                        />
+                    </div>
 
-                <table className={styles.table}>
-                    <thead>
-                    <tr>
-                        <th>Ad</th>
-                        <th>Tip</th>
-                        <th>IP</th>
-                        <th>Durum</th>
-                        <th>Zaman</th>
-                        <th>Haritada Göster</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {filteredSensors.map((sensor) => (
-                        <tr key={sensor.id}>
-                            <td>{sensor.name}</td>
-                            <td>{handleType(sensor.type)}</td>
-                            <td>{sensor.ip}</td>
-                            <td>
+                    <table className={styles.table}>
+                        <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Tip</th>
+                            <th>IP</th>
+                            <th>Durum</th>
+                            <th>Zaman</th>
+                            <th>Haritada Göster</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {filteredSensors.map((sensor) => (
+                            <tr key={sensor.id}>
+                                <td>{sensor.name}</td>
+                                <td>{handleType(sensor.type)}</td>
+                                <td>{sensor.ip}</td>
+                                <td>
                                     <span
                                         className={
                                             sensor.isActive
@@ -310,25 +314,28 @@ export default function SensorIPControl({
                                     >
                                         {sensor.isActive ? "Aktif" : "Pasif"}
                                     </span>
-                            </td>
-                            <td>
+                                </td>
+                                <td>
                                     <span className={sensorColorClasses[sensor.id]}>
                                         {sensor.timestamp}
                                     </span>
-                            </td>
-                            <td>
-                                <button
-                                    className={styles.mapButton}
-                                    onClick={() => handleViewOnMap(sensor)}
-                                >
-                                    Haritada Göster
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                                </td>
+                                <td>
+                                    <button
+                                        className={styles.mapButton}
+                                        onClick={() => handleViewOnMap(sensor)}
+                                    >
+                                        Haritada Göster
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+            </div>
+        </>
     );
+
 }

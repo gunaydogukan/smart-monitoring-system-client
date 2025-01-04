@@ -1,89 +1,71 @@
-.map-page {
-    position: relative;
-    overflow: hidden;
-    max-width: 100vw;
+.map-container {
+    max-width: 1500px; /* Maksimum genişlik */
+    height: 80vh; /* Haritanın yüksekliği */
+    margin: 50px auto; /* Ortalamak için margin */
+    padding: 10px; /* İçerik çevresine boşluk */
+    background-color: #ffffff; /* Arka plan rengi */
+    border-radius: 12px; /* Köşeleri yuvarlat */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti */
+    display: flex; /* İçerikleri hizalamak için flex */
+    flex-direction: column; /* Dikey düzen */
+    justify-content: space-between; /* İçerikler arasında boşluk */
+    transition: all 0.3s ease; /* Geçiş animasyonu */
+    border: 1px solid #e0e0e0; /* Hafif bir kenar çerçevesi */
 }
 
-.legend {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    width: 240px;
-    max-width: 90vw;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 100;
+/* Sidebar açık durum */
+.sidebar-open .map-container {
+    width: calc(100% - 220px); /* Sidebar açıkken genişlik */
+    margin-left: 220px; /* Sidebar genişliği kadar kaydır */
 }
 
-.legend.open {
-    transform: translateX(0);
+/* Sidebar kapalı durum */
+.sidebar-closed .map-container {
+    width: 90%; /* Sidebar kapalıyken genişliği %90 yap */
+    margin: 50px auto; /* Haritayı ortala */
+    margin-left: auto; /* Sol boşluğu ortadan kaldır */
+    margin-right: auto; /* Sağ boşluğu ortadan kaldır */
 }
 
-.legend-toggle {
-    background: #007BFF;
-    color: white;
-    padding: 8px 12px;
-    font-size: 1.2em;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    position: relative;
-    z-index: 101;
+/* Başlık stilleri */
+.map-container h2 {
+    font-size: 1.8rem; /* Başlık boyutu */
+    text-align: center; /* Ortalı başlık */
+    margin-bottom: 15px; /* Başlık ile harita arasında boşluk */
+    color: #333333; /* Daha koyu metin rengi */
+    font-family: 'Arial', sans-serif; /* Modern font */
+    font-weight: 600; /* Kalın başlık */
+    letter-spacing: 0.5px; /* Harf aralığı */
 }
 
-.legend-content p {
-    display: flex;
-    align-items: center;
-    font-size: 1em;
-    margin: 8px 0;
-    color: #333;
+/* Google Map alanı */
+.google-map {
+    flex: 1; /* Harita alanını genişlet */
+    border-radius: 10px; /* Köşeleri yuvarlat */
+    overflow: hidden; /* Taşan içerikleri gizle */
+    border: 1px solid #ddd; /* Hafif kenarlık */
 }
 
-.legend-content span {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-.blue-dot { background-color: blue; }
-.green-dot { background-color: green; }
-.yellow-dot { background-color: yellow; }
-.gray-dot { background-color: gray; }
-.purple-dot { background-color: purple; }
-
+/* Mobil cihazlar için */
 @media (max-width: 768px) {
-    .legend {
-        width: 180px;
-        right: 10px;
-        padding: 12px;
+    .map-container {
+        width: 95%; /* Mobilde genişlik %95 */
+        height: 70vh; /* Yükseklik daha küçük */
+        margin: 20px auto; /* Ortalamak için margin */
     }
-    .legend-toggle {
-        font-size: 1em;
-        padding: 8px;
-    }
-    .legend-content p {
-        font-size: 0.9em;
+
+    .map-container h2 {
+        font-size: 1.5rem; /* Başlık boyutunu küçült */
     }
 }
 
 @media (max-width: 480px) {
-    .legend {
-        width: 160px;
-        right: 5px;
-        padding: 10px;
+    .map-container {
+        height: 60vh; /* Daha küçük ekranlarda yükseklik */
+        padding: 8px; /* Daha az boşluk */
     }
-    .legend-toggle {
-        font-size: 0.9em;
-        padding: 6px;
-    }
-    .legend-content p {
-        font-size: 0.85em;
+
+    .map-container h2 {
+        font-size: 1.3rem; /* Başlık boyutunu daha da küçült */
     }
 }

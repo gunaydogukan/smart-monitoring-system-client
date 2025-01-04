@@ -1,5 +1,5 @@
 // src/App.js
-import React from "react";
+import React, {useState} from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
@@ -23,7 +23,11 @@ import SensorDataControllPage from "./pages/sensorDataControllPage";
 import SensorsDefination from "./pages/Sensors_definitionPage";
 
 export default function App() {
+
+    const [isSidebarOpen] = useState(false); // Sidebar durumu tanımlandı
+
     const { user, loading, userRole } = useAuth();
+
 
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
@@ -31,6 +35,8 @@ export default function App() {
         return <div>Yükleniyor.</div>; // `userRole` henüz yüklenmemişse
     }
     return (
+         
+                      
         <Router>
             <Routes>
                 {user ? (
@@ -40,12 +46,14 @@ export default function App() {
                             <>
                                 <Route path="/companies" element={<CompanyList />} />
                                 <Route path="/register-manager" element={<Register />} />
-                                <Route path="/sensorControl/kurulum" element={<SensorControl />} />
+                               
+                            <Route path="/sensorControl/kurulum" element={<SensorControl isSidebarOpen={isSidebarOpen}  />} />
                                 <Route path="/add-sensor-type" element={<AddType />} />
                                 <Route path="/add-company" element={<CompanyAdd />} />
                                 <Route path="/companies" element={<CompanyList />} />
                             </>
                         ) : (
+
                             <Route path="*" element={<Navigate to="/dashboard" />} />
                         )}
 

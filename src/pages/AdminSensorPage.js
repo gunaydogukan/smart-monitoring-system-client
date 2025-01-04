@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
-import { useNavigate } from 'react-router-dom';
 import {
     filterManagersByCompany,
     filterPersonalsByManager,
@@ -11,9 +10,13 @@ import {
 } from '../services/FilterService';
 import styles from '../styles/AdminPage.module.css';
 import SensorsDropdowns from '../components/SensorsDropdowns';
-import {toast} from "react-toastify"; // SensorsDropdowns'u import etmeyi unutmayın
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom"; // SensorsDropdowns'u import etmeyi unutmayın
+
+
 
 export default function AdminSensorPage({ role }) {
+    const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
     const [personals, setPersonals] = useState([]);
@@ -27,7 +30,7 @@ export default function AdminSensorPage({ role }) {
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
     const [sensorForCompany, setSensorForCompany] = useState([]);
-    const navigate = useNavigate();
+
 
 
 
@@ -119,8 +122,13 @@ export default function AdminSensorPage({ role }) {
 
 
     const handleMapRedirect = () => {
-        navigate('/map', { state: { sensors: sensors } });
+        // Sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(sensors));
+
+        // Yeni sekmede /map rotasını açıyoruz
+        window.open('/map', '_blank');
     };
+
 
 // Bu useEffect yalnızca bir kez çalışacak, çünkü bağımlılık dizisi boş.
     useEffect(() => {
