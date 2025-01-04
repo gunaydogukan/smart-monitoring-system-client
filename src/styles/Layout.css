@@ -6,7 +6,7 @@
 
 .content {
     flex: 1;
-    margin-left: 220px; /* Sidebar açıkken boşluk */
+    margin-left:250px; /* Sidebar açıkken boşluk */
     padding: 0;
     overflow-y: auto;
     box-sizing: border-box;

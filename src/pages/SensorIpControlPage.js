@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'; // Kullanıcının rolünü a
 import SensorIPControl from '../components/SensorIPControl';
 import { sensorIpServices } from '../services/sensorService';
 import Layout from "../layouts/Layout";
+import LoadingScreen from "../components/LoadingScreen";
 export default function RoleBasedRedirect() {
     const { user } = useAuth(); // Kullanıcı bilgilerini al
     const [data, setData] = useState(null);
@@ -25,7 +26,7 @@ export default function RoleBasedRedirect() {
     }, [user]);
 
     if (loading) {
-        return <p>Veriler yükleniyor...</p>;
+        return <LoadingScreen />;
     }
 
     if (!user || !data) {

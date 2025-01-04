@@ -1,5 +1,5 @@
 // src/App.js
-import React from "react";
+import React, {useState} from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
@@ -24,6 +24,7 @@ import SensorsDefination from "./pages/Sensors_definitionPage";
 
 export default function App() {
     const { user, loading } = useAuth();
+    const [isSidebarOpen] = useState(false); // Sidebar durumu tanımlandı
 
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
@@ -46,7 +47,7 @@ export default function App() {
                             <Route path="/add-company" element={<CompanyAdd />} />
                             <Route path="/users/:type" element={<Users />} />
                             <Route path="/charts" element={<ChartPage />} />
-                            <Route path="/sensorControl/kurulum" element={<SensorControl />} />
+                            <Route path="/sensorControl/kurulum" element={<SensorControl isSidebarOpen={isSidebarOpen}  />} />
                             <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
                             <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
                             <Route path="/add-sensor-type" element={<AddType/>} />

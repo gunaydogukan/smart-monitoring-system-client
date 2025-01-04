@@ -1,15 +1,17 @@
 .legend-card {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 200px;
+    top: 5px;
+    right: 5px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    width: 250px;
     max-width: 90%;
-    z-index: 1000; /* Legend card diğer içeriklerin altında kalacak */
-    transition: transform 0.3s ease;
+    z-index: 900; /* Legend card diğer içeriklerin üstünde */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
+    font-family: 'Arial', sans-serif;
+
 }
 
 .legend-card.open {
@@ -18,28 +20,24 @@
 
 .legend-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding: 10px;
     font-weight: bold;
+    font-size: 0.8rem;
     cursor: pointer;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ddd;
+    background-color: #4a90e2;
+    color: #ffffff;
+
+    transition: background-color 0.3s ease;
 }
 
-.close-btn {
-    background: none;
-    border: none;
-    color: #000000;
-    font-size: 0.9em;
-    cursor: pointer;
-}
-.close-btn:hover {
-    background-color: #4e99cf;
+.legend-header:hover {
+    background-color: #0056b3;
 }
 
 .legend-content {
-    padding: 10px;
+    padding: 15px;
     list-style: none;
     margin: 0;
 }
@@ -47,61 +45,68 @@
 .legend-content li {
     display: flex;
     align-items: center;
-    margin: 5px 0;
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #333333;
 }
 
 .marker {
     display: inline-block;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     margin-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.blue-dot { background-color: blue; }
-.green-dot { background-color: green; }
-.yellow-dot { background-color: #f4f41c; }
-.orange-dot { background-color: #f57c00; }
-.purple-dot { background-color: purple; }
+.blue-dot {
+    background-color: blue;
+}
 
-/* Responsive adjustments for tablet */
+.green-dot {
+    background-color: green;
+}
+
+.yellow-dot {
+    background-color: #f4f41c;
+}
+
+.orange-dot {
+    background-color: #f57c00;
+}
+
+.purple-dot {
+    background-color: purple;
+}
+
+/* Responsive adjustments for tablets */
 @media (max-width: 768px) {
     .legend-card {
-        width: 150px;
+        width: 200px;
         right: 10px;
         top: 10px;
     }
     .legend-content li {
-        font-size: 0.9em;
+        font-size: 0.9rem;
     }
 }
 
 /* Responsive adjustments for mobile */
 @media (max-width: 480px) {
     .legend-card {
-        width: 130px;
-        right: 5px;
-        top: 5px;
+        width: 180px;
+        right: 10px;
+        top: 10px;
+    }
+    .legend-header {
+        font-size: 1rem;
     }
     .legend-content li {
-        font-size: 0.85em;
+        font-size: 0.85rem;
     }
 }
 
-/* Form açıldığında legend card'ın altında kalması için modal z-index ayarı */
+/* Legend card'ın modal altında kalmasını engellemek için z-index ayarı */
 .modal {
-    z-index: 1100; /* Form, legend card'dan daha yüksek z-index'e sahip olacak */
-}
-
-/* Form ve legend card'ın responsive uyumluluğu */
-@media (max-width: 768px) {
-    .modal {
-        margin-top: 60px; /* Formun legend card altında görünmesi için margin ekliyoruz */
-    }
-}
-
-@media (max-width: 480px) {
-    .modal {
-        margin-top: 70px; /* Küçük ekranlar için margin */
-    }
+    z-index: 1100; /* Modal, legend card'dan daha yüksek z-index'e sahip olacak */
 }

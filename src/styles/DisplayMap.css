@@ -1,3 +1,16 @@
+.info-window {
+    background: #ffffff; /* Beyaz arka plan */
+    color: #333333; /* Yazı rengi */
+    padding: 5px 10px; /* İçerik boşluğu */
+    border-radius: 8px; /* Köşeleri yuvarlak */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Hafif gölge */
+    font-size: 14px; /* Yazı boyutu */
+    font-weight: 500; /* Yazı kalınlığı */
+    white-space: nowrap; /* Yazının tek satırda kalması */
+    text-align: center; /* Ortaya hizalama */
+}
+
+
 .map-container {
     display: flex;
     position: relative;

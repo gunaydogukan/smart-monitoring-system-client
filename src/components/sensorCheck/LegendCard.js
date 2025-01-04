@@ -12,8 +12,8 @@ function LegendCard() {
     return (
         <div className={`legend-card ${isOpen ? 'open' : ''}`}>
             <div className="legend-header" onClick={toggleCard}>
-                <span>🛈 Renklerin Anlamları</span>
-                <button className="close-btn">{isOpen ? 'Hide' : 'Show'}</button>
+                <span> Renklerin Anlamları için Tıklayınız</span>
+
             </div>
             {isOpen && (
                 <ul className="legend-content">

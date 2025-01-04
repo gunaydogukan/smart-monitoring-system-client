@@ -12,6 +12,7 @@ import {
 import styles from '../styles/SensorDataCheckPage.module.css';
 import { checkSensorDataTime } from '../services/sensorService';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingScreen from "../components/LoadingScreen"; // LoadingScreen bileşenini içe aktarın
 
 export default function SensorDataControllPage() {
     const { user } = useAuth();
@@ -111,13 +112,15 @@ export default function SensorDataControllPage() {
     };
 
     if (!sensors.length) {
-        return <p>Veri yükleniyor...</p>;
+        return <LoadingScreen />;
     }
+
 
     return (
         <Layout>
-            <div className={styles.container}>
-                <h2 className={styles.header}>Sensör Veri Kontrolü</h2>
+            <div className={styles.mainContainerData}>
+                <h2 className={styles.header}>Sensor Veri Kontrol Paneli
+                </h2>
                 <div className={styles.filterArea}>
                     <SensorsDropdowns
                         role={user.role}

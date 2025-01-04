@@ -3,6 +3,7 @@ import SensorsDropdowns from '../components/SensorsDropdowns';
 import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
 import {useNavigate} from "react-router-dom";
+import styles from "../styles/AdminPage.module.css";
 
 export default function ManagerPage({ role }) {
     const [managerData, setManagerData] = useState(null); // Manager verileri
@@ -91,8 +92,8 @@ export default function ManagerPage({ role }) {
     return (
         <Layout>
             <div>
-                <h2>Manager Paneli</h2>
-                <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
+                <h2 className={styles.header}>Manager Paneli</h2>
+            <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
                 <p>Şirket Kodu: {managerData.manager.companyCode}</p>
 
                 {/* Personeller Dropdown */}
