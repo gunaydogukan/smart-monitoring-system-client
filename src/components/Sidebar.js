@@ -9,9 +9,8 @@ import '../styles/Sidebar.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
-    const { user, logout } = useAuth();
-    const navigate = useNavigate();
-
+    const { user, logout,userRole } = useAuth();
+    const navigate = useNavigate()
     const [isUsersOpen, setIsUsersOpen] = useState(false);
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSensorControlOpen, setIsSensorControlOpen] = useState(false);
@@ -27,11 +26,11 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
         } else if (typeof role === 'object') {
             navigate(path, { state: role });
         } else {
-            navigate(path, { state: { role: user?.role } });
+            navigate(path, { state: { role: userRole?.role } });
         }
     };
 
-    const isPersonal = user?.role === 'personal';
+    const isPersonal = userRole?.role === 'personal';
 
     if (!user) return null;
 
@@ -67,9 +66,12 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                     </div>
                     {isSensorControlOpen && (
                         <ul className="dropdown">
-                            {user?.role === 'administrator' && (
-                                <li onClick={() => window.open("/sensorControl/kurulum", "_blank")}>
-                                    <FaRss className="dropdown-icon" /> Kurum Kontrol
+
+
+                            {userRole?.role === 'administrator' && (
+                                <li onClick={() => handleNavigation("/sensorControl/kurulum")}>
+                                    <FaRss className="dropdown-icon"/> Kurum Kontrol
+
                                 </li>
                             )}
                             <li onClick={() => handleNavigation("/sensorControl/ip")}>
@@ -105,7 +107,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             </div>
                             {isUsersOpen && (
                                 <ul className="dropdown">
-                                    {user?.role !== 'manager' && (
+                                    {userRole?.role !== 'manager' && (
                                         <li onClick={() => handleNavigation('/users/managers')}>
                                             <FaUser className="dropdown-icon"/> Managers
                                         </li>
@@ -117,7 +119,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             )}
                         </>
                     )}
-                    {user?.role === 'administrator' && (
+                    {userRole?.role === 'administrator' && (
                         <div className="menu" onClick={() => handleNavigation("/companies")}>
                             <FaBuilding className="menu-icon"/>
                             <span>Kurumlar</span>
@@ -131,27 +133,27 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             </div>
                             {isAddOpen && (
                                 <ul className="dropdown">
-                                    {user?.role === 'administrator' && (
+                                    {userRole?.role === 'administrator' && (
                                         <li onClick={() => handleNavigation('/register-manager', {role: 'manager'})}>
                                             <FaUser className="dropdown-icon"/> Manager Ekle
                                         </li>
                                     )}
-                                    {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    {(userRole?.role === 'manager' || user?.role === 'administrator') && (
                                         <li onClick={() => handleNavigation('/register-personal', {role: 'personal'})}>
                                             <FaUser className="dropdown-icon"/> Personal Ekle
                                         </li>
                                     )}
-                                    {user?.role === 'administrator' && (
+                                    {userRole?.role === 'administrator' && (
                                         <li onClick={() => handleNavigation('/add-company')}>
                                             <FaBuilding className="dropdown-icon"/> Kurum Ekle
                                         </li>
                                     )}
-                                    {user?.role === 'administrator' && (
-                                        <li onClick={() => handleNavigation('/add-sensor-type', {role: user.role})}>
+                                    {userRole?.role === 'administrator' && (
+                                        <li onClick={() => handleNavigation('/add-sensor-type', {role: userRole.role})}>
                                             <FaTag className="dropdown-icon"/> Yeni Sensör Tipi Ekle
                                         </li>
                                     )}
-                                    {(user?.role === 'manager' || user?.role === 'administrator') && (
+                                    {(userRole?.role === 'manager' || userRole?.role === 'administrator') && (
                                         <li onClick={() => handleNavigation('/add-address')}>
                                             <FaMicrochip className="dropdown-icon"/> Sensör Ekle
                                         </li>

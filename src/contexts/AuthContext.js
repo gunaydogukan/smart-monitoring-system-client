@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import UserService from '../services/userServices'
 
 //import {useNavigate} from "react-router-dom";
 
@@ -18,6 +19,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+    const [userRole, setUserRole] = useState(null);
 
     const [loading, setLoading] = useState(true); // Yüklenme durumu
 
@@ -35,6 +37,18 @@ export const AuthProvider = ({ children }) => {
                     if (response.data.valid) {
                         setUser(JSON.parse(storedUser));
                         setToken(storedToken);
+
+
+                        // Kullanıcı rolünü almak için UserService'i çağır
+                        UserService.getUserRole(storedToken)
+                            .then((role) => {
+                                setUserRole(role); // Kullanıcı rolünü ayarla
+                            })
+                            .catch((error) => {
+                                console.error("Kullanıcı rolü alınamadı:", error);
+                                logout(); // Hata durumunda oturumu kapat
+                            });
+
                     } else {
                         logout();
                     }
@@ -63,6 +77,11 @@ export const AuthProvider = ({ children }) => {
                 setUser(user);
                 setToken(token);
                 console.log("Giriş başarılı!");
+
+                const role = await UserService.getUserRole(token);
+                setUserRole(role);
+
+                console.log("Giriş başarılı, kullanıcı rolü:", role);
             }
         } catch (error) {
             console.error("Giriş hatası:", error);
@@ -78,7 +97,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, logout, loading,userRole }}>
             {children}
         </AuthContext.Provider>
     );

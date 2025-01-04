@@ -483,8 +483,6 @@ export default function Users() {
                         )}
                     </button>
                 )}
-
-
                 <div className={styles.tableContainer}>
                     {filteredResults.length > 0 ? (
                         <table
