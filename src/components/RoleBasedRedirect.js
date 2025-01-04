@@ -5,14 +5,15 @@ import ManagerPage from '../pages/ManagerSensorPage';
 import PersonnelPage from '../pages/PersonalSensorPage';
 
 export default function RoleBasedRedirect() {
-    const { user } = useAuth(); // Kullanıcı bilgilerini al
+    const { user,userRole } = useAuth(); // Kullanıcı bilgilerini al
 
-    if (!user) {
+    if (!user && !userRole) {
         return <p>Kullanıcı bilgisi yükleniyor...</p>;
     }
 
+
     // Kullanıcının rolüne göre yönlendirme yap
-    switch (user.role) {
+    switch (userRole.role) {
         case 'administrator':
             return <AdminPage role={user.role} />;
         case 'manager':

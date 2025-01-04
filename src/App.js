@@ -23,45 +23,62 @@ import SensorDataControllPage from "./pages/sensorDataControllPage";
 import SensorsDefination from "./pages/Sensors_definitionPage";
 
 export default function App() {
-    const { user, loading } = useAuth();
+    const { user, loading, userRole } = useAuth();
 
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
+    if (!userRole) {
+        return <div>Yükleniyor.</div>; // `userRole` henüz yüklenmemişse
+    }
     return (
-
-            <Router>
-                <Routes>
-
-                    {user ? (
-                        <>
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="/companies" element={<CompanyList />} />
-                            <Route path="/add-address" element={<Address />} />
-                            <Route path="/register-manager" element={<Register />} />
-                            <Route path="/register-personal" element={<Register />} />
-                            <Route path="/add-sensor" element={<SensorForm />} />
-                            <Route path="/sensors" element={<RoleBasedRedirect />} />
-                            <Route path="/map" element={<DisplayMap />} />
-                            <Route path="/add-company" element={<CompanyAdd />} />
-                            <Route path="/users/:type" element={<Users />} />
-                            <Route path="/charts" element={<ChartPage />} />
-                            <Route path="/sensorControl/kurulum" element={<SensorControl />} />
-                            <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
-                            <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
-                            <Route path="/add-sensor-type" element={<AddType/>} />
-                            <Route path="/sensor-definition" element={<SensorsDefination/>}/>
+        <Router>
+            <Routes>
+                {user ? (
+                    <>
+                        {/* Sadece admin görebilir */}
+                        {userRole.role !== "manager" && userRole.role !== "personal" ? (
+                            <>
+                                <Route path="/companies" element={<CompanyList />} />
+                                <Route path="/register-manager" element={<Register />} />
+                                <Route path="/sensorControl/kurulum" element={<SensorControl />} />
+                                <Route path="/add-sensor-type" element={<AddType />} />
+                                <Route path="/add-company" element={<CompanyAdd />} />
+                                <Route path="/companies" element={<CompanyList />} />
+                            </>
+                        ) : (
                             <Route path="*" element={<Navigate to="/dashboard" />} />
-                        </>
-                    ) : (
-                        <>
-                            <Route path="/login" element={<Login />} />
-                            <Route path="*" element={<Navigate to="/login" />} />
-                        </>
+                        )}
 
-                    )}
-                </Routes>
-            </Router>
+                        {/* Manager ve adminin görebileceği şeyler */}
+                        {userRole.role !== "personal" ? (
+                            <>
+                                <Route path="/register-personal" element={<Register />} />
+                                <Route path="/add-sensor" element={<SensorForm />} />
+                                <Route path="/users/:type" element={<Users />} />
+                                <Route path="/sensor-definition" element={<SensorsDefination />} />
+                                <Route path="/add-address" element={<Address />} />
+                            </>
+                        ) : (
+                            <Route path="*" element={<Navigate to="/dashboard" />} />
+                        )}
 
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/sensors" element={<RoleBasedRedirect />} />
+                        <Route path="/map" element={<DisplayMap />} />
+                        <Route path="/charts" element={<ChartPage />} />
+                        <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
+                        <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
+                        <Route path="*" element={<Navigate to="/dashboard" />} />
+                    </>
+                ) : (
+                    <>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="*" element={<Navigate to="/login" />} />
+                    </>
+                )}
+            </Routes>
+        </Router>
     );
 }
+

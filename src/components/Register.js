@@ -76,7 +76,6 @@ export default function Register() {
 
         if (role === 'administrator') {
             alert('Administrator ekleyemezsiniz!');
-            console.log("deneme");
             return;
         }
 
