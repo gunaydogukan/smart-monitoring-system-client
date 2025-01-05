@@ -10,16 +10,16 @@ export default function RoleBasedRedirect() {
     if (!user && !userRole) {
         return <p>Kullanıcı bilgisi yükleniyor...</p>;
     }
-
+    console.log(userRole.role)
 
     // Kullanıcının rolüne göre yönlendirme yap
     switch (userRole.role) {
         case 'administrator':
-            return <AdminPage role={user.role} />;
+            return <AdminPage role={userRole.role} />;
         case 'manager':
-            return <ManagerPage role={user.role}/>;
+            return <ManagerPage role={userRole.role}/>;
         case 'personal':
-            return <PersonnelPage role={user.role} />;
+            return <PersonnelPage role={userRole.role} />;
         default:
             return <p>Geçersiz kullanıcı rolü</p>;
     }

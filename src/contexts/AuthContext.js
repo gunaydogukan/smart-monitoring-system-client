@@ -1,9 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import UserService from '../services/userServices'
-
-//import {useNavigate} from "react-router-dom";
-
+import UserService from "../services/userServices";
 
 const AuthContext = createContext(undefined);
 
@@ -12,7 +9,6 @@ export const useAuth = () => {
     if (!context) {
         throw new Error("useAuth must be used within AuthProvider");
     }
-    //console.log(context);
     return context;
 };
 
@@ -20,9 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [userRole, setUserRole] = useState(null);
-
-    const [loading, setLoading] = useState(true); // Yüklenme durumu
-
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -33,34 +27,32 @@ export const AuthProvider = ({ children }) => {
                 .get("http://localhost:5000/api/verifyToken", {
                     headers: { Authorization: `Bearer ${storedToken}` },
                 })
-                .then((response) => {
+                .then(async (response) => {
                     if (response.data.valid) {
                         setUser(JSON.parse(storedUser));
                         setToken(storedToken);
 
-
-                        // Kullanıcı rolünü almak için UserService'i çağır
-                        UserService.getUserRole(storedToken)
-                            .then((role) => {
-                                setUserRole(role); // Kullanıcı rolünü ayarla
-                            })
-                            .catch((error) => {
-                                console.error("Kullanıcı rolü alınamadı:", error);
-                                logout(); // Hata durumunda oturumu kapat
-                            });
-
+                        try {
+                            const role = await UserService.getUserRole(storedToken);
+                            setUserRole(role);
+                        } catch (error) {
+                            console.error("Kullanıcı rolü alınamadı:", error);
+                            logout();
+                        }
                     } else {
                         logout();
                     }
                 })
-                .catch(() => logout())
-                .finally(() => setLoading(false)); // Yüklenme bitti
+                .catch(() => {
+                    logout();
+                })
+                .finally(() => setLoading(false)); // Yükleme durumu tamamlanır
         } else {
-            setLoading(false); // Kullanıcı yoksa yüklenme bitti
+            setLoading(false); // Kullanıcı yoksa yükleme tamamlanır
         }
     }, []);
 
-    const login = async (email, password) => {
+    const login = async (email, password, navigate) => {
         try {
             const response = await axios.post(
                 "http://localhost:5000/api/login",
@@ -76,12 +68,13 @@ export const AuthProvider = ({ children }) => {
 
                 setUser(user);
                 setToken(token);
-                console.log("Giriş başarılı!");
 
                 const role = await UserService.getUserRole(token);
                 setUserRole(role);
 
-                console.log("Giriş başarılı, kullanıcı rolü:", role);
+                if (navigate) {
+                    navigate("/dashboard"); // Başarılı girişte yönlendirme
+                }
             }
         } catch (error) {
             console.error("Giriş hatası:", error);
@@ -89,15 +82,20 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+    const logout = (navigate) => {
         setUser(null);
         setToken(null);
+        setUserRole(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        setLoading(false); // Logout sonrası yükleme tamamlanır
+        if (navigate) {
+            navigate("/login"); // Çıkışta login sayfasına yönlendir
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading,userRole }}>
+        <AuthContext.Provider value={{ user, token, userRole, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

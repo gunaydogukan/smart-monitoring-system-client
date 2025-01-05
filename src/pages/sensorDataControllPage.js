@@ -30,7 +30,7 @@ export default function SensorDataControllPage() {
     const [selectedCompany, setSelectedCompany] = useState('');
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
-
+    const [isTimeout, setIsTimeout] = useState(false);
     useEffect(() => {
         async function fetchData() {
             try {
@@ -111,10 +111,25 @@ export default function SensorDataControllPage() {
         }
     };
 
-    if (!sensors.length) {
-        return <LoadingScreen />;
-    }
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsTimeout(true);
+        }, 5000); // 5 saniye sonra setIsTimeout true olacak
+
+        if (sensors.length) {
+            clearTimeout(timer); // Sensors verisi geldiğinde zamanlayıcıyı temizle
+        }
+
+        return () => clearTimeout(timer); // Bileşen unmount olduğunda temizle
+    }, [sensors]);
+
+    if (!sensors.length) {
+        if (isTimeout) {
+            return <div>Sensorunuz yok</div>; // 5 saniye geçti ve sensors hâlâ boş
+        }
+        return <LoadingScreen />; // 5 saniyeden önce ise yükleme ekranı göster
+    }
 
     return (
         <Layout>
