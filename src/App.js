@@ -31,34 +31,37 @@ export default function App() {
 
     if (loading) return <div>Loading...</div>; // Yüklenme ekranı
 
-    if (!userRole) {
-        return <div>Yükleniyor.</div>; // `userRole` henüz yüklenmemişse
+    if (!user) {
+        console.log("Kullanıcı yok");
     }
+
+    if (!userRole || !userRole.role) {
+        console.log("Role bilgisi yok");
+    } else {
+        console.log("Role var:", userRole.role);
+    }
+
     return (
-         
-                      
         <Router>
             <Routes>
                 {user ? (
                     <>
                         {/* Sadece admin görebilir */}
-                        {userRole.role !== "manager" && userRole.role !== "personal" ? (
+                        {userRole?.role && userRole.role !== "manager" && userRole.role !== "personal" && (
                             <>
                                 <Route path="/companies" element={<CompanyList />} />
                                 <Route path="/register-manager" element={<Register />} />
-                               
-                            <Route path="/sensorControl/kurulum" element={<SensorControl isSidebarOpen={isSidebarOpen}  />} />
+                                <Route
+                                    path="/sensorControl/kurulum"
+                                    element={<SensorControl isSidebarOpen={isSidebarOpen} />}
+                                />
                                 <Route path="/add-sensor-type" element={<AddType />} />
                                 <Route path="/add-company" element={<CompanyAdd />} />
-                                <Route path="/companies" element={<CompanyList />} />
                             </>
-                        ) : (
-
-                            <Route path="*" element={<Navigate to="/dashboard" />} />
                         )}
 
                         {/* Manager ve adminin görebileceği şeyler */}
-                        {userRole.role !== "personal" ? (
+                        {userRole?.role && userRole.role !== "personal" && (
                             <>
                                 <Route path="/register-personal" element={<Register />} />
                                 <Route path="/add-sensor" element={<SensorForm />} />
@@ -66,10 +69,9 @@ export default function App() {
                                 <Route path="/sensor-definition" element={<SensorsDefination />} />
                                 <Route path="/add-address" element={<Address />} />
                             </>
-                        ) : (
-                            <Route path="*" element={<Navigate to="/dashboard" />} />
                         )}
 
+                        {/* Ortak olarak herkesin erişebileceği rotalar */}
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/sensors" element={<RoleBasedRedirect />} />
