@@ -3,8 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from "../layouts/Layout";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../contexts/AuthContext";
+import styles from "../styles/Register.module.css";
 
 export default function Register() {
+    const { user, userRole } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         lastname: '',
@@ -12,42 +15,52 @@ export default function Register() {
         password: '',
         phone: '',
         companyCode: '',
-        creator_id: '', // Seçilen manager'in id'si burada tutulacak (sadece personal için)
+        creator_id: '', // Seçilen manager'in id'si burada tutulur
     });
 
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState(''); // Seçilen kurum
+    const [selectedCompany, setSelectedCompany] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Role'ü location'dan çekiyoruz
-    const role = location.state?.role;
-    console.log(role);
-    useEffect(() => {
-        const fetchCompanies = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/companies', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
-                const data = await response.json();
-                setCompanies(data);
-            } catch (error) {
-                console.error('Şirketleri çekerken hata:', error);
-            }
-        };
+    const added_role = location.state?.role;
+    const activeUseRole = userRole.role;
+    const activeUserCompanyCode = userRole.companyCode;
 
-        fetchCompanies();
-    }, []);
+    useEffect(() => {
+        if (activeUseRole === 'manager') {
+            setSelectedCompany(activeUserCompanyCode);
+            setFormData((prev) => ({
+                ...prev,
+                companyCode: activeUserCompanyCode,
+                creator_id: user.id,
+            }));
+        } else {
+            const fetchCompanies = async () => {
+                try {
+                    const response = await fetch('http://localhost:5000/api/companies', {
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                    });
+                    const data = await response.json();
+                    setCompanies(data);
+                } catch (error) {
+                    console.error('Şirketleri çekerken hata:', error);
+                }
+            };
+
+            fetchCompanies();
+        }
+    }, [activeUseRole, activeUserCompanyCode, user.id]);
 
     const handleCompanyChange = async (e) => {
         const companyCode = e.target.value;
         setSelectedCompany(companyCode);
-        setFormData({ ...formData, companyCode });
+        setFormData((prev) => ({ ...prev, companyCode }));
 
-        if (companyCode && role === 'personal') { // Eğer personal ekleniyorsa managerları getir
+        if (added_role === 'personal') {
             try {
                 const response = await fetch('http://localhost:5000/api/users', {
                     headers: {
@@ -57,8 +70,10 @@ export default function Register() {
                 const data = await response.json();
 
                 // Manager rolüne sahip ve seçilen kuruma ait kullanıcıları filtrele
-                const filteredManagers = data.filter(user => user.role === 'manager' && user.companyCode === companyCode);
-                setManagers(filteredManagers); // Filtrelenmiş manager'ları ayarla
+                const filteredManagers = data.filter(
+                    (manager) => manager.role === 'manager' && manager.companyCode === companyCode
+                );
+                setManagers(filteredManagers);
             } catch (error) {
                 console.error('Manager listesi alınırken hata:', error);
             }
@@ -74,13 +89,13 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (role === 'administrator') {
+        if (added_role === 'administrator') {
             alert('Administrator ekleyemezsiniz!');
             return;
         }
 
         try {
-            const payload = { ...formData, role };
+            const payload = { ...formData, role: added_role };
             const response = await fetch('http://localhost:5000/api/register', {
                 method: 'POST',
                 headers: {
@@ -93,8 +108,7 @@ export default function Register() {
             const data = await response.json();
             if (response.ok) {
                 toast.success('Kayıt başarılı!', { autoClose: 2500 });
-                setTimeout(() => navigate(`/users/${role}s`), 3500);
-
+                setTimeout(() => navigate(`/users/${added_role}s`), 3500);
             } else {
                 toast.error(data.error || 'Kayıt başarısız. Lütfen tekrar deneyin.');
             }
@@ -107,11 +121,10 @@ export default function Register() {
     return (
         <Layout>
             <ToastContainer />
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <h2 style={styles.formTitle}>
-                    {role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <h2 className={styles.formTitle}>
+                    {added_role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
                 </h2>
-                {/* Form alanları */}
                 <input
                     type="text"
                     name="name"
@@ -119,7 +132,7 @@ export default function Register() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className={styles.input}
                 />
                 <input
                     type="text"
@@ -128,7 +141,7 @@ export default function Register() {
                     value={formData.lastname}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className={styles.input}
                 />
                 <input
                     type="email"
@@ -137,7 +150,7 @@ export default function Register() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className={styles.input}
                 />
                 <input
                     type="password"
@@ -146,7 +159,7 @@ export default function Register() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className={styles.input}
                 />
                 <input
                     type="tel"
@@ -154,34 +167,36 @@ export default function Register() {
                     placeholder="Telefon"
                     value={formData.phone}
                     onChange={handleChange}
-                    style={styles.input}
+                    className={styles.input}
                 />
 
-                {/* Kurum seçimi */}
-                <select
-                    name="companyCode"
-                    value={formData.companyCode}
-                    onChange={handleCompanyChange}
-                    required
-                    style={styles.input}
-                >
-                    <option value="">Kurum Seçin</option>
-                    {companies.map((company) => (
-                        <option key={company.code} value={company.code}>
-                            {company.name} / {company.code}
-                        </option>
-                    ))}
-                </select>
-
-                {/* Manager seçimi sadece personal ekleniyorsa görünsün */}
-                {role === 'personal' && (
+                {activeUseRole !== 'manager' && (
                     <select
-                        name="creator_id"  // Seçilen manager'in id'si
-                        value={formData.creator_id}
-                        onChange={handleChange}
+                        name="companyCode"
+                        value={formData.companyCode}
+                        onChange={handleCompanyChange}
                         required
-                        disabled={!selectedCompany}  // Kurum seçilmeden kilitli olacak
-                        style={styles.input}
+                        className={styles.input}
+                    >
+                        <option value="">Kurum Seçin</option>
+                        {companies.map((company) => (
+                            <option key={company.code} value={company.code}>
+                                {company.name} / {company.code}
+                            </option>
+                        ))}
+                    </select>
+                )}
+
+                {activeUseRole !== 'manager' && added_role === 'personal' && (
+                    <select
+                        name="creator_id"
+                        value={formData.creator_id}
+                        onChange={(e) =>
+                            setFormData({ ...formData, creator_id: e.target.value })
+                        }
+                        required
+                        className={styles.input}
+                        disabled={!selectedCompany}
                     >
                         <option value="">Manager Seçin</option>
                         {managers.map((manager) => (
@@ -192,46 +207,10 @@ export default function Register() {
                     </select>
                 )}
 
-                <button type="submit" style={styles.button}>
-                    {role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
+                <button type="submit" className={styles.button}>
+                    {added_role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
                 </button>
             </form>
         </Layout>
     );
 }
-
-const styles = {
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        backgroundColor: '#fff',
-    },
-    formTitle: {
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '24px',
-        color: '#333',
-    },
-    input: {
-        marginBottom: '15px',
-        padding: '10px',
-        fontSize: '16px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-    },
-    button: {
-        padding: '10px',
-        fontSize: '16px',
-        borderRadius: '4px',
-        border: 'none',
-        backgroundColor: '#4CAF50',
-        color: '#fff',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-    },
-};
