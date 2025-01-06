@@ -61,9 +61,12 @@ export default function PersonalPage() {
     }
 
     const handleMapRedirect = () => {
-        navigate('/map', { state: { sensors: sensors } });
-    };
+        // Sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(sensors));
 
+        // Yeni sekmede /map rotasını açıyoruz
+        window.open('/map', '_blank');
+    };
     return (
         <Layout>
             <div style={styles.container}>

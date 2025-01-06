@@ -163,7 +163,15 @@ export default function SensorList({
     };
 
     const handleViewOnMap = (sensor) => {
-        navigate('/map', { state: { sensor } });
+        // Önce eski veriyi temizle
+        sessionStorage.removeItem('sensorsForMap');
+
+        // Yeni sensör verisini sessionStorage'a kaydet
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(sensor));
+
+        // Cache etkisini bypass etmek için benzersiz bir timestamp ekleyerek yeni sekme aç
+        const timestamp = Date.now(); // Benzersiz bir zaman damgası
+        window.open(`/map`, '_blank');
     };
 
     const handleViewOnChart = (sensor) => {
@@ -279,7 +287,7 @@ export default function SensorList({
                             <td>
                                 <button
                                     className={styles.mapButton}
-                                    onClick={() => handleViewOnMap(sensor)}
+                                    onClick={() => handleViewOnMap(sensor,'sensorsForMap')}
                                 >
                                     Haritada Göster
                                 </button>

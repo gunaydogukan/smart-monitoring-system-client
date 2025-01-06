@@ -38,9 +38,11 @@ export const sensorIpServices = async (role, userId) => {
             personals = data.personals || [];
             sensors = data.sensors || [];
             sensorOwners = data.sensorOwners || [];
+            console.log("owner",sensorOwners);
         } else if (role === 'manager') {
             const data = response.data;
             managers = data.manager;
+            personals = data.personals;
             if(!managers){
                 throw new Error("Manager bulunamadı");
             }
@@ -48,7 +50,28 @@ export const sensorIpServices = async (role, userId) => {
             if(!sensors){
                 throw new Error("Sensör bulunamadı");
             }
-            sensorOwners = sensors; // ?
+
+
+            //personal sensörleri sensorwOwner objesine ekle
+            const formattedSensors = data.personalSensors.flatMap(personal =>
+                (personal.sensors?.sensors?.length > 0 ?
+                        personal.sensors.sensors.map(sensor => ({
+                            sensor_owner: personal.personalId,
+                            sensor_id: sensor.id
+                        }))
+                        : []
+                )
+            );
+
+            /*
+              {
+            sensor_owner: personal.personalId,
+            sensor_id: sensor.id
+            }
+             */
+
+            sensorOwners =[...data.sensorOwners,...formattedSensors]; // ?
+            console.log("data = ",sensorOwners);
         } else {
             const data = response.data;
             // FİİLTER SERVİS KULLANILACAK
@@ -151,7 +174,6 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
 
         } else if (role === 'manager') {
             const data = response.data;
-            console.log("data = (checkSensorDataTime)",data);
 
             // Manager bilgileri ve bağlı personeller
             let manager = data.manager
@@ -163,13 +185,26 @@ export const checkSensorDataTime = async (role, userId, companyCode = null, mana
             }
 
             personals = data.personals;
+            sensors = data.managerSensors;
+
+            const formattedSensors = data.personalSensors.flatMap(personal =>
+                (personal.sensors?.sensors?.length > 0 ?
+                        personal.sensors.sensors.map(sensor => ({
+                            sensor_owner: personal.personalId,
+                            sensor_id: sensor.id
+                        }))
+                        : []
+                )
+            );
+
+            sensorOwners=[...data.sensorOwners,...formattedSensors];
 
             for (const personal of personals) {
                 if (personal.creator_id !== manager.id) {
                     throw new Error("Manager ile user aynı değil");
                 }
             }
-            sensors = data.managerSensors;
+
         } else if (role === 'personal') {
             const data = response.data;
             sensors = data.sensors;  //buradaki filtreleme işlemi kaldırıldı. backendden gelen filtreme kullanılıyor
@@ -243,7 +278,6 @@ export const sensorOwners = async (role, userId) => {
             typeName: sensorTypeMapping[sensor.type] || "Bilinmeyen Tip" // `type` eşleşmesini yap
         }));
 
-        console.log("sensorOwners çalışıyor, sensörler:", sensors);
         return { success: true, sensors };
     } catch (err) {
         console.error("SensorOwners metot hatası ", err);
