@@ -1,38 +1,64 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext'; // AuthContext'ten login fonksiyonunu alıyoruz
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(''); // Hata durumunu saklıyoruz
+    const [error, setError] = useState('');
 
-    const { login, loading } = useAuth(); // login fonksiyonunu ve loading durumunu alıyoruz
+    // Ekranın mobil boyutta olup olmadığını takip eden state
+    const [isMobile, setIsMobile] = useState(false);
+
+    const { login, loading } = useAuth();
     const navigate = useNavigate();
+
+    // Pencere boyutunu izleyip <768 ise isMobile = true yapıyoruz
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(email, password); // login işlemi
-            console.log('Giriş başarılı!');
-            navigate('/dashboard'); // Başarılı girişte yönlendir
-        } catch (error) {
-            setError(error.response.data.error); // Hata durumunu göster
+            await login(email, password);
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err?.response?.data?.error || 'Bilinmeyen bir hata oluştu');
         }
     };
 
     if (loading) {
-        return <div>Yükleniyor...</div>; // Yüklenme durumunda gösterilecek ekran
+        return <div>Yükleniyor...</div>;
     }
+
+    // Masaüstünde width: '60%', mobilde neredeyse tam: '95%'
+    const dynamicContentStyle = {
+        ...styles.content,
+        width: isMobile ? '95%' : '60%',
+    };
+
+    // Sol taraf, mobilde tamamen gizlensin
+    const dynamicLeftSectionStyle = {
+        ...styles.leftSection,
+        display: isMobile ? 'none' : 'flex',
+    };
 
     return (
         <div style={styles.container}>
-            <div style={styles.content}>
-                <div style={styles.leftSection}>
+            <div style={dynamicContentStyle}>
+                <div style={dynamicLeftSectionStyle}>
                     <h1 style={styles.title}>Hoş Geldiniz!</h1>
                     <p style={styles.description}>
-                        Tüm sensörlerinizi tek bir yerden yönetin, gerçek zamanlı analizlere göz atın ve akıllı
-                        uyarılarla işlerinizi kolaylaştırın.
+                        Tüm sensörlerinizi tek bir yerden yönetin, gerçek zamanlı
+                        analizlere göz atın ve akıllı uyarılarla işlerinizi kolaylaştırın.
                     </p>
                 </div>
                 <div style={styles.rightSection}>
@@ -59,7 +85,10 @@ export default function Login() {
                             Giriş Yap
                         </button>
                         <p style={styles.footerText}>
-                            Şifremi unuttum <a href="/reset-password" style={styles.link}>Şifremi sıfırla</a>
+                            Şifremi unuttum{' '}
+                            <a href="/reset-password" style={styles.link}>
+                                Şifremi sıfırla
+                            </a>
                         </p>
                     </form>
                 </div>
@@ -76,16 +105,20 @@ const styles = {
         height: '100vh',
         backgroundColor: '#f0f1f3',
         fontFamily: 'Arial, sans-serif',
+        // Dikey kaydırma gerekebilecek durumda sayfanın kesilmesini engellemek için:
+        overflowY: 'auto',
+        padding: '20px',
+        boxSizing: 'border-box',
     },
     content: {
         display: 'flex',
         flexDirection: 'row',
-        width: '60%',
         maxWidth: '1300px',
         height: '70vh',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
         borderRadius: '20px',
         overflow: 'hidden',
+        // width: '60%'  -> dinamikte ayarlanacak
     },
     leftSection: {
         flex: 1,
@@ -93,11 +126,20 @@ const styles = {
         backgroundColor: '#e5e7eb',
         color: '#333',
         textAlign: 'center',
-        display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.1)',
+        // Mobilde display: 'none' olacak
+    },
+    rightSection: {
+        flex: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
+        boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.05)',
+        padding: '40px',
     },
     title: {
         fontSize: '48px',
@@ -108,15 +150,6 @@ const styles = {
         fontSize: '22px',
         maxWidth: '500px',
         margin: '0 auto',
-    },
-    rightSection: {
-        flex: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.05)',
-        padding: '40px',
     },
     form: {
         width: '100%',

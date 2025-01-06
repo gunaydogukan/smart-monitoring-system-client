@@ -43,19 +43,21 @@ export default function SensorsDropdowns({
                     ))}
                 </select>
             )}
-            <select
-                className={styles.dropdown}
-                value={selectedPersonal}
-                onChange={(e) => onChange('personal', e.target.value)}
-                disabled={role === 'administrator' && !selectedManager}
-            >
-                <option value="">Tüm Personeller</option>
-                {personals.map((personal) => (
-                    <option key={personal.id} value={personal.id}>
-                        {personal.name} {personal.lastname}
-                    </option>
-                ))}
-            </select>
+            {role !=='personal' && (
+                <select
+                    className={styles.dropdown}
+                    value={selectedPersonal}
+                    onChange={(e) => onChange('personal', e.target.value)}
+                    disabled={role === 'administrator' && !selectedManager}
+                >
+                    <option value="">Tüm Personeller</option>
+                    {personals.map((personal) => (
+                        <option key={personal.id} value={personal.id}>
+                            {personal.name} {personal.lastname}
+                        </option>
+                    ))}
+                </select>
+            )}
             <button
                 onClick={onMapRedirect}
                 className={styles.mapButton}

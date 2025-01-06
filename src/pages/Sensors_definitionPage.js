@@ -72,7 +72,9 @@ export default function SensorsDefinitionPage() {
             }
 
             let sensorsData = await sensorsResponse.json();
-            setOriginalSensors(sensorsData.sensors); // Tam listeyi de saklıyoruz
+            if(userRole==="administrator"){
+                setOriginalSensors(sensorsData.sensors); // Tam listeyi de saklıyoruz
+            }
 
             const usersData = await usersResponse.json();
 
@@ -81,6 +83,9 @@ export default function SensorsDefinitionPage() {
                 const storedUser = JSON.parse(localStorage.getItem("user"));
                 sensorsData = await sensorOwners(userRole,storedUser.id);
                 filteredUsers = usersData.users.filter(user => user.creator_id === storedUser.id);
+                setOriginalSensors(sensorsData.sensors);
+                setSensors(sensorsData.sensors); // Sensörleri güncelle
+                setActiveUsers(filteredUsers);   // Kullanıcıları güncelle
             } //Eğer kullanıcı manager ise o managerin personelleri gelir ve maangerin sensörleri gelir.
 
             setSensors(sensorsData.sensors); // Sensörleri state'e kaydet

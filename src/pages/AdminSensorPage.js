@@ -122,8 +122,8 @@ export default function AdminSensorPage({ role }) {
 
 
     const handleMapRedirect = () => {
-        // Sensörleri sessionStorage'a kaydediyoruz
-        sessionStorage.setItem('sensorsForMap', JSON.stringify(sensors));
+        // Filtrelenmiş sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(filteredSensors));
 
         // Yeni sekmede /map rotasını açıyoruz
         window.open('/map', '_blank');

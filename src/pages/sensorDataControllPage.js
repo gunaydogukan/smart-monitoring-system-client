@@ -15,7 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import LoadingScreen from "../components/LoadingScreen"; // LoadingScreen bileşenini içe aktarın
 
 export default function SensorDataControllPage() {
-    const { user } = useAuth();
+    const { user,userRole } = useAuth();
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
     const [personals, setPersonals] = useState([]);
@@ -31,12 +31,13 @@ export default function SensorDataControllPage() {
     const [selectedManager, setSelectedManager] = useState('');
     const [selectedPersonal, setSelectedPersonal] = useState('');
     const [isTimeout, setIsTimeout] = useState(false);
+
+
     useEffect(() => {
         async function fetchData() {
             try {
-                const fetchedData = await checkSensorDataTime(user.role, user.id);
+                const fetchedData = await checkSensorDataTime(userRole.role, user.id);
                 const { allCompanies, managers, personals, sensors, sensorOwners, types, result } = fetchedData;
-
                 // getTimes metotu
                 const timeResults = result.map(item => ({
                     datacode: item.datacode,
@@ -56,6 +57,10 @@ export default function SensorDataControllPage() {
                 setFilteredSensors(sensors);
                 setSensorTypes(types);
 
+                if(userRole.role === 'manager'){
+                    setFilteredPersonals(personals);
+                }
+
                 setTimes(timeResults); // Gelen 'times' verisini state'e kaydet
                 setResultData(dataResults); //sensör verilerini alı
 
@@ -67,6 +72,7 @@ export default function SensorDataControllPage() {
     }, [user]);
 
     const handleDropdownChange = (type, value) => {
+        console.log("dropwon change giriş, ",value);
         if (type === 'company') {
             setSelectedCompany(value);
             if (!value) {
@@ -96,8 +102,8 @@ export default function SensorDataControllPage() {
             const filteredSensors = filterSensorsByManager(sensors, sensorOwners, value);
             setFilteredSensors(filteredSensors);
         } else if (type === 'personal') {
-            setSelectedPersonal(value);
             if (!value) {
+                setSelectedPersonal([]);
                 if (selectedManager) {
                     const filteredSensors = filterSensorsByManager(sensors, sensorOwners, selectedManager);
                     setFilteredSensors(filteredSensors);
@@ -106,6 +112,7 @@ export default function SensorDataControllPage() {
                 }
                 return;
             }
+            setSelectedPersonal(value);
             const filteredSensors = filterSensorsByPersonal(sensors, sensorOwners, value);
             setFilteredSensors(filteredSensors);
         }
@@ -116,7 +123,6 @@ export default function SensorDataControllPage() {
         const timer = setTimeout(() => {
             setIsTimeout(true);
         }, 5000); // 5 saniye sonra setIsTimeout true olacak
-
         if (sensors.length) {
             clearTimeout(timer); // Sensors verisi geldiğinde zamanlayıcıyı temizle
         }
@@ -125,11 +131,21 @@ export default function SensorDataControllPage() {
     }, [sensors]);
 
     if (!sensors.length) {
+
         if (isTimeout) {
             return <div>Sensorunuz yok</div>; // 5 saniye geçti ve sensors hâlâ boş
         }
         return <LoadingScreen />; // 5 saniyeden önce ise yükleme ekranı göster
     }
+
+    //tüm sensörleri gösterme
+    const handleMapRedirect = () => {
+        // Filtrelenmiş sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(filteredSensors));
+
+        // Yeni sekmede /map rotasını açıyoruz
+        window.open('/map', '_blank');
+    };
 
     return (
         <Layout>
@@ -138,7 +154,7 @@ export default function SensorDataControllPage() {
                 </h2>
                 <div className={styles.filterArea}>
                     <SensorsDropdowns
-                        role={user.role}
+                        role={userRole.role}
                         companies={companies}
                         managers={filteredManagers}
                         personals={filteredPersonals}
@@ -146,7 +162,7 @@ export default function SensorDataControllPage() {
                         selectedManager={selectedManager}
                         selectedPersonal={selectedPersonal}
                         onChange={handleDropdownChange}
-                        onMapRedirect={() => console.log('Haritaya yönlendirme!')}
+                        onMapRedirect={handleMapRedirect}
                     />
                 </div>
                 <SensorDataControll

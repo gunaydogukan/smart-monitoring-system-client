@@ -5,7 +5,7 @@ import { sensorIpServices } from '../services/sensorService';
 import Layout from "../layouts/Layout";
 import LoadingScreen from "../components/LoadingScreen";
 export default function RoleBasedRedirect() {
-    const { user } = useAuth(); // Kullanıcı bilgilerini al
+    const { user,userRole } = useAuth(); // Kullanıcı bilgilerini al
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -13,7 +13,7 @@ export default function RoleBasedRedirect() {
         async function fetchData() {
             try {
                 if (user) {
-                    const fetchedData = await sensorIpServices(user.role, user.id);
+                    const fetchedData = await sensorIpServices(userRole.role, user.id);
                     setData(fetchedData);
                 }
             } catch (error) {
@@ -33,10 +33,11 @@ export default function RoleBasedRedirect() {
         return <p>Kullanıcı bilgisi veya veriler bulunamadı.</p>;
     }
     console.log(user.role);
+    console.log("veriler personeller = ",data.personals);
     return (
         <Layout>
             <SensorIPControl
-                role={user.role}
+                role={userRole.role}
                 companies={data.companies}
                 managers={data.managers}
                 personals={data.personals}

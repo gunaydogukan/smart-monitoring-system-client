@@ -34,8 +34,11 @@ export const filterSensorsByManager = (sensors, sensorOwners, managerId) => {
 
 export const filterSensorsByPersonal = (sensors, sensorOwners, personalId) => {
     if (!personalId) return sensors; // Eğer personalId yoksa tüm sensörleri döndür
-
-    const filteredOwner = sensorOwners.filter(owner => owner.sensor_owner === parseInt(personalId));
+    console.log("sensors = ",sensors);
+    console.log("owner = ",sensorOwners);
+    console.log("id = ",personalId);
+    const filteredOwner = sensorOwners.filter(owner => parseInt(owner.sensor_owner) === parseInt(personalId));
+    console.log("filtrenenen sensör ",filteredOwner);
     const sensorIds = filteredOwner.map(owner => owner.sensor_id);
     return sensors.filter(sensor => sensorIds.includes(sensor.id));
 };

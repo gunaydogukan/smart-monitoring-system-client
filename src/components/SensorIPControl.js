@@ -30,7 +30,6 @@ export default function SensorIPControl({
     const [filteredPersonals, setFilteredPersonals] = useState([]);
 
     const navigate = useNavigate();
-
     // Kullanıcı dostu tarih formatı
     // Tarih formatını dönüştürme işlevi
     const formatDate = (dateString) => {
@@ -231,6 +230,7 @@ export default function SensorIPControl({
 
     // Dropdown değişikliklerini yönetme
     const handleDropdownChange = (type, value) => {
+        console.log(type);
         if (type === "company") {
             setSelectedCompany(value);
             managers = filterManagersByCompany(managers, selectedCompany);
@@ -252,10 +252,28 @@ export default function SensorIPControl({
         return foundType ? foundType.type : "Bilinmiyor";
     };
 
-    // Harita yönlendirme
-    const handleViewOnMap = (sensor) => {
-        navigate("/map", {state: {sensor}});
+
+    const handleMapRedirect = () => {
+        // Filtrelenmiş sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(filteredSensors));
+
+        // Yeni sekmede /map rotasını açıyoruz
+        window.open('/map', '_blank');
     };
+
+    // İlgili sensörün konumuna yönlendirme
+    const handleViewOnMap = (sensor) => {
+        // Önce eski veriyi temizle
+        sessionStorage.removeItem('sensorsForMap');
+
+        // Yeni sensör verisini sessionStorage'a kaydet
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(sensor));
+
+        // Cache etkisini bypass etmek için benzersiz bir timestamp ekleyerek yeni sekme aç
+        const timestamp = Date.now(); // Benzersiz bir zaman damgası
+        window.open(`/map`, '_blank');
+    };
+
 
     return (
         <>
@@ -272,6 +290,7 @@ export default function SensorIPControl({
                     selectedManager={selectedManager}
                     selectedPersonal={selectedPersonal}
                     onChange={handleDropdownChange}
+                    onMapRedirect={handleMapRedirect}
                 />
             </div>
             <div className={styles.sensorListContainer}>

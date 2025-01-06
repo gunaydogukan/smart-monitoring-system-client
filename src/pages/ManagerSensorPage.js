@@ -77,17 +77,17 @@ export default function ManagerPage({ role }) {
     };
 
 
-
-
     if (!managerData) {
         return <p>Veriler yükleniyor...</p>;  // Veri yüklenene kadar
     }
 
     const handleMapRedirect = () => {
-        navigate('/map', { state: { sensors: sensors } });
+        // Filtrelenmiş sensörleri sessionStorage'a kaydediyoruz
+        sessionStorage.setItem('sensorsForMap', JSON.stringify(filteredSensors));
+
+        // Yeni sekmede /map rotasını açıyoruz
+        window.open('/map', '_blank');
     };
-
-
 
     return (
         <Layout>
