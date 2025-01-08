@@ -2,6 +2,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import UserService from "../services/userServices";
 
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+
 const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
@@ -24,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
         if (storedUser && storedToken) {
             axios
-                .get("http://localhost:5000/api/verifyToken", {
+                .get(`${API_URL}/api/verifyToken`, {
                     headers: { Authorization: `Bearer ${storedToken}` },
                 })
                 .then(async (response) => {
@@ -55,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password, navigate) => {
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/login",
+                `${API_URL}/api/login`,
                 { email, password },
                 { headers: { "Content-Type": "application/json" } }
             );

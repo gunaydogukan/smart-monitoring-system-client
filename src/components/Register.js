@@ -7,6 +7,8 @@ import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/Register.module.css";
 
 export default function Register() {
+    const API_URL = process.env.REACT_APP_API_URL
+
     const { user, userRole } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
@@ -39,7 +41,7 @@ export default function Register() {
         } else {
             const fetchCompanies = async () => {
                 try {
-                    const response = await fetch('http://localhost:5000/api/companies', {
+                    const response = await fetch(`${API_URL}/api/companies`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         },
@@ -62,7 +64,7 @@ export default function Register() {
 
         if (added_role === 'personal') {
             try {
-                const response = await fetch('http://localhost:5000/api/users', {
+                const response = await fetch(`${API_URL}/api/users`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     },
@@ -96,7 +98,7 @@ export default function Register() {
 
         try {
             const payload = { ...formData, role: added_role };
-            const response = await fetch('http://localhost:5000/api/register', {
+            const response = await fetch(`${API_URL}/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

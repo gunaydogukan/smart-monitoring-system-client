@@ -4,6 +4,8 @@ import Layout from "../layouts/Layout";
 import styles from '../styles/Address.module.css'; // CSS dosyasını içe aktar
 
 export default function Address() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [provinces, setProvinces] = useState([]);
     const [filteredProvinces, setFilteredProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -118,7 +120,7 @@ export default function Address() {
             const token = localStorage.getItem('token');
             console.log('Gönderilen token:', token);
 
-            const response = await fetch('http://localhost:5000/api/address', {
+            const response = await fetch(`${API_URL}/api/address`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

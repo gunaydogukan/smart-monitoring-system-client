@@ -5,8 +5,12 @@ import "react-toastify/dist/ReactToastify.css"; // Toastify CSS
 import styles from "../styles/Sensors_definitionPage.module.css";
 import Layout from "../layouts/Layout";
 import {sensorOwners} from "../services/sensorService";
+import {useAuth} from "../contexts/AuthContext";
 
 export default function SensorsDefinitionPage() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
+    const { user,userRole } = useAuth();
     const [selectedCompany, setSelectedCompany] = useState(""); // Seçilen kurum
     const [companies, setCompanies] = useState([]); // Kurumlar
     const [sensors, setSensors] = useState([]); // Kuruma ait sensörler
@@ -14,7 +18,7 @@ export default function SensorsDefinitionPage() {
     const [selectedSensors, setSelectedSensors] = useState([]); // Seçilen sensörler
     const [selectedUsers, setSelectedUsers] = useState([]); // Seçilen kullanıcılar
     const [isModalOpen, setIsModalOpen] = useState(false); // Modal görünürlük durumu
-    const [userRole, setUserRole] = useState(""); // Kullanıcı rolü
+    //const [userRole, setUserRole] = useState(""); // Kullanıcı rolü
     const [selectedRole, setSelectedRole] = useState(""); // Modal için hedef role (manager veya personal)
 
     const [originalSensors, setOriginalSensors] = useState([]);
@@ -24,18 +28,19 @@ export default function SensorsDefinitionPage() {
         if (storedUser) {
             try {
                 const user = JSON.parse(storedUser);
-                setUserRole(user.role); // Kullanıcı rolünü ayarla
+                console.log(userRole.role);
+                //setUserRole(user.role); // Kullanıcı rolünü ayarla
             } catch (error) {
                 console.error("LocalStorage'daki kullanıcı verisi okunamadı:", error);
             }
         }
-    }, []);
+    }, [user]);
 
     // Kurumları API'den çekme
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/companies", {
+                const response = await fetch(`${API_URL}/api/companies`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
@@ -55,13 +60,13 @@ export default function SensorsDefinitionPage() {
         if (!selectedCompany || !selectedRole) return;
 
         try {
-            const sensorsResponse = await fetch(`http://localhost:5000/api/company/${selectedCompany}/sensors`, {
+            const sensorsResponse = await fetch(`${API_URL}/api/company/${selectedCompany}/sensors`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
 
-            const usersResponse = await fetch(`http://localhost:5000/api/company/${selectedCompany}/users?role=${selectedRole}`, {
+            const usersResponse = await fetch(`${API_URL}/api/company/${selectedCompany}/users?role=${selectedRole}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -72,16 +77,16 @@ export default function SensorsDefinitionPage() {
             }
 
             let sensorsData = await sensorsResponse.json();
-            if(userRole==="administrator"){
+            if(userRole.role==="administrator"){
                 setOriginalSensors(sensorsData.sensors); // Tam listeyi de saklıyoruz
             }
 
             const usersData = await usersResponse.json();
 
             let filteredUsers = usersData.users;
-            if (userRole === "manager") {
+            if (userRole.role === "manager") {
                 const storedUser = JSON.parse(localStorage.getItem("user"));
-                sensorsData = await sensorOwners(userRole,storedUser.id);
+                sensorsData = await sensorOwners(userRole.role,storedUser.id);
                 filteredUsers = usersData.users.filter(user => user.creator_id === storedUser.id);
                 setOriginalSensors(sensorsData.sensors);
                 setSensors(sensorsData.sensors); // Sensörleri güncelle
@@ -136,7 +141,7 @@ export default function SensorsDefinitionPage() {
         }
 
         try {
-            const response = await fetch("http://localhost:5000/api/assign-random-sensors", {
+            const response = await fetch(`${API_URL}/api/assign-random-sensors`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -173,10 +178,10 @@ export default function SensorsDefinitionPage() {
             });
         }
     };
-
-    const filterSensorsByCreatorPersonal = async (userRole, userId) => {
+    const usrRole = userRole.role
+    const filterSensorsByCreatorPersonal = async (usrRole, userId) => {
         try {
-            const response = await sensorOwners(userRole, userId);
+            const response = await sensorOwners(usrRole, userId);
             return response.sensors || [];
         } catch (error) {
             console.error("Sensör filtreleme hatası:", error);
@@ -190,14 +195,14 @@ export default function SensorsDefinitionPage() {
         if (storedUser) {
             try {
                 const user = JSON.parse(storedUser);
-                if (userRole === "manager") {
+                if (userRole.role === "manager") {
                     setSelectedCompany(user.companyCode || ""); // Manager için varsayılan şirket
                 }
             } catch (error) {
                 console.error("LocalStorage'daki kullanıcı verisi okunamadı:", error);
             }
         }
-    }, [userRole]);
+    }, [userRole.role]);
 
     useEffect(() => {
         if (selectedUsers.length === 0) {
@@ -205,12 +210,12 @@ export default function SensorsDefinitionPage() {
             return;
         }
 
-        if (userRole === "administrator" && selectedRole === "personal") {
+        if (userRole.role === "administrator" && selectedRole === "personal") {
             const selectedUserId = selectedUsers[0];
             const selectedUser = activeUsers.find((u) => u.id === selectedUserId);
 
             if (selectedUser && selectedUser.creator_id) {
-                filterSensorsByCreatorPersonal(userRole, selectedUser.creator_id)
+                filterSensorsByCreatorPersonal(userRole.role, selectedUser.creator_id)
                     .then((filteredSensors) => {
                         setSensors(filteredSensors);
                     })
@@ -221,14 +226,14 @@ export default function SensorsDefinitionPage() {
             } else {
                 setSensors([]);
             }
-        } else if (userRole === "administrator" && selectedRole === "manager") {
+        } else if (userRole.role === "administrator" && selectedRole === "manager") {
             setSensors(originalSensors); // Manager seçiliyken filtreleme yok
-        } else if (userRole === "manager") {
+        } else if (userRole.role === "manager") {
             const selectedUserId = selectedUsers[0];
             const selectedUser = activeUsers.find((u) => u.id === selectedUserId);
 
             if (selectedUser && selectedUser.creator_id) {
-                filterSensorsByCreatorPersonal(userRole, selectedUser.creator_id)
+                filterSensorsByCreatorPersonal(userRole.role, selectedUser.creator_id)
                     .then((filteredSensors) => {
                         setSensors(filteredSensors);
                     })
@@ -240,7 +245,7 @@ export default function SensorsDefinitionPage() {
                 setSensors([]);
             }
         }
-    }, [selectedUsers, userRole, selectedRole, activeUsers, originalSensors]);
+    }, [selectedUsers, userRole.role, selectedRole, activeUsers, originalSensors]);
 
     return (
         <Layout>
@@ -249,7 +254,7 @@ export default function SensorsDefinitionPage() {
 
                 <h1 className={styles.pageTitle}>Sensör Tanımla</h1>
 
-                {(userRole === "administrator" || userRole === "manager") && (
+                {(userRole.role === "administrator" || userRole.role === "manager") && (
                     <div className={styles.institutionSelect}>
                         <select
                             className={styles.select}
@@ -261,9 +266,9 @@ export default function SensorsDefinitionPage() {
                                 setIsModalOpen(false); // Modalı kapalı hale getir
                                 setSelectedRole(""); // Role sıfırla
                             }}
-                            disabled={userRole === "manager"} // Eğer kullanıcı manager ise seçim yapılamaz
+                            disabled={userRole.role === "manager"} // Eğer kullanıcı manager ise seçim yapılamaz
                         >
-                            {userRole === "administrator" ? (
+                            {userRole.role === "administrator" ? (
                                 <>
                                     <option value="">Kurum Seçin</option>
                                     {companies.map((company) => (
@@ -283,7 +288,7 @@ export default function SensorsDefinitionPage() {
                 )}
 
                 <div className={styles.mainContent}>
-                    {userRole === "administrator" && (
+                    {userRole.role === "administrator" && (
                         <>
                             <div
                                 className={`${styles.card} ${styles.managerCard}`}
@@ -309,7 +314,7 @@ export default function SensorsDefinitionPage() {
                         </>
                     )}
 
-                    {userRole === "manager" && (
+                    {userRole.role === "manager" && (
                         <div
                             className={`${styles.card} ${styles.personalCard}`}
                             onClick={() => openModal("personal")}
@@ -363,7 +368,7 @@ export default function SensorsDefinitionPage() {
                                                 type="checkbox"
                                                 checked={selectedUsers.includes(user.id)}
                                                 disabled={
-                                                    userRole === "administrator" &&
+                                                    userRole.role === "administrator" &&
                                                     selectedRole === "personal" && // Sadece personel atamada geçerli
                                                     selectedUsers.length > 0 &&
                                                     user.creator_id !== activeUsers.find((u) => u.id === selectedUsers[0])?.creator_id

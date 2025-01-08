@@ -7,6 +7,8 @@ import styles from '../styles/Profile.module.css';
 import UpdateModal from '../components/profileUpdateModal';
 
 export default function Profile() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const { token } = useAuth();
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/profile', {
+                const response = await fetch(`${API_URL}/api/profile`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

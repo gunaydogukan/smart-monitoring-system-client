@@ -1,12 +1,12 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000/api"; // API'nin temel URL'si
+const API_URL = process.env.REACT_APP_API_URL;
 
 const UserService = {
     // Kullanıcı rolünü al
     getUserRole: async (token) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/profile`, {
+            const response = await axios.get(`${API_URL}/api/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

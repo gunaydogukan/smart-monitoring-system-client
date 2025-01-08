@@ -16,10 +16,12 @@ const mapOptions = {
     scaleControl: true, // Ölçek kontrolü
     rotateControl: true, // Döndürme kontrolü
 };
+const API_URL = process.env.REACT_APP_API_URL;
+const MAP_API = process.env.REACT_APP_GOOGLE_MAP_API;
 
 function MapPage({ isSidebarOpen }) {
     const { isLoaded } = useLoadScript({
-        googleMapsApiKey: 'AIzaSyD_SgDBoNntGbcwChUDreSgHCwjDbld8xU', // Google API anahtarınızı buraya koyun
+        googleMapsApiKey: MAP_API,
         libraries,
     });
 
@@ -30,7 +32,7 @@ function MapPage({ isSidebarOpen }) {
     useEffect(() => {
         const fetchSensors = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/sensors/all-sensors');
+                const response = await fetch(`${API_URL}/api/sensors/all-sensors`);
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setSensors(data);

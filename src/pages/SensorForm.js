@@ -6,6 +6,8 @@ import styles from '../styles/SensorForm.module.css';
 import Modal from '../components/MessageModal';
 
 export default function SensorForm() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const location = useLocation();
     const { villageId, villageName } = location.state || {};
 
@@ -37,9 +39,9 @@ export default function SensorForm() {
                 };
 
                 const urls = [
-                    'http://localhost:5000/api/type',
-                    'http://localhost:5000/api/companies',
-                    'http://localhost:5000/api/users'
+                    `${API_URL}/api/type`,
+                    `${API_URL}/api/companies`,
+                    `${API_URL}/api/users`
                 ];
 
                 const responses = await Promise.all(
@@ -101,7 +103,7 @@ export default function SensorForm() {
         try {
             const token = localStorage.getItem('token');
 
-            const response = await fetch('http://localhost:5000/api/sensors', {
+            const response = await fetch(`${API_URL}/api/sensors`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

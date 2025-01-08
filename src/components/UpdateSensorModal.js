@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../styles/UpdateSensorModal.module.css';
 
 export default function UpdateSensorModal({ sensor, isOpen, onClose, onUpdate }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [formData, setFormData] = useState({
         name: '',
         lat: '',
@@ -120,7 +122,7 @@ export default function UpdateSensorModal({ sensor, isOpen, onClose, onUpdate })
 
                 try {
                     const token = localStorage.getItem('token');
-                    const response = await fetch('http://localhost:5000/api/address', {
+                    const response = await fetch(`${API_URL}/api/address`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

@@ -9,6 +9,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Users() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const location = useLocation();
     const { type } = useParams();
     const [companies, setCompanies] = useState([]);
@@ -42,8 +44,8 @@ export default function Users() {
         const currentCompany = companyCode || selectedCompany;
         try {
             const url = currentCompany
-                ? `http://localhost:5000/api/company/${currentCompany}/undefined-users-and-managers`
-                : `http://localhost:5000/api/users/undefined-users-and-managers`;
+                ? `${API_URL}/api/company/${currentCompany}/undefined-users-and-managers`
+                : `${API_URL}/api/users/undefined-users-and-managers`;
 
             const response = await fetch(url, {
                 headers: {
@@ -90,7 +92,7 @@ export default function Users() {
                 setSelectedManager(usr.id);
                 return;
             }
-            const response = await fetch("http://localhost:5000/api/companies", {
+            const response = await fetch(`${API_URL}/api/companies`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -112,10 +114,10 @@ export default function Users() {
             }
 
             const url = companyCode
-                ? `http://localhost:5000/api/${type}?companyCode=${encodeURIComponent(
+                ? `${API_URL}/api/${type}?companyCode=${encodeURIComponent(
                     companyCode
                 )}`
-                : `http://localhost:5000/api/${type}`;
+                : `${API_URL}/api/${type}`;
 
             const response = await fetch(url, {
                 headers: {
@@ -189,7 +191,7 @@ export default function Users() {
 
     const handleModifyUserDetails = async (updatedUser) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/modifyuser`, {
+            const response = await fetch(`${API_URL}/api/modifyuser`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -226,7 +228,7 @@ export default function Users() {
 
 
         try {
-            const response = await fetch("http://localhost:5000/api/assign-personals", {
+            const response = await fetch(`${API_URL}/api/assign-personals`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -266,8 +268,8 @@ export default function Users() {
         try {
             const endpoint =
                 actionType === "deactivate"
-                    ? `http://localhost:5000/api/${selectedUser}/deactivate`
-                    : `http://localhost:5000/api/${selectedUser}/activate`;
+                    ? `${API_URL}/api/${selectedUser}/deactivate`
+                    : `${API_URL}/api/${selectedUser}/activate`;
 
             const response = await fetch(endpoint, {
                 method: "PATCH",
@@ -293,7 +295,7 @@ export default function Users() {
                 console.log(selectedUser);
                 console.log(data.user.role);
                 try {
-                    const sensorResponse = await fetch("http://localhost:5000/api/user/sensor-operations", {
+                    const sensorResponse = await fetch(`${API_URL}/api/user/sensor-operations`, {
                         method: "POST",
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -336,7 +338,7 @@ export default function Users() {
         }
 
         try {
-            const response = await fetch("http://localhost:5000/api/assign-manager", {
+            const response = await fetch(`${API_URL}/api/assign-manager`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -7,10 +7,11 @@ import {
     filterSensorsByManager,
     filterSensorsByPersonal
 } from './FilterService';
+const API_URL = process.env.REACT_APP_API_URL;
 
-const userSensorAPI = 'http://localhost:5000/api/user-sensors';
-const sensorTypeAPI = 'http://localhost:5000/api/type';
-const sensorTimeAPI = 'http://localhost:5000/log/data-time-check';
+const userSensorAPI = `${API_URL}/api/user-sensors`;
+const sensorTypeAPI = `${API_URL}/api/type`;
+const sensorTimeAPI = `${API_URL}/log/data-time-check`;
 
 // Sensör verilerini kullanıcıya göre çekme
 export const sensorIpServices = async (role, userId) => {
@@ -106,7 +107,7 @@ export const getIPData = async (sensors) => {
         // Sensör datacode'larını virgülle ayrılmış bir string olarak oluştur
         const datacodes = sensors.map(sensor => sensor.datacode).join(',');
         // GET isteği yap
-        const response = await axios.get('http://localhost:5000/log/IP-controll', {
+        const response = await axios.get(`${API_URL}/log/IP-controll`, {
             params: {
                 datacodes, // URL parametresi olarak datacodes ekle
             },
