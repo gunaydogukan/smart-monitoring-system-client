@@ -21,6 +21,8 @@ export default function SensorIPControl({
                                             ipLogs,
                                             types,
                                         }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [selectedCompany, setSelectedCompany] = useState("");
     const [selectedManager, setSelectedManager] = useState("");
     const [selectedPersonal, setSelectedPersonal] = useState("");
@@ -28,6 +30,7 @@ export default function SensorIPControl({
     const [sensorColorClasses, setSensorColorClasses] = useState({});
     const [filteredManagers, setFilteredManagers] = useState([]);
     const [filteredPersonals, setFilteredPersonals] = useState([]);
+
 
     const navigate = useNavigate();
     // Kullanıcı dostu tarih formatı
@@ -112,14 +115,13 @@ export default function SensorIPControl({
             }
             return styles.redBox;
         }
-        console.log("time ", timeDifferenceInMinutes);
         return styles.defaultBox;
     };
 
     const isActiveForIP = async (sensorId, isActive) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/sensor-logs/update/isActiveForIP/${sensorId}/${isActive}`,
+                `${API_URL}/api/sensor-logs/update/isActiveForIP/${sensorId}/${isActive}`,
                 {
                     method: "PUT",
                     headers: {
@@ -134,7 +136,6 @@ export default function SensorIPControl({
             }
 
             const data = await response.json();
-            console.log(`Sensor ID ${sensorId} başarıyla güncellendi.`, data);
             return data;
         } catch (error) {
             console.error(`Sensor update failed for ID ${sensorId}:`, error.message);
@@ -230,11 +231,9 @@ export default function SensorIPControl({
 
     // Dropdown değişikliklerini yönetme
     const handleDropdownChange = (type, value) => {
-        console.log(type);
         if (type === "company") {
             setSelectedCompany(value);
             managers = filterManagersByCompany(managers, selectedCompany);
-            console.log(managers);
             setSelectedManager("");
             setSelectedPersonal("");
         } else if (type === "manager") {

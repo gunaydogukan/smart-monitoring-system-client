@@ -32,8 +32,7 @@ export default function RoleBasedRedirect() {
     if (!user || !data) {
         return <p>Kullanıcı bilgisi veya veriler bulunamadı.</p>;
     }
-    console.log(user.role);
-    console.log("veriler personeller = ",data.personals);
+
     return (
         <Layout>
             <SensorIPControl

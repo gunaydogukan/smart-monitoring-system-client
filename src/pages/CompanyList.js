@@ -4,6 +4,8 @@ import Layout from "../layouts/Layout";
 
 
 export default function CompanyList() {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     //const [companies, setCompanies] = useState([]);
     const [count, setCount] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,7 +20,7 @@ export default function CompanyList() {
 
     const fetchCompaniesCount = async () => {
         try{
-            const response = await fetch('http://localhost:5000/api/companiesCount',{
+            const response = await fetch(`${API_URL}/api/companiesCount`,{
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
@@ -36,31 +38,6 @@ export default function CompanyList() {
             setLoading(false);
         }
     };
-
-/* yorum satırında cunku tek apiden buradaki bilgileride alıyorum.
-    const fetchCompanies = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/companies', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Şirketler getirilemedi.');
-            }
-
-            const data = await response.json();
-            setCompanies(data);
-        } catch (error) {
-            setError('Şirketler yüklenirken bir hata oluştu.');
-            console.error('Şirketler yüklenirken hata:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
- */
 
     if (loading) {
         return <div>Yükleniyor...</div>;

@@ -16,6 +16,8 @@ import {useNavigate} from "react-router-dom"; // SensorsDropdowns'u import etmey
 
 
 export default function AdminSensorPage({ role }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
@@ -83,7 +85,7 @@ export default function AdminSensorPage({ role }) {
 
     const fetchAdminData = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/user-sensors', {
+            const response = await fetch(`${API_URL}/api/user-sensors`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
@@ -97,7 +99,7 @@ export default function AdminSensorPage({ role }) {
             setSensorOwners(sensorOwners);
 
             // Tip verilerini yükle
-            const typesResponse = await fetch('http://localhost:5000/api/type', {
+            const typesResponse = await fetch(`${API_URL}/api/type`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             const typesData = await typesResponse.json();

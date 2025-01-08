@@ -11,6 +11,8 @@ const containerStyle = {
 const libraries = ["places"];
 
 const DisplayMap = () => {
+    const MAP_API = process.env.REACT_APP_GOOGLE_MAP_API;
+
     const [sensors, setSensors] = useState([]);
     const [selectedSensor, setSelectedSensor] = useState(null);
     const [map, setMap] = useState(null);
@@ -27,7 +29,7 @@ const DisplayMap = () => {
     const [mapCenter, setMapCenter] = useState(defaultCenter); // Harita merkezi için state
 
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: "AIzaSyD_SgDBoNntGbcwChUDreSgHCwjDbld8xU", // Buraya kendi API key'inizi koyun
+        googleMapsApiKey: MAP_API,
         libraries,
     });
 

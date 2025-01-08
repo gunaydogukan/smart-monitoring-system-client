@@ -23,6 +23,8 @@ export default function SensorList({
                                        onDefine,
                                        onReload,
                                    }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [sensorList, setSensorList] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState(null);
@@ -44,8 +46,8 @@ export default function SensorList({
     const fetchUndefinedSensors = useCallback(async () => {
         try {
             const url = selectedCompany
-                ? `http://localhost:5000/api/undefined-sensors?companyCode=${encodeURIComponent(selectedCompany)}`
-                : `http://localhost:5000/api/undefined-sensors`;
+                ? `${API_URL}/api/undefined-sensors?companyCode=${encodeURIComponent(selectedCompany)}`
+                : `${API_URL}/api/undefined-sensors`;
 
             const response = await fetch(url, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -77,7 +79,7 @@ export default function SensorList({
 
     const handleAssignSensors = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/sensors-assign', {
+            const response = await fetch(`${API_URL}/api/sensors-assign`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +128,7 @@ export default function SensorList({
     const handleUpdateSensor = async (sensorId, updatedData) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://localhost:5000/api/sensor-logs/update/${sensorId}`, {
+            const response = await fetch(`${API_URL}/api/sensor-logs/update/${sensorId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify(updatedData),

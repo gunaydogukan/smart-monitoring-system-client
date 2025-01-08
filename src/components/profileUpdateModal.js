@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styles from '../styles/ProfileUpdateModal.module.css';
 
 export default function UpdateModal({ profileData, token, closeModal }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [formData, setFormData] = useState({ ...profileData, password: '' }); // Şifre varsayılan olarak boş
     const [message, setMessage] = useState('');
 
@@ -12,7 +14,7 @@ export default function UpdateModal({ profileData, token, closeModal }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:5000/api/update', {
+            const response = await fetch(`${API_URL}/api/update`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

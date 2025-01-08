@@ -11,12 +11,13 @@ export default function AddSensorType() {
         dataNames: [''],
     });
 
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const navigate = useNavigate();
     const location = useLocation();
 
     // Role kontrolünü localStorage üzerinden alalım
     const role = location.state?.role;
-    console.log(role);
 
     useEffect(() => {
         // Eğer role yoksa veya 'administrator' değilse yönlendiriyoruz
@@ -45,7 +46,7 @@ export default function AddSensorType() {
         console.log("Gönderilen veri: ", sensorType);
         try {
             // Sensör tipi verilerini backend'e gönderme
-            const response = await fetch('http://localhost:5000/api/add-new-type', {
+            const response = await fetch(`${API_URL}/api/add-new-type`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +59,6 @@ export default function AddSensorType() {
 
             if (response.ok) {
                 toast.success('Sensör tipi başarıyla eklendi!');
-                console.log("Backend'den gelen veri:", data);
                 // Başarılı olduğunda, kullanıcıyı yönlendirebilirsiniz
                 setTimeout(() => navigate('/dashboard'), 3000); // Yönlendirme
             } else {

@@ -6,6 +6,8 @@ import {useNavigate} from "react-router-dom";
 import styles from "../styles/AdminPage.module.css";
 
 export default function ManagerPage({ role }) {
+    const API_URL = process.env.REACT_APP_API_URL;
+
     const [managerData, setManagerData] = useState(null); // Manager verileri
     const [sensors,setSensors] = useState([]);
     const [filteredSensors, setFilteredSensors] = useState([]);
@@ -20,7 +22,7 @@ export default function ManagerPage({ role }) {
 
     const fetchManagerSensors = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/user-sensors`, {
+            const response = await fetch(`${API_URL}/api/user-sensors`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
@@ -33,7 +35,7 @@ export default function ManagerPage({ role }) {
             setSensors(data.managerSensors);
             console.log("Manager sensör bilgileri = ",data)
             // Tip verilerini yükle
-            const typesResponse = await fetch('http://localhost:5000/api/type', {
+            const typesResponse = await fetch(`${API_URL}/api/type`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
             });
             const typesData = await typesResponse.json();

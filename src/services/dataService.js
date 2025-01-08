@@ -1,5 +1,5 @@
 import {get} from "axios";
-
+const API_URL = process.env.REACT_APP_API_URL;
 export const fetchSensorData = async (sensor, interval) => {
     console.log("Gönderilen sensör başarıyla fethSensorData metotuna iletildi = ",sensor);
     if (!sensor || !sensor.datacode) {
@@ -9,7 +9,7 @@ export const fetchSensorData = async (sensor, interval) => {
     console.log("fetchSensorData - Sensor datacode:", sensor.datacode); // datacode kontrolü
     try {
         // Interval parametresi varsa URL'ye ekle
-        const url = `http://localhost:5000/api/sensor-data?dataCode=${sensor.datacode}${interval ? `&interval=${interval}` : ''}`;
+        const url = `${API_URL}/api/sensor-data?dataCode=${sensor.datacode}${interval ? `&interval=${interval}` : ''}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -79,7 +79,7 @@ const getType = async (sensorType) => {
     }
 
     try {
-        const url = "http://localhost:5000/api/type"; // Endpoint URL
+        const url = `${API_URL}/api/type`; // Endpoint URL
 
         const response = await fetch(url, {
             method: 'GET',

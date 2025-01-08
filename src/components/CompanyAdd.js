@@ -5,6 +5,8 @@ import Layout from "../layouts/Layout";
 
 
 export default function CompanyAdd() {
+    const API_URL = process.env.REACT_APP_API_URL
+
     const [formData, setFormData] = useState({
         name: '',
         code: '',
@@ -17,6 +19,7 @@ export default function CompanyAdd() {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
+
 
     // Şehirleri dış API'den çekme
     useEffect(() => {
@@ -54,7 +57,7 @@ export default function CompanyAdd() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/companies', {
+            const response = await fetch(`${API_URL}/api/companies`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
