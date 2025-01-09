@@ -427,7 +427,7 @@ export default function Users() {
         <Layout>
             <div className={styles.container}>
                 <h2 className={styles.title}>
-                    {type === "managers" ? " Managers" : " Personals"}
+                    {type === "managers" ? " Yöneticiler" : " Personeller"}
                 </h2>
 
 
@@ -497,8 +497,7 @@ export default function Users() {
                                 <th>E-posta</th>
                                 <th>Şirket</th>
                                 <th>Durum</th>
-                                {type === "personals" &&
-                                    <th>Yönetici</th>} {/* Yönetici sütunu sadece personals için görünür */}
+                                {type === "personals" && <th>Yönetici</th>}
                                 <th>İşlemler</th>
                             </tr>
                             </thead>
@@ -529,39 +528,37 @@ export default function Users() {
                                         </td>
                                     )}
                                     <td>
-                                        <button
-                                            className={`${styles.actionButton} ${styles.updateButton}`}
-                                            onClick={() => handleUpdateClick(person)}
-                                        >
-                                            Güncelle
-                                        </button>
-                                        <button
-                                            className={`${styles.actionButton} ${
-                                                person.isActive
-                                                    ? styles.deleteButton
-                                                    : styles.activateButton
-                                            }`}
-                                            onClick={() =>
-                                                handleConfirmAction(
-                                                    person.id,
-                                                    person.isActive ? "deactivate" : "activate"
-                                                )
-                                            }
-                                        >
-                                            {person.isActive ? "Pasif Yap" : "Aktif Yap"}
-                                        </button>
-                                        {/* Yeni Yönetici Değiştir Butonu */}
-                                        {type === "personals" && (
-                                        <button
-                                            className={`${styles.actionButton} ${styles.changeManagerButton}`}
-                                            onClick={() => openChangeManagerModal(person)}
-                                        >
-                                            Yönetici Değiştir
-                                        </button> )}
+                                        <div className={styles.buttonContainer}>
+                                            <button
+                                                className={`${styles.actionButton} ${styles.updateButton}`}
+                                                onClick={() => handleUpdateClick(person)}
+                                            >
+                                                Güncelle
+                                            </button>
+                                            <button
+                                                className={`${styles.actionButton} ${
+                                                    person.isActive ? styles.deleteButton : styles.activateButton
+                                                }`}
+                                                onClick={() =>
+                                                    handleConfirmAction(person.id, person.isActive ? "deactivate" : "activate")
+                                                }
+                                            >
+                                                {person.isActive ? "Pasif Yap" : "Aktif Yap"}
+                                            </button>
+                                            {type === "personals" && (
+                                                <button
+                                                    className={`${styles.actionButton} ${styles.changeManagerButton}`}
+                                                    onClick={() => openChangeManagerModal(person)}
+                                                >
+                                                    Yönetici Değiştir
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
                             </tbody>
+
                         </table>
                     ) : (
                         <p className={styles.message}>
@@ -601,11 +598,12 @@ export default function Users() {
                         <div className={styles.notificationModal}>
                             <h3 className={styles.notificationTitle}>Bilgilendirme</h3>
                             <p className={styles.notificationText}>
-                                Kullanıcı <strong className={styles.notificationHighlight}>{notificationUser}</strong> {notificationMessage}
+                                Kullanıcı <strong
+                                className={styles.notificationHighlight}>{notificationUser}</strong> {notificationMessage}
                             </p>
                             {relatedPersonals && relatedPersonals.length > 0 && (
                                 <p className={styles.notificationInstruction}>
-                                    Ona bağlı personeller (
+                                Ona bağlı personeller (
                                     <strong className={styles.notificationHighlight}>{relatedPersonals.length}</strong>)
                                     yeni managerlere atanmayı bekliyor. <br />
                                     Personeller için <strong>"Kullanıcılar > Personals > Tanımsız Personeller"</strong> sekmesine gidin.

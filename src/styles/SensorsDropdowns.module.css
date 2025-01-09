@@ -64,11 +64,38 @@
     .sensorDropdownContainer {
         flex-direction: column; /* Küçük ekranlarda elemanlar alt alta geçer */
         align-items: stretch;
+        gap: 10px; /* Elemanlar arasında boşluk */
+        width: 100%; /* Tam genişlik */
     }
 
     .dropdown,
     .mapButton {
         flex: none; /* Genişlik esnekliğini kaldırır */
         width: 100%; /* Ekran genişliği kadar yayılır */
+    }
+}
+@media (max-width: 768px) {
+    .sensorDropdownContainer {
+        flex-direction: column; /* Elemanları alt alta dizer */
+        align-items: stretch; /* Tüm elemanları tam genişlikte hizalar */
+
+    }
+
+    .dropdown,
+    .mapButton {
+        width: 100%; /* Her eleman ekran genişliğine yayılır */
+        max-width: 100%; /* Maksimum genişlik kısıtlaması kaldırılır */
+    }
+}
+@media (max-width: 576px) {
+    .sensorDropdownContainer {
+        gap: 8px; /* Daha az boşluk */
+        padding: 8px; /* Daha küçük padding */
+    }
+
+    .dropdown,
+    .mapButton {
+        font-size: 0.9rem; /* Yazı boyutunu küçült */
+        padding: 8px 12px; /* Daha küçük iç boşluk */
     }
 }

@@ -94,7 +94,7 @@ export default function ManagerPage({ role }) {
     return (
         <Layout>
             <div>
-                <h2 className={styles.header}>Manager Paneli</h2>
+                <h2 className={styles.header}>Yönetici Paneli</h2>
             <p>Manager: {managerData.manager.name} {managerData.manager.lastname}</p>
                 <p>Şirket Kodu: {managerData.manager.companyCode}</p>
 
