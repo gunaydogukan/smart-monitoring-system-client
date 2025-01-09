@@ -20,6 +20,7 @@ import AddType from "./components/AddType";
 import SensorIpControlPage from "./pages/SensorIpControlPage";
 import SensorDataControllPage from "./pages/sensorDataControllPage";
 import SensorsDefination from "./pages/Sensors_definitionPage";
+import SensorsRemovalPage from "./pages/sensorRemovePage";
 
 export default function App() {
     const { user, loading, userRole } = useAuth();
@@ -70,6 +71,7 @@ export default function App() {
                         <Route path="/add-sensor" element={<SensorForm />} />
                         <Route path="/users/:type" element={<Users />} />
                         <Route path="/sensor-definition" element={<SensorsDefination />} />
+                        <Route path="/sensor-remove" element={<SensorsRemovalPage />} />
                         <Route path="/add-address" element={<Address />} />
                     </>
                 )}
