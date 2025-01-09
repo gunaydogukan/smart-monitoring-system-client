@@ -12,6 +12,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 const userSensorAPI = `${API_URL}/api/user-sensors`;
 const sensorTypeAPI = `${API_URL}/api/type`;
 const sensorTimeAPI = `${API_URL}/log/data-time-check`;
+const ownerSensorAPI = `${API_URL}/api/owner-sensors`;
 
 // Sensör verilerini kullanıcıya göre çekme
 export const sensorIpServices = async (role, userId) => {
@@ -286,8 +287,6 @@ export const sensorOwners = async (role, userId) => {
     }
 };
 
-
-
 export const getTimes = async (sensors) => {
     try {
         // Datacodları al
@@ -319,6 +318,55 @@ export const getTimes = async (sensors) => {
         throw err;
     }
 };
+
+// services/sensorService.js
+export const fetchSensorsByCompany = async (API_URL, companyCode) => {
+    try {
+        const response = await fetch(`${API_URL}/api/company/${companyCode}/sensors`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error("Sensörler alınırken hata oluştu.");
+        }
+        return await response.json(); // Örn: { sensors: [...] }
+    } catch (error) {
+        console.error("Sensörler alınırken hata oluştu:", error);
+        return { sensors: [] }; // Hata durumunda boş bir array dön
+    }
+};
+
+//sensör çıkart için yapılan servis
+export const getUsersSensors = async (userId) => {
+    try {
+        if (!userId) {
+            throw new Error('Kullanıcı ID’si yok...');
+        }
+
+        // 2. Kullanıcıya ait sensörleri al (GET isteği)
+        const response = await axios.get(`${ownerSensorAPI}?userIds=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        if (!response || !response.data) {
+            throw new Error('Sensör verileri alınırken bir hata oluştu.');
+        }
+
+        const data = response.data;
+
+        const sensors =  data.sensors || [];
+
+        return { success: true, sensors };
+    } catch (error) {
+        console.error("getUsersSensors hata:", error);
+        return { success: false, error: error.message };
+    }
+};
+
+
 
 
 
