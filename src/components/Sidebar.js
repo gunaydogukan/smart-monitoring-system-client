@@ -70,7 +70,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
 
                             {userRole?.role === 'administrator' && (
                                 <li onClick={() => window.open("/sensorControl/kurulum", "_blank")}>
-                                    <FaRss className="dropdown-icon"/> Kurum Kontrol
+                                    <FaRss className="dropdown-icon"/> Kurulu Sistemleri Takip Etme
                                 </li>
                             )}
                             <li onClick={() => handleNavigation("/sensorControl/ip")}>
@@ -108,11 +108,11 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                                 <ul className="dropdown">
                                     {userRole?.role !== 'manager' && (
                                         <li onClick={() => handleNavigation('/users/managers')}>
-                                            <FaUser className="dropdown-icon"/> Managers
+                                            <FaUser className="dropdown-icon"/> Yöneticiler
                                         </li>
                                     )}
                                     <li onClick={() => handleNavigation('/users/personals')}>
-                                        <FaUser className="dropdown-icon"/> Personals
+                                        <FaUser className="dropdown-icon"/> Personeller
                                     </li>
                                 </ul>
                             )}
@@ -134,12 +134,12 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                                 <ul className="dropdown">
                                     {userRole?.role === 'administrator' && (
                                         <li onClick={() => handleNavigation('/register-manager', {role: 'manager'})}>
-                                            <FaUser className="dropdown-icon"/> Manager Ekle
+                                            <FaUser className="dropdown-icon"/> Yönetici Ekle
                                         </li>
                                     )}
                                     {(userRole?.role === 'manager' || user?.role === 'administrator') && (
                                         <li onClick={() => handleNavigation('/register-personal', {role: 'personal'})}>
-                                            <FaUser className="dropdown-icon"/> Personal Ekle
+                                            <FaUser className="dropdown-icon"/> Personel Ekle
                                         </li>
                                     )}
                                     {userRole?.role === 'administrator' && (

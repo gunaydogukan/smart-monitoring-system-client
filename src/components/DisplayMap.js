@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {GoogleMap, InfoWindow, Marker, useLoadScript} from "@react-google-maps/api";
 import { fetchSensorData } from "../services/dataService";
 import "../styles/DisplayMap.css";
+import LoadingScreen from "./LoadingScreen";
 
 const containerStyle = {
     width: "100%",
@@ -12,6 +13,7 @@ const libraries = ["places"];
 
 const DisplayMap = () => {
     const MAP_API = process.env.REACT_APP_GOOGLE_MAP_API;
+    const mapRef = useRef(null);
 
     const [sensors, setSensors] = useState([]);
     const [selectedSensor, setSelectedSensor] = useState(null);
@@ -128,10 +130,11 @@ const DisplayMap = () => {
                         monthData: data1Month.data,
                     });
                     setAverages({
-                        avg1Day: data1Day.ortalama,
-                        avg1Week: data1Week.ortalama,
-                        avg1Month: data1Month.ortalama,
+                        "1 Günlük": data1Day.ortalama,
+                        "1 Haftalık": data1Week.ortalama,
+                        "1 Aylık": data1Month.ortalama,
                     });
+
                     setSensorType(data1Day.type.type);
                     setLoading(false);
                 })
@@ -168,151 +171,149 @@ const DisplayMap = () => {
     }
 
     if (!isLoaded) {
-        return <div>Harita yükleniyor...</div>;
+        return <LoadingScreen />;
     }
+    const handleSidebarToggle = () => {
+        setSidebarExpanded(!sidebarExpanded);
 
+        // Google Map yeniden boyutlandırmayı tetikleme
+        setTimeout(() => {
+            if (mapRef.current) {
+                const mapInstance = mapRef.current;
+                window.google.maps.event.trigger(mapInstance, "resize");
+                mapInstance.setCenter(defaultCenter); // Merkez harita konumunu koru
+            }
+        }, 300); // Sidebar geçiş animasyon süresine paralel
+    };
 
     return (
-        <div style={{ display: "flex", width: "100%", height: "100vh" }}>
-            {/* Sidebar */}
-            <div
-                style={{
-                    width: sidebarExpanded ? "12%" : "35px",
-                    backgroundColor: "#f0f0f0",
-                    padding: sidebarExpanded ? "20px" : "5px",
-                    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-                    transition: "width 0.3s ease",
-                    overflowY: "auto",
-                }}
+        <div className={`display-map-container ${sidebarExpanded ? "sidebar-open" : "sidebar-closed"}`}>
+            {/* Hamburger Menu Button */}
+            <button
+                className="sidebar-toggle-button"
+                onClick={handleSidebarToggle}
             >
-                <div
-                    onClick={() => setSidebarExpanded(!sidebarExpanded)}
-                    style={{ cursor: "pointer", display: "flex", alignItems: "center", marginBottom: "10px" }}
-                >
-                    <img
-                        src="https://img.icons8.com/ios-filled/50/000000/menu.png"
-                        style={{ width: "34px", height: "34px" }}
-                        alt="Toggle Sidebar"
-                    />
-                    {sidebarExpanded && <h2 style={{ marginLeft: "10px" }}>Sensörler</h2>}
-                </div>
-                {sidebarExpanded && (
-                    <ul>
-                        {sensors.map((sensor) => (
-                            <li
-                                key={sensor.id}
-                                onClick={() => setSelectedSensor(sensor)}
-                                style={{
-                                    cursor: "pointer",
-                                    marginBottom: "10px",
-                                    padding: "10px",
-                                    border: "1px solid #ccc",
-                                    borderRadius: "5px",
-                                }}
-                            >
-                                {sensor.name} , Kod: {sensor.datacode}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                ☰
+            </button>
+
+            {/* Sidebar */}
+            <div className={`display-map-sidebar ${sidebarExpanded ? "expanded" : "collapsed"}`}>
+                <ul>
+                    {sensors.map((sensor) => (
+                        <li
+                            key={sensor.id}
+                            onClick={() => setSelectedSensor(sensor)}
+                        >
+                            {sensor.name} , Kod: {sensor.datacode}
+                        </li>
+                    ))}
+                </ul>
             </div>
 
             {/* Harita */}
-            <div style={{ flex: 1, height: "100%" }}>
+            <div className="display-map-map">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
-                    center={mapCenter}
+                    center={defaultCenter}
                     zoom={10}
-                    onLoad={(mapInstance) => setMap(mapInstance)}
+                    onLoad={(mapInstance) => {
+                        setMap(mapInstance);
+                        mapRef.current = mapInstance;
+                    }}
                 >
                     {sensors.map((sensor) => (
                         <Marker
                             key={sensor.id}
-                            position={{ lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng) }}
+                            position={{
+                                lat: parseFloat(sensor.lat),
+                                lng: parseFloat(sensor.lng),
+                            }}
                             icon={getMarkerIcon(sensor)}
                             onClick={() => setSelectedSensor(sensor)}
-                        >
-                            {/* Tip Adı Gösterimi */}
-                            <InfoWindow position={{ lat: parseFloat(sensor.lat), lng: parseFloat(sensor.lng) }}>
-                                <div className="info-window">{getTypeName(sensor.type)}</div>
-                            </InfoWindow>
-
-                        </Marker>
+                        />
                     ))}
                 </GoogleMap>
+            </div>
 
-                {/* Modal */}
-                {selectedSensor && (
-                    <div className="modal-overlay">
-                        <div className="modal-content large-modal">
-                            <div className="modal-header">
-                                <h2>Sensör Bilgileri</h2>
-                                <div className="sensor-details">
-                                    <p>
-                                        <strong>İsim:</strong> {selectedSensor.name}
-                                    </p>
-                                    <p>
-                                        <strong>DataCode:</strong> {selectedSensor.datacode}
-                                    </p>
-                                    <p>
-                                        <strong>Enlem, Boylam:</strong> {selectedSensor.lat}, {selectedSensor.lng}
-                                    </p>
-                                    <p>
-                                        <strong>Açıklama:</strong> {selectedSensor.def}
-                                    </p>
-                                    <p>
-                                        <strong>Sensör Tipi:</strong> {sensorType}
-                                    </p>
-                                </div>
-                                <button className="close-button" onClick={() => setSelectedSensor(null)}>
-                                    ×
-                                </button>
+            {/* Modal */}
+            {selectedSensor && (
+                <div className="display-map-modal-overlay">
+                    <div className="display-map-modal-content large-modal">
+                        <div className="display-map-modal-header">
+                            <h2>Sensör Bilgileri</h2>
+                            <button
+                                className="close-button_veri"
+                                onClick={() => setSelectedSensor(null)}
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="display-map-modal-body">
+                            <div className="display-map-sensor-details">
+                                <p>
+                                    <strong>İsim:</strong> {selectedSensor.name}
+                                </p>
+                                <p>
+                                    <strong>Veri Kodu:</strong> {selectedSensor.datacode}
+                                </p>
+                                <p>
+                                    <strong>Enlem, Boylam:</strong> {selectedSensor.lat}, {selectedSensor.lng}
+                                </p>
+                                <p>
+                                    <strong>Açıklama:</strong> {selectedSensor.def}
+                                </p>
+                                <p>
+                                    <strong>Sensör Tipi:</strong> {sensorType}
+                                </p>
                             </div>
-                            <div className="modal-body">
-                                <div className="veri-section">
-                                    <h4>Son Üç Veri</h4>
-                                    <div className="veri-container">
-                                        {sonUcVeri(sensorData.dayData).map((item, index) => (
-                                            <div key={index} className="veri-box">
-                                                {item.map((field, i) => (
-                                                    <p key={i}>
-                                                        <strong>{field.label}:</strong> {field.value}
-                                                    </p>
+                            <div className="display-map-veri-section">
+                                <h4>Son Üç Veri</h4>
+                                <div className="display-map-veri-container">
+                                    {sonUcVeri(sensorData.dayData).map((item, index) => (
+                                        <div key={index} className="display-map-veri-box">
+                                            {item.map((field, i) => (
+                                                <p key={i}>
+                                                    <strong>{field.label}:</strong> {field.value}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="display-map-veri-section">
+                                <h4>Ortalamalar</h4>
+                                <div className="display-map-veri-container">
+                                    {Object.keys(averages).map((key, index) => (
+                                        <div key={index} className="display-map-veri-box">
+                                            <h5>{key.replace("avg", "")} Ortalama</h5>
+                                            <ul>
+                                                {Object.entries(averages[key]).map(([subKey, value], i) => (
+                                                    <li key={i}>
+                                                        <strong>{subKey}:</strong> {value.toFixed(2)}
+                                                    </li>
                                                 ))}
-                                            </div>
-                                        ))}
-                                    </div>
+                                            </ul>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="veri-section">
-                                    <h4>Ortalamalar</h4>
-                                    <div className="veri-container">
-                                        {Object.keys(averages).map((key, index) => (
-                                            <div key={index} className="veri-box">
-                                                <h5>{key.replace("avg", "")} Ortalama</h5>
-                                                <ul>
-                                                    {Object.entries(averages[key]).map(([subKey, value], i) => (
-                                                        <li key={i}>
-                                                            <strong>{subKey}:</strong> {value.toFixed(2)}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    className="sensor-info-button"
-                                    onClick={() => handleDirections(selectedSensor.lat, selectedSensor.lng)}
-                                >
-                                    Yol Tarifi Al
-                                </button>
                             </div>
                         </div>
+                        <div className="display-map-modal-footer">
+                            <button
+                                className="display-map-sensor-info-button"
+                                onClick={() =>
+                                    handleDirections(
+                                        selectedSensor.lat,
+                                        selectedSensor.lng
+                                    )
+                                }
+                            >
+                                Yol Tarifi Al
+                            </button>
+                        </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

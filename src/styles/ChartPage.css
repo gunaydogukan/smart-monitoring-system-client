@@ -1,0 +1,85 @@
+.chart-page-container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 1200px; /* Büyük ekranlar için genişlik */
+    margin: 20px auto;
+    overflow: hidden; /* Taşma problemini engeller */
+}
+
+.chart-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-control-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.chart-label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: bold;
+}
+
+.chart-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+
+.chart-select:hover {
+    border-color: #007bff;
+    background-color: #f1f9ff;
+}
+
+/* Grafiklerin bulunduğu alan */
+.charts-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* Büyük ekranlarda 2 grafik yan yana */
+    gap: 20px; /* Grafikler arasında boşluk */
+}
+
+/* Grafik kutusu */
+.chart-wrapper {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    height: 400px;
+    overflow: hidden; /* Taşma problemini engeller */
+}
+
+/* Tablet için grafik düzeni */
+@media (max-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr; /* 1 sütun */
+    }
+
+    .chart-wrapper {
+        height: 350px; /* Daha küçük ekranlarda grafik boyutunu küçült */
+    }
+}
+
+/* Mobil için grafik düzeni */
+@media (max-width: 480px) {
+    .charts-container {
+        grid-template-columns: 1fr; /* Tek sütun düzeni */
+    }
+
+    .chart-wrapper {
+        height: 300px; /* Daha küçük ekranlar için grafik boyutunu daha da küçült */
+    }
+}

@@ -325,12 +325,7 @@ export default function SensorList({
                                         >
                                             {sensor.isActive ? 'Pasif Yap' : 'Aktif Yap'}
                                         </button>
-                                        <button
-                                            className={styles.defineButton}
-                                            onClick={() => onDefine(sensor.id)}
-                                        >
-                                            Tanımla
-                                        </button>
+
                                     </>
                                 )}
                             </td>

@@ -11,12 +11,14 @@
     align-items: center;
     opacity: 0;
     transition: opacity 0.3s ease;
+    z-index: 1000; /* Diğer tüm öğelerin üstünde olacak */
 }
 
 .modal.active {
     display: flex;
     opacity: 1;
 }
+
 
 /* Modal content */
 .modalContent {

@@ -35,7 +35,7 @@ export default function SensorsDropdowns({
                     onChange={(e) => onChange('manager', e.target.value)}
                     disabled={!selectedCompany}
                 >
-                    <option value="">Tüm Managerlar</option>
+                    <option value="">Tüm Yöneticiler</option>
                     {managers.map((manager) => (
                         <option key={manager.id} value={manager.id}>
                             {manager.name} {manager.lastname}

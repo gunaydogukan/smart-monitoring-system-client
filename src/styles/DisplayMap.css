@@ -1,192 +1,372 @@
-.info-window {
-    background: #ffffff; /* Beyaz arka plan */
-    color: #333333; /* Yazı rengi */
-    padding: 5px 10px; /* İçerik boşluğu */
-    border-radius: 8px; /* Köşeleri yuvarlak */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Hafif gölge */
-    font-size: 14px; /* Yazı boyutu */
-    font-weight: 500; /* Yazı kalınlığı */
-    white-space: nowrap; /* Yazının tek satırda kalması */
-    text-align: center; /* Ortaya hizalama */
-}
-
-
-.map-container {
+/* Root Container */
+.display-map-container {
     display: flex;
+    width: 100%;
+    height: 100vh;
     position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #ffffff;
 }
 
-.sensor-info-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.sensor-info-header h2 {
-    font-size: 24px;
-    color: #1d3557;
-    margin: 0;
-    font-weight: bold;
-}
-
-.close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #e63946;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.close-button:hover {
-    color: #d90429;
-    transform: scale(1.2);
-}
-
-.modal-overlay {
+/* Sidebar Styles */
+.display-map-sidebar {
+    background-color: #f9f9f9;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow-y: auto;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    transition: width 0.3s ease;
+    z-index: 1000;
+}
+
+.display-map-sidebar.collapsed {
+    width: 0; /* Sidebar kapalıyken görünmez */
+    padding: 0;
+}
+
+.display-map-sidebar.expanded {
+    width: 250px; /* Genişletilmiş durumda genişlik */
+    padding: 20px;
+}
+
+/* Sidebar Content */
+.display-map-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 75px;
+}
+
+.display-map-sidebar li {
+    cursor: pointer;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.display-map-sidebar li:hover {
+    background-color: #e8f0fe;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Scroll Bar */
+.display-map-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.display-map-sidebar::-webkit-scrollbar-thumb {
+    background: #4285F4;
+    border-radius: 5px;
+}
+
+.display-map-sidebar::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+/* Sidebar Aç/Kapa Butonu */
+.sidebar-toggle-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    background-color: #4285F4;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-toggle-button:hover {
+    background-color: #357ae8;
+}
+
+/* Harita Container */
+
+.display-map-map {
+    max-width: 1500px; /* Maksimum genişlik */
+    height: 80vh; /* Haritanın yüksekliği */
+    margin: auto; /* Ortalamak için margin */
+    padding: 10px; /* İçerik çevresine boşluk */
+    background-color: #ffffff; /* Arka plan rengi */
+    border-radius: 12px; /* Köşeleri yuvarlat */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Hafif gölge efekti */
+    display: flex; /* İçerikleri hizalamak için flex */
+    flex-direction: column; /* Dikey düzen */
+    justify-content: space-between; /* İçerikler arasında boşluk */
+    transition: all 0.3s ease; /* Geçiş animasyonu */
+    border: 1px solid #e0e0e0; /* Hafif bir kenar çerçevesi */
+    width: calc(80% - 50px); /* Sidebar açıkken genişlik */
+
+}
+
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .display-map-sidebar.expanded {
+        width: 200px; /* Mobilde daha dar sidebar genişliği */
+    }
+
+    .display-map-map {
+        width: calc(100% - 0px); /* Sidebar açıkken mobil genişlik */
+        margin-left: 0px;
+    }
+
+    .display-map-map.sidebar-closed {
+        width: 100%; /* Sidebar kapalıyken tam genişlik */
+        margin-left: 0;
+    }
+}
+
+
+/* Map Container */
+
+.display-map-sidebar.collapsed ~ .display-map-map {
+    margin-left: 10%;
+}
+.display-map-sidebar.expanded ~ .display-map-map {
+    margin-left: 290px;
+}
+/* Modal Overlay */
+.display-map-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 10px;
 }
 
-.modal-content {
-    background: #f1faee;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 1100px;
-    height: 85vh;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    position: relative;
+/* Modal Content */
+.display-map-modal-content {
+    background: #ffffff;
+    border-radius: 8px;
+    width: 90%; /* Varsayılan genişlik */
+    max-width: 1200px; /* Büyük ekranlar için maksimum genişlik */
+    max-height: 90vh;
     overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin; /* Modern tarayıcılar için scroll bar kalınlığı */
+    scrollbar-color: #4285F4 #e0e0e0;
+}
+/* Scroll Bar Stili */
+.display-map-modal-content::-webkit-scrollbar {
+    width: 8px; /* Scroll bar genişliği */
 }
 
-.modal-header {
+.display-map-modal-content::-webkit-scrollbar-thumb {
+    background: #4285F4; /* Scroll barın rengi */
+    border-radius: 8px;
+}
+
+.display-map-modal-content::-webkit-scrollbar-track {
+    background: #e0e0e0; /* Scroll barın arka planı */
+}
+
+/* Modal Header */
+.display-map-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.modal-header h2 {
+.display-map-modal-header h2 {
+    width: 100%;
     margin: 0;
-    font-size: 22px;
-    color: #457b9d;
-    text-transform: uppercase;
+    font-size: 1.5em;
+    color: #333333;
 }
 
-.modal-body {
-    flex-grow: 1;
-    font-size: 16px;
-    line-height: 1.6;
-}
-
-.modal-footer {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
-
-.sensor-info-button {
-    background-color: #0077b6;
-    color: white;
+.display-map-modal-header .close-button_veri {
+    width: 40px;
+    background: none;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    font-size: 1.5em; /* Büyük ekranlar için varsayılan font boyutu */
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #999999;
+    transition: color 0.2s ease;
+
+    z-index: 10; /* Modal içindeki diğer elemanların üstünde kalır */
 }
 
-.sensor-info-button:hover {
-    background-color: #023e8a;
-    transform: translateY(-3px);
+.display-map-modal-header .close-button_veri:hover {
+    color: #333333;
 }
 
-.large-modal {
-    width: 90%;
-    max-width: 1100px;
-    height: 85vh;
-    max-height: 90vh;
-    padding: 30px;
-    overflow-y: auto;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+/* Sensor Details */
+.display-map-sensor-details p {
+    margin: 5px 0;
+    color: #555555;
 }
 
-.veri-container {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 20px;
+.display-map-sensor-details strong {
+    color: #333333;
 }
 
-.veri-box {
-    flex: 1;
-    min-width: 260px;
-    border: 1px solid #a8dadc;
-    border-radius: 12px;
-    background-color: #f1faee;
+/* Modal Body */
+.display-map-modal-body {
     padding: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    text-align: left;
 }
 
-.veri-box:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+.display-map-veri-section {
+    margin-bottom: 20px;
 }
 
-.veri-box h5 {
-    font-size: 18px;
-    color: #1d3557;
+.display-map-veri-section h4 {
     margin-bottom: 10px;
-    border-bottom: 2px solid #457b9d;
-    padding-bottom: 5px;
+    color: #333333;
+    font-size: 1.2em;
 }
 
-.veri-box ul {
-    list-style-type: none;
+/* Veri Kutuları */
+/* Veri Konteyneri */
+.display-map-veri-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Kutular arasındaki boşluk */
+    justify-content: space-between; /* Kutular eşit hizalı */
+    align-items: flex-start; /* Dikey hizalama */
+}
+
+/* Veri Kutuları */
+.display-map-veri-box {
+    flex: 1 1 calc(33.333% - 50px); /* Tablet ve büyük ekranlar için üç kolon düzeni */
+    max-width: calc(33.333% - 50px);
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+
+/* Metinler */
+.display-map-veri-box p {
+    margin: 5px 0;
+    color: #555555;
+}
+
+.display-map-veri-box h5 {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: #333333;
+}
+
+.display-map-veri-box ul {
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.veri-box ul li {
-    font-size: 14px;
-    color: #343a40;
+.display-map-veri-box li {
     margin-bottom: 5px;
+    color: #555555;
 }
 
-.veri-box ul li strong {
-    color: #1d3557;
-}
-
-.veri-section {
-    margin-top: 30px;
+/* Modal Footer */
+.display-map-modal-footer {
     padding: 20px;
-    border: 1px solid #a8dadc;
-    border-radius: 12px;
-    background-color: #f8f9fa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid #e0e0e0;
+    text-align: right;
 }
 
-.veri-section h4 {
-    font-size: 20px;
-    color: #457b9d;
-    margin-bottom: 15px;
-    text-align: center;
+.display-map-sensor-info-button {
+    background-color: #4285F4;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.display-map-sensor-info-button:hover {
+    background-color: #357ae8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobil ve Tablet: Modal ve Box Stili */
+@media (max-width: 1199px) and (min-width: 768px) {
+    .display-map-modal-content {
+        width: 90%; /* Tabletlerde modal genişliği küçültüldü */
+        max-width: 500px;
+    }
+
+    .display-map-veri-box {
+        flex: 1 1 calc(95%); /* İki kolon düzeni */
+        max-width: calc(95%);
+    }
+}
+
+@media (max-width: 768px) {
+    .display-map-modal-content {
+        width: 95%; /* Mobilde modal genişliği daha küçük */
+        max-width: 600px;
+    }
+
+    .display-map-veri-box {
+        flex: 1 1 100%; /* Tek kolon düzeni */
+        max-width: 100%;
+    }
+}
+
+/* Mobil Scroll Bar */
+@media (max-width: 768px) {
+    .display-map-modal-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .display-map-modal-content::-webkit-scrollbar-thumb {
+        background: #4285F4;
+        border-radius: 4px;
+    }
+
+    .display-map-modal-content::-webkit-scrollbar-track {
+        background: #f0f0f0;
+    }
+}@media (max-width: 767px) {
+    .display-map-modal-content {
+        width: 95%; /* Mobilde modal genişliği daha küçük */
+        max-width: 600px;
+    }
+
+    .display-map-veri-box {
+        flex: 1 1 100%; /* Tek kolon düzeni */
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 1199px) {
+    .display-map-modal-header .close-button_veri {
+        font-size: 2em; /* Daha küçük font boyutu */
+    }
 }

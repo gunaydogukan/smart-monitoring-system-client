@@ -149,11 +149,12 @@ const UpdateUserModal = ({ modalVisible, handleCloseModal, selectedUser, handleU
 
                     {/* Butonlar */}
                     <div className={styles.buttonGroup}>
-                        <button type="button" className={styles.modalButton} onClick={handleSubmit}>
-                            Güncelle
-                        </button>
+
                         <button type="button" className={styles.cancelButton} onClick={handleCloseModal}>
                             İptal
+                        </button>
+                        <button type="button" className={styles.modalButton} onClick={handleSubmit}>
+                            Güncelle
                         </button>
                     </div>
                 </form>
