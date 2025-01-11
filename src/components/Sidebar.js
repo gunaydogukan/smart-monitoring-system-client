@@ -91,9 +91,16 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             <li onClick={() => handleNavigation("/sensors")}>
                                 <FaRss className="dropdown-icon"/> Sensörler
                             </li>
-                            <li onClick={() => handleNavigation("/sensor-definition")}>
-                                <FaRss className="dropdown-icon"/> Sensör Tanımlama
-                            </li>
+                            {userRole.role !== "personal" && (
+                                <>
+                                    <li onClick={() => handleNavigation("/sensor-definition")}>
+                                        <FaRss className="dropdown-icon" /> Sensör Tanımlama
+                                    </li>
+                                    <li onClick={() => handleNavigation("/sensor-remove")}>
+                                        <FaRss className="dropdown-icon" /> Sensör Çıkart
+                                    </li>
+                                </>
+                            )}
                         </ul>
                     )}
 
