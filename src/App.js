@@ -20,6 +20,9 @@ import AddType from "./components/AddType";
 import SensorIpControlPage from "./pages/SensorIpControlPage";
 import SensorDataControllPage from "./pages/sensorDataControllPage";
 import SensorsDefination from "./pages/Sensors_definitionPage";
+
+import SoilMoistureMap from "./pages/SoilMoistureMap";
+
 import SensorsRemovalPage from "./pages/sensorRemovePage";
 
 export default function App() {
@@ -84,6 +87,8 @@ export default function App() {
                 <Route path="/sensorControl/ip" element={<SensorIpControlPage />} />
                 <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
                 <Route path="*" element={<Navigate to="/dashboard" />} />
+                <Route path="/soilmoisturemap" element={<SoilMoistureMap />} />
+
             </>
         );
     };
