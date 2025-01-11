@@ -97,6 +97,11 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                         </ul>
                     )}
 
+                    <div className="menu" onClick={() => handleNavigation("/soilmoisturemap")}>
+                        <FaHome className="menu-icon"/>
+                        <span>Nem Haritası</span>
+                    </div>
+
                     {!isPersonal && (
                         <>
                             <div className={`menu ${isUsersOpen ? 'open' : ''}`}
