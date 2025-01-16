@@ -4,6 +4,7 @@ import SensorList from '../components/SensorList';
 import Layout from "../layouts/Layout";
 import {useNavigate} from "react-router-dom";
 import styles from "../styles/AdminPage.module.css";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function ManagerPage({ role }) {
     const API_URL = process.env.REACT_APP_API_URL;
@@ -80,7 +81,7 @@ export default function ManagerPage({ role }) {
 
 
     if (!managerData) {
-        return <p>Veriler yükleniyor...</p>;  // Veri yüklenene kadar
+       return <LoadingScreen />;;  // Veri yüklenene kadar
     }
 
     const handleMapRedirect = () => {

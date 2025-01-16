@@ -11,7 +11,8 @@ import {
 import styles from '../styles/AdminPage.module.css';
 import SensorsDropdowns from '../components/SensorsDropdowns';
 import {toast} from "react-toastify";
-import {useNavigate} from "react-router-dom"; // SensorsDropdowns'u import etmeyi unutmayın
+import {useNavigate} from "react-router-dom";
+import LoadingScreen from "../components/LoadingScreen"; // SensorsDropdowns'u import etmeyi unutmayın
 
 
 
@@ -33,6 +34,7 @@ export default function AdminSensorPage({ role }) {
     const [selectedPersonal, setSelectedPersonal] = useState('');
     const [sensorForCompany, setSensorForCompany] = useState([]);
 
+    const [loading, setLoading] = useState(true); // Yüklenme durumunu takip eden state
 
 
 
@@ -85,6 +87,7 @@ export default function AdminSensorPage({ role }) {
 
     const fetchAdminData = useCallback(async () => {
         try {
+            setLoading(true); // Veri çekmeye başlarken yükleniyor durumuna geç
             const response = await fetch(`${API_URL}/api/user-sensors`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -118,8 +121,10 @@ export default function AdminSensorPage({ role }) {
         } catch (error) {
             console.error('Veri çekme hatası:', error);
             toast.error(`Veri çekme hatası: ${error.message}`); // Hata mesajını göster
+        } finally {
+            setLoading(false); // Veri çekme işlemi tamamlandıktan sonra yükleniyor durumunu kapat
         }
-    }, [selectedCompany, handleDropdownChange]); // `selectedCompany` ve `handleDropdownChange` bağımlılıkları eklendi
+    }, [selectedCompany, handleDropdownChange]);
 
 
 
@@ -137,6 +142,10 @@ export default function AdminSensorPage({ role }) {
         fetchAdminData(); // Yalnızca ilk render'da çalışacak
     }, []); // Bağımlılık dizisi boş bırakıldı
 
+
+    if (loading) {
+        return <LoadingScreen />;
+    }
     return (
         <Layout>
             <div className={styles.container}>

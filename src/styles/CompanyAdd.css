@@ -1,0 +1,110 @@
+/* Formun tamamı */
+.containerCompanyAdd {
+    display: flex; /* Flexbox düzeni */
+    justify-content: center; /* Yatayda ortala */
+    align-items: center; /* Dikeyde ortala */
+    min-height: 100vh; /* Sayfa boyutunu kapla */
+    padding: 20px; /* İçerik için boşluk */
+    transition: margin-left 0.3s ease; /* Sidebar açılış/kapanış animasyonu */
+}
+
+.formCompanyAdd {
+    max-width: 500px; /* Formun maksimum genişliği */
+    width: 100%; /* Tam genişlik */
+    margin: 0 auto; /* Ortala */
+    padding: 30px 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    font-family: 'Arial', sans-serif;
+}
+
+
+/* Form başlığı */
+.formTitleCompanyAdd {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333333; /* Koyu metin rengi */
+}
+
+/* Input alanları */
+.inputCompanyAdd {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc; /* Gri kenarlık */
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box; /* Kenarlık ve padding hesaba katılır */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input focus efekti */
+.inputCompanyAdd:focus {
+    border-color: #3498db; /* Mavi kenarlık */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4); /* Hafif mavi ışık efekti */
+    outline: none;
+}
+
+/* Dropdown (select) alanı */
+.inputCompanyAdd select {
+    cursor: pointer;
+}
+
+/* Buton */
+.buttonCompanyAdd {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #2980b9; /* Yeşil buton rengi */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Buton hover efekti */
+.buttonCompanyAdd:hover {
+    background-color: #1c6ea4; /* Daha koyu yeşil */
+    transform: translateY(-2px); /* Hafif yukarı çıkma efekti */
+}
+
+/* Buton pasifken */
+.buttonCompanyAdd:disabled {
+    background-color: #ccc; /* Gri renk */
+    cursor: not-allowed;
+}
+
+/* Hata mesajları */
+.errorCompanyAdd {
+    color: red;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .formCompanyAdd {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .formTitleCompanyAdd {
+        font-size: 20px;
+    }
+
+    .inputCompanyAdd {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .buttonCompanyAdd {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+}

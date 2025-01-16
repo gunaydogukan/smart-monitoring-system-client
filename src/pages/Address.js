@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
-import styles from '../styles/Address.module.css'; // CSS dosyasını içe aktar
+import styles from '../styles/Address.module.css';
 
 export default function Address() {
     const API_URL = process.env.REACT_APP_API_URL;
@@ -21,6 +21,7 @@ export default function Address() {
     const [selectedDistrictId, setSelectedDistrictId] = useState('');
     const [selectedNeighborhoodId, setSelectedNeighborhoodId] = useState('');
     const [village, setVillage] = useState('');
+    const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
 
@@ -28,6 +29,24 @@ export default function Address() {
         options.filter((option) =>
             option.name.toLowerCase().startsWith(searchValue.toLowerCase())
         );
+
+    const validateField = (name, value) => {
+        let error = '';
+        if (name === 'village' && value.trim() && !/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+            error = 'Köy adı yalnızca harfler ve boşluk içerebilir.';
+        }
+        if (name === 'searchProvince' && value.trim() && !/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+            error = 'İl adı yalnızca harfler ve boşluk içerebilir.';
+        }
+        if (name === 'searchDistrict' && value.trim() && !/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+            error = 'İlçe adı yalnızca harfler ve boşluk içerebilir.';
+        }
+        if (name === 'searchNeighborhood' && value.trim() && !/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+            error = 'Mahalle adı yalnızca harfler ve boşluk içerebilir.';
+        }
+        setErrors((prev) => ({ ...prev, [name]: error }));
+        return error === '';
+    };
 
     useEffect(() => {
         const fetchProvinces = async () => {
@@ -79,18 +98,6 @@ export default function Address() {
         }
     }, [selectedDistrictId]);
 
-    useEffect(() => {
-        setFilteredProvinces(filterOptions(provinces, searchProvince));
-    }, [searchProvince, provinces]);
-
-    useEffect(() => {
-        setFilteredDistricts(filterOptions(districts, searchDistrict));
-    }, [searchDistrict, districts]);
-
-    useEffect(() => {
-        setFilteredNeighborhoods(filterOptions(neighborhoods, searchNeighborhood));
-    }, [searchNeighborhood, neighborhoods]);
-
     const handleSelectChange = (setId, setSearch, list, id) => {
         setId(id);
         const selectedItem = list.find((item) => item.id === parseInt(id));
@@ -118,8 +125,6 @@ export default function Address() {
 
         try {
             const token = localStorage.getItem('token');
-            console.log('Gönderilen token:', token);
-
             const response = await fetch(`${API_URL}/api/address`, {
                 method: 'POST',
                 headers: {
@@ -131,19 +136,10 @@ export default function Address() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Sunucu Hatası:', errorData);
-                console.log(addressData);
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(errorData.message || 'Sunucu hatası');
             }
 
             const result = await response.json();
-            console.log('Adres başarıyla eklendi:', result);
-
-            if (!result.villageId) {
-                alert('Köy ID alınamadı. Lütfen tekrar deneyin.');
-                return;
-            }
-
             navigate('/add-sensor', { state: { villageId: result.villageId, villageName: village } });
         } catch (error) {
             console.error('Adres ekleme hatası:', error);
@@ -152,6 +148,9 @@ export default function Address() {
 
     return (
         <Layout>
+            <div className={styles.contentContainer}>
+
+
             <div className={styles.addressContainer}>
                 <h1>Adres Bilgisi</h1>
                 <form onSubmit={handleSubmit}>
@@ -160,9 +159,13 @@ export default function Address() {
                         <input
                             type="text"
                             value={searchProvince}
-                            onChange={(e) => setSearchProvince(e.target.value)}
+                            onChange={(e) => {
+                                setSearchProvince(e.target.value);
+                                validateField('searchProvince', e.target.value);
+                            }}
                             placeholder="İl Ara"
                         />
+                        {errors.searchProvince && <p className={styles.error}>{errors.searchProvince}</p>}
                         <select
                             value={selectedProvinceId}
                             onChange={(e) =>
@@ -189,9 +192,13 @@ export default function Address() {
                         <input
                             type="text"
                             value={searchDistrict}
-                            onChange={(e) => setSearchDistrict(e.target.value)}
+                            onChange={(e) => {
+                                setSearchDistrict(e.target.value);
+                                validateField('searchDistrict', e.target.value);
+                            }}
                             placeholder="İlçe Ara"
                         />
+                        {errors.searchDistrict && <p className={styles.error}>{errors.searchDistrict}</p>}
                         <select
                             value={selectedDistrictId}
                             onChange={(e) =>
@@ -218,9 +225,15 @@ export default function Address() {
                         <input
                             type="text"
                             value={searchNeighborhood}
-                            onChange={(e) => setSearchNeighborhood(e.target.value)}
+                            onChange={(e) => {
+                                setSearchNeighborhood(e.target.value);
+                                validateField('searchNeighborhood', e.target.value);
+                            }}
                             placeholder="Mahalle Ara"
                         />
+                        {errors.searchNeighborhood && (
+                            <p className={styles.error}>{errors.searchNeighborhood}</p>
+                        )}
                         <select
                             value={selectedNeighborhoodId}
                             onChange={(e) =>
@@ -246,9 +259,13 @@ export default function Address() {
                         <input
                             type="text"
                             value={village}
-                            onChange={(e) => setVillage(e.target.value)}
+                            onChange={(e) => {
+                                setVillage(e.target.value);
+                                validateField('village', e.target.value);
+                            }}
                             placeholder="Buraya özel notunuzu yazın"
                         />
+                        {errors.village && <p className={styles.error}>{errors.village}</p>}
                     </div>
 
                     <button
@@ -262,6 +279,7 @@ export default function Address() {
                         İleri
                     </button>
                 </form>
+            </div>
             </div>
         </Layout>
     );

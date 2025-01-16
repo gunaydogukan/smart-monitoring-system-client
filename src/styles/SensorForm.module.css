@@ -1,142 +1,119 @@
-/* Specific styles for the SensorForm component */
 .sensorFormWrapper {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Yatayda ortala */
+    align-items: center; /* Dikeyde ortala */
     width: 100%;
     min-height: 100vh;
-    background-color: #f7f7f7; /* Background color for the page */
+    background-color: #f7f7f7; /* Sayfa arka plan rengi */
+    padding: 2rem;
 }
 
-/* Container for the form */
+/* Form kapsayıcısı */
 .sensorFormContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    background-color: #fff; /* Beyaz arka plan */
     color: #333;
-    max-width: 700px;
-    margin: 20px auto;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-width: 600px; /* Maksimum genişlik */
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: auto; /* İçerik taşarsa kaydırma */
     transition: all 0.3s ease;
 }
 
-.sensorFormContainer.dark {
-    background-color: #212529;
-    color: #fff;
-}
 
-/* Form Title */
-h1 {
+/* Başlık */
+.sensorFormTitle {
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
-    font-weight: 600;
+    font-weight: bold;
     text-align: center;
+    color: #333;
 }
 
-/* Form styling */
+
+
+/* Form yapısı */
 form {
     display: flex;
     flex-direction: column;
     width: 100%;
 }
 
-/* Form Group (label + input/select/textarea) */
+/* Form grubu */
 .formGroup {
     display: flex;
     flex-direction: column;
     margin-bottom: 1.5rem;
 }
 
-/* Form Group Label */
+/* Etiket */
 .formGroup label {
     font-weight: bold;
     margin-bottom: 0.5rem;
     color: #666;
 }
 
-.sensorFormContainer.dark .formGroup label {
-    color: #e0e0e0;
-}
 
-/* Form Inputs, Selects, Textarea */
+/* Giriş, seçim ve metin alanları */
 .formGroup input,
 .formGroup select,
 .formGroup textarea {
     padding: 0.8rem;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 8px; /* Yuvarlatılmış kenarlar */
     font-size: 1rem;
-    margin-top: 0.5rem;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .formGroup input:focus,
 .formGroup select:focus,
 .formGroup textarea:focus {
-    border-color: #5cb85c;
-    box-shadow: 0 0 5px rgba(92, 184, 92, 0.5);
+    border-color: #3498db; /* Mavi kenarlık */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Hafif mavi ışık efekti */
+    outline: none;
 }
 
-/* Button Styling (for SensorForm only) */
-.sensorFormContainer button {
-    margin-top: 1rem;
+/* Buton */
+.sensorFormButton {
     padding: 0.8rem 1.5rem;
     border: none;
-    border-radius: 5px;
-    background-color: #28a745;
+    border-radius: 8px;
+    background-color: #2980b9; /* Yeşil arka plan */
     color: #fff;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-    align-self: center;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    width: 100%; /* Butonu genişlikte tam yap */
 }
 
-.sensorFormContainer.dark button {
-    background-color: #17a2b8;
-    color: #fff;
+
+.sensorFormButton:hover {
+    background-color: #1c6ea4;
+    transform: translateY(-2px);
 }
 
-.sensorFormContainer button:hover {
-    background-color: #218838;
-    transform: scale(1.05);
-}
 
-.sensorFormContainer.dark button:hover {
-    background-color: #138496;
-}
-
-.sensorFormContainer button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.sensorFormContainer.dark button:disabled {
-    background-color: #495057;
-    color: #a6a6a6;
-}
-
-/* Error message styling */
 .error {
     color: red;
     margin-top: 1rem;
+    font-size: 0.9rem;
     text-align: center;
 }
 
-/* Mobile Responsiveness */
+
 @media (max-width: 768px) {
     .sensorFormContainer {
-        max-width: 90%; /* Küçük ekranlarda genişlik ayarı */
-        padding: 1rem;
+        max-width: 90%;
+        padding: 1.5rem;
     }
 
-    .sensorFormContainer button {
+    .sensorFormButton {
         padding: 0.6rem 1rem;
         font-size: 0.9rem;
-        width: 100%;
     }
 }

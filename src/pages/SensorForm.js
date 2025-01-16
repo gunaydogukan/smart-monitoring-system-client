@@ -29,6 +29,33 @@ export default function SensorForm() {
 
     const navigate = useNavigate();
 
+    const validateField = (field, value) => {
+        let errorMessage = '';
+
+        switch (field) {
+            case 'datacode':
+                if (!/^[A-Z0-9]{3,10}$/.test(value)) {
+                    errorMessage = 'Data kodu 3-10 karakter arasında büyük harf ve rakam içermelidir.';
+                }
+                break;
+            case 'name':
+                if (!/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+                    errorMessage = 'İsim yalnızca harfler ve boşluk içerebilir.';
+                }
+                break;
+            case 'lat':
+            case 'lng':
+                if (isNaN(value) || value === '' || value < -90 || value > 90) {
+                    errorMessage = 'Geçerli bir enlem veya boylam değeri girin (-90 ile 90 arasında).';
+                }
+                break;
+            default:
+                break;
+        }
+
+        return errorMessage;
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -80,22 +107,20 @@ export default function SensorForm() {
     }, [companyCode, allManagers]);
 
     const isFormValid = () => {
-        return (
-            companyCode &&
-            managerId &&
-            datacode &&
-            name &&
-            lat &&
-            lng &&
-            typeId
-        );
+        const errors = [
+            validateField('datacode', datacode),
+            validateField('name', name),
+            validateField('lat', lat),
+            validateField('lng', lng),
+        ];
+        return errors.every((err) => err === '') && companyCode && managerId && typeId;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!isFormValid()) {
-            setError('Lütfen tüm zorunlu alanları doldurun.');
+            setError('Lütfen tüm zorunlu alanları doğru doldurun.');
             setIsErrorModalOpen(true);
             return;
         }
@@ -143,7 +168,7 @@ export default function SensorForm() {
                 <h1>Yeni Sensör Ekle</h1>
                 <form onSubmit={handleSubmit}>
                     <div className={styles.formGroup}>
-                        <label>Company:</label>
+                        <label>Şirket:</label>
                         <select
                             value={companyCode}
                             onChange={(e) => setCompanyCode(e.target.value)}
@@ -158,7 +183,7 @@ export default function SensorForm() {
                         </select>
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Manager:</label>
+                        <label>Yönetici:</label>
                         <select
                             value={managerId}
                             onChange={(e) => setManagerId(e.target.value)}
@@ -180,6 +205,7 @@ export default function SensorForm() {
                             value={datacode}
                             onChange={(e) => setDatacode(e.target.value)}
                             required
+                            onBlur={(e) => setError(validateField('datacode', e.target.value))}
                         />
                     </div>
                     <div className={styles.formGroup}>
@@ -189,26 +215,27 @@ export default function SensorForm() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
+                            onBlur={(e) => setError(validateField('name', e.target.value))}
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Lat (Enlem):</label>
+                        <label>Enlem:</label>
                         <input
                             type="number"
                             value={lat}
                             onChange={(e) => setLat(e.target.value)}
-                            step="any"
                             required
+                            onBlur={(e) => setError(validateField('lat', e.target.value))}
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label>Lng (Boylam):</label>
+                        <label>Boylam:</label>
                         <input
                             type="number"
                             value={lng}
                             onChange={(e) => setLng(e.target.value)}
-                            step="any"
                             required
+                            onBlur={(e) => setError(validateField('lng', e.target.value))}
                         />
                     </div>
                     <div className={styles.formGroup}>
@@ -226,9 +253,9 @@ export default function SensorForm() {
                             required
                         >
                             <option value="">Tip Seç</option>
-                            {types.map((t) => (
-                                <option key={t.id} value={t.id}>
-                                    {t.type}
+                            {types.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                    {type.type}
                                 </option>
                             ))}
                         </select>
@@ -237,7 +264,6 @@ export default function SensorForm() {
                         <label>Köy:</label>
                         <input type="text" value={villageName} readOnly />
                     </div>
-
                     {error && <p className={styles.error}>{error}</p>}
                     <button type="submit">Ekle</button>
                 </form>

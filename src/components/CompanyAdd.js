@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "../layouts/Layout";
-
-
+import "../styles/CompanyAdd.css";
+import LoadingScreen from "./LoadingScreen"; // CSS dosyasını içe aktarıyoruz
 
 export default function CompanyAdd() {
-    const API_URL = process.env.REACT_APP_API_URL
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const [formData, setFormData] = useState({
         name: '',
         code: '',
-        plate: '',    // Seçilen şehrin id'si
-        city: '',     // Seçilen şehrin adı
+        plate: '',
+        city: '',
     });
 
-    const [provinces, setProvinces] = useState([]);  // API'den gelecek şehir bilgileri
+    const [provinces, setProvinces] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-
-    // Şehirleri dış API'den çekme
     useEffect(() => {
         const fetchProvinces = async () => {
             try {
                 const response = await fetch('https://turkiyeapi.dev/api/v1/provinces');
                 const data = await response.json();
-                setProvinces(data.data || []);  // Gelen şehir verisini kaydediyoruz
+                setProvinces(data.data || []);
             } catch (error) {
                 console.error('İller çekilirken hata:', error);
                 setError('Şehirler yüklenirken bir hata oluştu.');
@@ -38,22 +37,61 @@ export default function CompanyAdd() {
         fetchProvinces();
     }, []);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const validateField = (name, value) => {
+        let error = '';
+        switch (name) {
+            case 'name':
+                if (!/^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$/.test(value)) {
+                    error = 'Kurum adı sadece harflerden ve boşluklardan oluşabilir.';
+                }
+                break;
+            case 'code':
+                if (!/^[A-Z0-9]{3,10}$/.test(value)) {
+                    error = 'Kurum kodu 3-10 karakter uzunluğunda, harf ve rakamlardan oluşmalıdır.';
+                }
+                break;
+            case 'plate':
+                if (!/^\d+$/.test(value)) {
+                    error = 'Şehir plaka kodu yalnızca rakamlardan oluşmalıdır.';
+                }
+                break;
+            default:
+                break;
+        }
+        setErrors((prev) => ({ ...prev, [name]: error }));
+        return error === '';
     };
 
-    // Şehir seçimi yapıldığında, şehir plakası (id) ve adı ile birlikte formData'ya kaydediyoruz
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        validateField(name, value);
+    };
+
     const handleCityChange = (e) => {
-        const selectedCity = provinces.find(province => province.id === parseInt(e.target.value)); // `id` alanını kullanıyoruz
+        const selectedCity = provinces.find(province => province.id === parseInt(e.target.value));
         setFormData({
             ...formData,
-            plate: selectedCity.id,  // Şehir id'si
-            city: selectedCity.name, // Şehir adı
+            plate: selectedCity.id,
+            city: selectedCity.name,
         });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        let isValid = true;
+        Object.keys(formData).forEach((key) => {
+            if (!validateField(key, formData[key])) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            alert('Lütfen tüm alanları doğru doldurun.');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -63,12 +101,11 @@ export default function CompanyAdd() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
-                body: JSON.stringify(formData),  // Backend'e formData gönderiliyor
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
             if (response.ok) {
-                console.log('Kurum başarıyla eklendi:', data);
                 alert('Kurum başarıyla eklendi!');
                 navigate('/dashboard');
             } else {
@@ -83,16 +120,15 @@ export default function CompanyAdd() {
     };
 
     if (loading) {
-        return <div>Şehirler yükleniyor...</div>;
+        return <LoadingScreen />;
     }
 
     return (
-<Layout>
-
-
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <h2 style={styles.formTitle}>Kurum Ekle</h2>
-                {error && <p style={styles.error}>{error}</p>}
+        <Layout>
+            <div className="containerCompanyAdd">
+            <form onSubmit={handleSubmit} className="formCompanyAdd">
+                <h2 className="formTitleCompanyAdd">Kurum Ekle</h2>
+                {error && <p className="errorCompanyAdd">{error}</p>}
                 <input
                     type="text"
                     name="name"
@@ -100,8 +136,9 @@ export default function CompanyAdd() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className="inputCompanyAdd"
                 />
+                {errors.name && <p className="CompanyAdd">{errors.name}</p>}
                 <input
                     type="text"
                     name="code"
@@ -109,73 +146,31 @@ export default function CompanyAdd() {
                     value={formData.code}
                     onChange={handleChange}
                     required
-                    style={styles.input}
+                    className="inputCompanyAdd"
                 />
+                {errors.code && <p className="errorCompanyAdd">{errors.code}</p>}
 
-                {/* Şehir Seçimi Dropdown */}
                 <select
                     name="plate"
                     value={formData.plate}
-                    onChange={handleCityChange}  // handleCityChange fonksiyonu şehir seçimini işliyor
+                    onChange={handleCityChange}
                     required
-                    style={styles.input}
+                    className="inputCompanyAdd"
                 >
                     <option value="">Şehir Seçin</option>
                     {provinces.map((province) => (
                         <option key={province.id} value={province.id}>
-                            {province.name} ({province.id}) {/* Şehir adı ve id'si (plate) */}
+                            {province.name} ({province.id})
                         </option>
                     ))}
                 </select>
+                {errors.plate && <p className="errorCompanyAdd">{errors.plate}</p>}
 
-                <button
-                    type="submit"
-                    style={styles.button}
-                    disabled={isSubmitting}
-                >
+                <button type="submit" className="buttonCompanyAdd" disabled={isSubmitting}>
                     {isSubmitting ? 'Ekleniyor...' : 'Kurum Ekle'}
                 </button>
             </form>
-</Layout>
+            </div>
+        </Layout>
     );
 }
-
-const styles = {
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '400px',
-        margin: '0 auto',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        backgroundColor: '#fff',
-    },
-    formTitle: {
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '24px',
-        color: '#333',
-    },
-    input: {
-        marginBottom: '15px',
-        padding: '10px',
-        fontSize: '16px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-    },
-    button: {
-        padding: '10px',
-        fontSize: '16px',
-        borderRadius: '4px',
-        border: 'none',
-        backgroundColor: '#4CAF50',
-        color: '#fff',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s',
-    },
-    error: {
-        color: 'red',
-        marginBottom: '15px',
-    },
-};

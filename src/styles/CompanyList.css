@@ -1,51 +1,88 @@
+/* CompanyList.css */
+
 .company-list {
-    padding: 20px;
-    background-color: #f9f9f9;
-    min-height: 100vh;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f7f9fc; /* Hafif arka plan rengi */
+    min-height: 100vh; /* Sayfa boyutunda yükseklik */
 }
 
 .company-list h2 {
-    text-align: center;
-    font-size: 32px;
-    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
     color: #333;
+    text-align: center;
 }
 
 .company-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px; /* İçerik genişliğini sınırla */
+    padding: 1rem;
 }
 
 .company-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    background-color: #ffffff; /* Kartın arka planı */
+    border: 1px solid #ddd; /* İnce kenarlık */
+    border-radius: 10px; /* Köşeleri yuvarla */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    padding: 1.5rem;
     text-align: center;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .company-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* Hafif yukarı kalkma efekti */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Daha belirgin gölge */
 }
 
 .company-card h3 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #4CAF50;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff; /* Ana renk */
+    margin-bottom: 1rem;
 }
 
 .company-card p {
-    font-size: 16px;
-    color: #555;
+    font-size: 1rem;
+    color: #555; /* Daha açık metin rengi */
+    margin-bottom: 0.5rem;
 }
 
+/* Responsive Tasarım */
 @media (max-width: 768px) {
-    .company-cards {
-        flex-direction: column;
-        align-items: center;
+    .company-list {
+        padding: 1rem;
+    }
+
+    .company-card {
+        padding: 1rem;
+    }
+
+    .company-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .company-card p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .company-card {
+        padding: 0.8rem;
+    }
+
+    .company-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .company-card p {
+        font-size: 0.8rem;
     }
 }

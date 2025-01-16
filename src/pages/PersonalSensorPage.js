@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from "../layouts/Layout";
 import SensorList from "../components/SensorList";
 import { useNavigate } from 'react-router-dom';
+import LoadingScreen from "../components/LoadingScreen";
 
 
 export default function PersonalPage() {
@@ -54,7 +55,7 @@ export default function PersonalPage() {
 
     // Ekrana yüklenmeden önce yükleme ekranı göster
     if (loading) {
-        return <p>Veriler yükleniyor...</p>;
+        return <LoadingScreen />;
     }
 
     // Hata varsa kullanıcıya hata mesajı göster

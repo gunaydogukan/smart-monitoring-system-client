@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaBars, FaTimes, FaRss, FaTag
+    FaPlus, FaSignOutAlt, FaRss, FaTag, FaTint
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -105,7 +105,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                     )}
 
                     <div className="menu" onClick={() => handleNavigation("/soilmoisturemap")}>
-                        <FaHome className="menu-icon"/>
+                        <FaTint className="menu-icon"/>
                         <span>Nem Haritası</span>
                     </div>
 

@@ -1,0 +1,120 @@
+/* Formun genel kapsayıcısı */
+.containerAddSensorType {
+    display: flex;
+    justify-content: center; /* Yatayda ortala */
+    align-items: center; /* Dikeyde ortala */
+    min-height: 100vh; /* Sayfanın tamamını kapla */
+    padding: 20px; /* İçerik için boşluk */
+    transition: margin-left 0.3s ease; /* Sidebar açılış/kapanış animasyonu */
+    background-color: #f7f8fc; /* Açık arka plan rengi */
+}
+
+/* Form kapsayıcısı */
+.formAddSensorType {
+    max-width: 500px; /* Formun maksimum genişliği */
+    width: 100%; /* Tam genişlik */
+    margin: 0 auto; /* Ortala */
+    padding: 30px 20px; /* Form içi boşluk */
+    background-color: #ffffff; /* Beyaz arka plan */
+    border-radius: 10px; /* Yuvarlatılmış köşeler */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    font-family: 'Arial', sans-serif; /* Yazı tipi */
+}
+
+/* Form başlığı */
+.formTitleAddSensorType {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333333; /* Koyu metin rengi */
+}
+
+/* Etiketler */
+.labelAddSensorType {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+    display: block; /* Bloğa çevir */
+}
+
+/* Input alanları */
+.inputAddSensorType {
+    width: 100%; /* Tam genişlik */
+    padding: 12px 15px; /* İç boşluk */
+    margin-bottom: 15px; /* Alt boşluk */
+    border: 1px solid #ccc; /* Gri kenarlık */
+    border-radius: 8px; /* Yuvarlatılmış köşeler */
+    font-size: 16px;
+    box-sizing: border-box; /* Kenarlık ve padding dahil */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Input focus efekti */
+.inputAddSensorType:focus {
+    border-color: #3498db; /* Mavi kenarlık */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.4); /* Hafif mavi ışık efekti */
+    outline: none;
+}
+
+/* Dropdown (select) alanı */
+.inputAddSensorType select {
+    cursor: pointer;
+}
+
+/* Butonlar */
+.buttonAddSensorType {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #2980b9; /* Yeşil buton rengi */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Buton hover efekti */
+.buttonAddSensorType:hover {
+    background-color: #3498db; /* Daha koyu yeşil */
+    transform: translateY(-2px); /* Hafif yukarı çıkma efekti */
+}
+
+/* Pasif buton */
+.buttonAddSensorType:disabled {
+    background-color: #ccc; /* Gri renk */
+    cursor: not-allowed;
+}
+
+/* Hata mesajları */
+.errorAddSensorType {
+    color: red;
+    margin-bottom: 15px;
+    font-size: 14px;
+    text-align: left;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .formAddSensorType {
+        width: 90%; /* Küçük ekranlarda genişlik */
+        padding: 20px;
+    }
+
+    .formTitleAddSensorType {
+        font-size: 20px;
+    }
+
+    .inputAddSensorType {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .buttonAddSensorType {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+}
