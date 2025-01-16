@@ -60,7 +60,7 @@ const SoilMoistureMap = () => {
                     radius: 20,
                     blur: 15,
                     maxZoom: 10,
-                    gradient: { 0.4: "red", 0.65: "lime", 1: "green" },
+                    gradient: { 0.30: "red", 0.50: "lime", 1: "green" },
                 });
 
                 heatLayer.addTo(mapInstance);
