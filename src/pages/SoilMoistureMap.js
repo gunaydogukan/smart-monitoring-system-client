@@ -180,5 +180,5 @@ const SoilMoistureMap = () => {
         </Layout>
     );
 };
-
+// deneme
 export default SoilMoistureMap;
