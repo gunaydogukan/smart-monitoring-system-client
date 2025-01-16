@@ -1,0 +1,33 @@
+.alertsContainer {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.alertsContainer h3 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.alertsContainer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alertsContainer li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    color: #555;
+}
+
+.alertsContainer li strong {
+    color: #333;
+}
+
+.alertsContainer li em {
+    font-size: 0.9rem;
+    color: #777;
+}
