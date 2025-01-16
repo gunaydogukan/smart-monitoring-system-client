@@ -77,10 +77,11 @@ export default function UpdateModal({ profileData, token, closeModal }) {
                         placeholder="Yeni şifre"
                     />
                     <div className={styles.buttonContainer}>
-                        <button type="submit">Güncelle</button>
+
                         <button type="button" onClick={closeModal}>
                             İptal
                         </button>
+                        <button type="submit">Güncelle</button>
                     </div>
                 </form>
                 {message && <p className={styles.message}>{message}</p>}

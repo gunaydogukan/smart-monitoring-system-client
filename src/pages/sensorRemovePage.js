@@ -283,7 +283,7 @@ export default function SensorsDefinitionPage() {
                                     <FaRss />
                                     <FaPlus className={styles.plusIcon} />
                                 </div>
-                                <h3>Managerden Sensör Çıkart</h3>
+                                <h3>Yöneticilerden Sensör Çıkart</h3>
                             </div>
 
                             <div
@@ -294,7 +294,7 @@ export default function SensorsDefinitionPage() {
                                     <FaRss />
                                     <FaPlus className={styles.plusIcon} />
                                 </div>
-                                <h3>Personelden Sensör Çıkart</h3>
+                                <h3>Personellerden Sensör Çıkart</h3>
                             </div>
                         </>
                     )}

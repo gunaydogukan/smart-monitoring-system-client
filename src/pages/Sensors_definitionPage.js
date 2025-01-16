@@ -298,7 +298,7 @@ export default function SensorsDefinitionPage() {
                                     <FaRss />
                                     <FaPlus className={styles.plusIcon} />
                                 </div>
-                                <h3>Managerlere Sensör Tanımla</h3>
+                                <h3>Yöneticilere Sensör Tanımla</h3>
                             </div>
 
                             <div

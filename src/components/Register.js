@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import styles from "../styles/Register.module.css";
 
 export default function Register() {
-    const API_URL = process.env.REACT_APP_API_URL
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const { user, userRole } = useAuth();
     const [formData, setFormData] = useState({
@@ -17,9 +17,10 @@ export default function Register() {
         password: '',
         phone: '',
         companyCode: '',
-        creator_id: '', // Seçilen manager'in id'si burada tutulur
+        creator_id: '',
     });
 
+    const [errors, setErrors] = useState({});
     const [companies, setCompanies] = useState([]);
     const [managers, setManagers] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState('');
@@ -44,6 +45,7 @@ export default function Register() {
                     const response = await fetch(`${API_URL}/api/companies`, {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('token')}`,
+
                         },
                     });
                     const data = await response.json();
@@ -52,26 +54,64 @@ export default function Register() {
                     console.error('Şirketleri çekerken hata:', error);
                 }
             };
-
             fetchCompanies();
         }
     }, [activeUseRole, activeUserCompanyCode, user.id]);
+
+    const validateField = (name, value) => {
+        let error = '';
+        switch (name) {
+            case 'name':
+            case 'lastname':
+                if (!/^[a-zA-ZğüşöçİĞÜŞÖÇ ]+$/.test(value)) {
+                    error = 'Sadece harfler ve boşluk kullanılabilir.';
+                }
+                break;
+            case 'email':
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    error = 'Geçerli bir e-posta adresi girin.';
+                }
+                break;
+            case 'password':
+                if (value.length < 6) {
+                    error = 'Şifre en az 6 karakter olmalıdır.';
+                } else if (!/[A-Z]/.test(value)) {
+                    error = 'Şifre en az bir büyük harf içermelidir.';
+                } else if (!/[0-9]/.test(value)) {
+                    error = 'Şifre en az bir rakam içermelidir.';
+                }
+                break;
+            case 'phone':
+                if (!/^\d{10,11}$/.test(value)) {
+                    error = 'Telefon numarası 10-11 hane uzunluğunda olmalıdır.';
+                }
+                break;
+            default:
+                break;
+        }
+        setErrors((prev) => ({ ...prev, [name]: error }));
+        return error === '';
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        validateField(name, value);
+    };
 
     const handleCompanyChange = async (e) => {
         const companyCode = e.target.value;
         setSelectedCompany(companyCode);
         setFormData((prev) => ({ ...prev, companyCode }));
-
         if (added_role === 'personal') {
             try {
                 const response = await fetch(`${API_URL}/api/users`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
+
                     },
                 });
                 const data = await response.json();
-
-                // Manager rolüne sahip ve seçilen kuruma ait kullanıcıları filtrele
                 const filteredManagers = data.filter(
                     (manager) => manager.role === 'manager' && manager.companyCode === companyCode
                 );
@@ -80,22 +120,22 @@ export default function Register() {
                 console.error('Manager listesi alınırken hata:', error);
             }
         } else {
-            setManagers([]); // Manager listesi boşaltılır
+            setManagers([]);
         }
-    };
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (added_role === 'administrator') {
-            alert('Administrator ekleyemezsiniz!');
+        let valid = true;
+        Object.keys(formData).forEach((field) => {
+            if (!validateField(field, formData[field])) {
+                valid = false;
+            }
+        });
+        if (!valid) {
+            toast.error('Lütfen tüm alanları doğru doldurun.');
             return;
         }
-
         try {
             const payload = { ...formData, role: added_role };
             const response = await fetch(`${API_URL}/api/register`, {
@@ -123,9 +163,11 @@ export default function Register() {
     return (
         <Layout>
             <ToastContainer />
+
+            <div className={styles.containerRegister}>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <h2 className={styles.formTitle}>
-                    {added_role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
+                    {added_role === 'manager' ? 'Yönetici Ekle' : 'Personel Ekle'}
                 </h2>
                 <input
                     type="text"
@@ -136,6 +178,7 @@ export default function Register() {
                     required
                     className={styles.input}
                 />
+                {errors.name && <p className={styles.error}>{errors.name}</p>}
                 <input
                     type="text"
                     name="lastname"
@@ -145,6 +188,7 @@ export default function Register() {
                     required
                     className={styles.input}
                 />
+                {errors.lastname && <p className={styles.error}>{errors.lastname}</p>}
                 <input
                     type="email"
                     name="email"
@@ -154,6 +198,7 @@ export default function Register() {
                     required
                     className={styles.input}
                 />
+                {errors.email && <p className={styles.error}>{errors.email}</p>}
                 <input
                     type="password"
                     name="password"
@@ -163,6 +208,7 @@ export default function Register() {
                     required
                     className={styles.input}
                 />
+                {errors.password && <p className={styles.error}>{errors.password}</p>}
                 <input
                     type="tel"
                     name="phone"
@@ -171,6 +217,7 @@ export default function Register() {
                     onChange={handleChange}
                     className={styles.input}
                 />
+                {errors.phone && <p className={styles.error}>{errors.phone}</p>}
 
                 {activeUseRole !== 'manager' && (
                     <select
@@ -200,7 +247,7 @@ export default function Register() {
                         className={styles.input}
                         disabled={!selectedCompany}
                     >
-                        <option value="">Manager Seçin</option>
+                        <option value="">Yönetici Seçin</option>
                         {managers.map((manager) => (
                             <option key={manager.id} value={manager.id}>
                                 {manager.name} {manager.lastname}
@@ -210,9 +257,10 @@ export default function Register() {
                 )}
 
                 <button type="submit" className={styles.button}>
-                    {added_role === 'manager' ? 'Manager Ekle' : 'Personal Ekle'}
+                    {added_role === 'manager' ? 'Yönetici Ekle' : 'Personel Ekle'}
                 </button>
             </form>
+            </div>
         </Layout>
     );
 }

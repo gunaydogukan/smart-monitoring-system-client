@@ -12,16 +12,15 @@
     top: 0;
     left: 0;
     width: 220px;
-    height: 100vh;
+    height: 100vh; /* Tam pencere yüksekliği */
     background-color: var(--bg-color-light);
     display: flex;
     flex-direction: column;
-    padding: 25px 15px; /* Üst ve alt boşluklar */
-    transition: transform 0.3s ease, width 0.3s ease;
+    padding: 0 15px; /* Kenarlardaki boşluk */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transform: translateX(-100%);
-    z-index: 1000; /* Sidebar'ın üstte kalmasını sağla */
-    overflow-y: auto; /* Sidebar içindeki öğeler için kaydırma */
+    z-index: 1000; /* Üstte kalmasını sağlar */
+    overflow-y: auto; /* Sidebar'ın tamamını kaydırılabilir yap */
+    transition: transform 0.3s ease, width 0.3s ease;
 }
 
 .sidebar.open {
@@ -30,24 +29,22 @@
 
 /* Sidebar'da scroll bar */
 .sidebar::-webkit-scrollbar {
-    width: 8px;  /* Dikey kaydırma çubuğu genişliği */
+    width: 6px; /* Kaydırma çubuğu genişliği */
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: #e9ecef;  /* Arka plan rengi */
-    border-radius: 10px;  /* Yuvarlatılmış köşeler */
+    background: #e9ecef; /* Kaydırma çubuğu arka planı */
+    border-radius: 10px;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #3498db, #2980b9);  /* Scroll bar rengi */
-    border-radius: 10px;  /* Yuvarlatılmış köşeler */
-    border: 2px solid #e9ecef;  /* Arka plan ile çubuk arasında boşluk */
+    background: linear-gradient(to bottom, #3498db, #2980b9); /* Kaydırma çubuğu rengi */
+    border-radius: 10px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(to bottom, #216693, #1c639c); /* Hover efekti */
 }
-
 /* Sidebar'da yatay kaydırma çubuğu */
 .sidebar::-webkit-scrollbar-thumb:horizontal {
     background: linear-gradient(to right, #3498db, #2980b9);  /* Yatay scroll bar rengi */
@@ -60,22 +57,23 @@
 /* Sidebar Toggle */
 .custom-sidebar-toggle {
     position: fixed;
-    top: 5px;
-    left: 15px;
+    top: 0; /* Yukarıdan uzaklık */
+    margin-top: 10px;
+    left: 10px; /* Varsayılan konum */
     background: linear-gradient(135deg, #3498db, #2980b9); /* Modern degrade efekti */
     color: white;
     border: none;
-    border-radius: 50%; /* Tam daire */
+    border-radius: 50%;
     width: 45px;
     height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px; /* İkon boyutu */
+    font-size: 18px;
     cursor: pointer;
-    z-index: 1100; /* Sidebar'ın üstünde */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Daha modern bir gölge */
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Modern gölge */
+    transition: left 0.3s ease, transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; /* Sol pozisyon değişimi için geçiş efekti */
 }
 
 .custom-sidebar-toggle:hover {
@@ -101,13 +99,17 @@
         height: 45px;
         font-size: 20px; /* Daha küçük ikon */
         top: 15px;
-        left: 8px; /* Daha küçük ekranlar için pozisyon */
+        left: 8px; /* Mobil için varsayılan konum */
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); /* Daha hafif bir gölge */
+    }
+    .sidebar.open + .custom-sidebar-toggle {
+        left: 150px; /* Mobil cihazda sidebar açıkken sol konum */
     }
     .custom-sidebar-toggle:hover {
         transform: scale(1.1); /* Mobilde daha az büyüme efekti */
     }
 }
+
 
 /* Menü Grubu */
 .menu-group {
@@ -115,8 +117,9 @@
     flex-direction: column;
     gap: 15px;
     margin-top: 40px;
-    margin-bottom: auto;
-    flex-grow: 0.2; /* Menü öğelerinin tüm boşluğu doldurmasını sağlar */
+    flex-grow: 0.2; /* Menü öğelerinin boşluğu doldurmasını sağlar */
+
+
 }
 
 /* Menü ve Logout Butonları */

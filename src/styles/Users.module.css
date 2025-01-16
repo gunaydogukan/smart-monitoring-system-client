@@ -219,7 +219,7 @@ body, html {
     gap: 10px; /* Butonlar arası boşluk */
 }
 
-.actionButton {
+.actionButtonUsers{
     flex: 1; /* Tüm butonlar eşit genişlikte olur */
     padding: 8px 12px;
     border-radius: 4px;
@@ -229,9 +229,10 @@ body, html {
     font-weight: bold;
     transition: background-color 0.3s ease, transform 0.2s ease;
     text-align: center; /* Yazıyı ortalamak için */
+    max-width: 250px;
 }
 
-.actionButton:last-child {
+.actionButtonUsers:last-child {
     margin-right: 0; /* Son butonun sağ boşluğu kaldırıldı */
 }
 
@@ -441,12 +442,12 @@ body, html {
 }
 
 .modalButton.assign {
-    background-color: #27ae60;
+    background-color: #2980b9;
     color: white;
 }
 
 .modalButton.assign:hover {
-    background-color: #1e8449;
+    background-color: #3498db;
     transform: scale(1.05);
 }
 
@@ -556,7 +557,7 @@ body, html {
 }
 /* Tanımsız Personeller Butonu */
 /* Tanımsız Personeller Butonu */
-.undefinedButton {
+.undefinedButtonUsers {
     position: relative;
     padding: 12px 45px;
     background-color: #007bff;
@@ -592,7 +593,7 @@ body, html {
     font-size: 16px;
     font-style: italic;
 }
-.undefinedButton:hover {
+.undefinedButtonUsers:hover {
     background-color: #0056b3;
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);

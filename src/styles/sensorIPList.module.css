@@ -300,7 +300,7 @@
 }
 
 .yellowBox {
-    background-color: yellow;
+    background-color: #eee600;
     color: black;
     padding: 5px;
     border-radius: 3px;
@@ -330,12 +330,14 @@
 .redBox {
     background-color: red;
     color: white;
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
     text-align: center;
-    animation: pulse 1.5s infinite ease-in-out; /* Sürekli animasyon */
+    animation: pulse 1.2s infinite ease-in-out; /* Sürekli animasyon */
     transform-origin: center; /* Animasyon merkezden */
     display: inline-block; /* Animasyonun düzgün çalışması için */
+    max-width: 150px;
+    margin-left: 8px;
 }
 
 .defaultBox {

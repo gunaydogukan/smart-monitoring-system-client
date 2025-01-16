@@ -218,7 +218,7 @@ export default function Users() {
     };
     const handleAssignPersonals = async () => {
         if (!selectedManager) {
-            toast.error("Lütfen bir manager seçin.");
+            toast.error("Lütfen bir Yönetici seçin.");
             return;
         }
         if (selectedPersonals.length === 0) {
@@ -469,7 +469,7 @@ export default function Users() {
 
                 {type === "personals" && (
                     <button
-                        className={`${styles.actionButton} ${styles.undefinedButton}`}
+                        className={`${styles.actionButtonUsers} ${styles.undefinedButtonUsers}`}
                         onClick={() => {
                             if (!selectedCompany) {
                                 toast.error("Lütfen bir kurum seçin.");  {/* Kurum seçilmeden bildirim göster */}
@@ -629,7 +629,7 @@ export default function Users() {
                         <div className={styles.undefinedUsersModal}>
                             <h3>Tanımsız Personelleri Atama</h3>
                             <div className={styles.undefinedUsersDropdown}>
-                                <label htmlFor="manager-select">Aktif Manager Seç:</label>
+                                <label htmlFor="manager-select">Aktif Yönetici Seç:</label>
                                 <select
                                     id="manager-select"
                                     value={usr.role === "manager" ? parseInt(usr.id, 10) : selectedManager}
@@ -638,7 +638,7 @@ export default function Users() {
                                     disabled={usr.role === "manager"} // Eğer giriş yapan kişi manager ise değiştirme engellenir
                                 >
                                     {usr.role !== "manager" && (
-                                        <option value="">Manager Seç</option>
+                                        <option value="">Yönetici Seç</option>
                                     )}
                                     {activeManagers.map((manager) => (
                                         <option key={manager.id} value={manager.id}>
@@ -748,7 +748,7 @@ export default function Users() {
                                     value={selectedManager}
                                     onChange={(e) => setSelectedManager(e.target.value)}
                                 >
-                                    <option value="">Manager Seç</option>
+                                    <option value="">Yönetici Seç</option>
                                     {filteredManagers.map((manager) => (
                                         <option key={manager.id} value={manager.id}>
                                             {manager.name} {manager.lastname}

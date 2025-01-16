@@ -4,6 +4,7 @@ import SensorCheckBoxForm from '../../components/sensorCheck/sensorCheckBoxForm'
 import LegendCard from '../../components/sensorCheck/LegendCard';
 import '../../styles/sensorCheck/MapPage.css';
 import Layout from "../../layouts/Layout";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const libraries = ['places'];
 const center = { lat: 41.6279, lng: 32.2422 };
@@ -47,7 +48,7 @@ function MapPage({ isSidebarOpen }) {
         setSelectedSensor(null);
     };
 
-    if (!isLoaded) return <div>Loading...</div>;
+    if (!isLoaded) return <LoadingScreen />;
 
     return (
         <Layout>

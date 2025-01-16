@@ -25,19 +25,14 @@
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
-.dark .profileContent {
-    background-color: #2c2c2c;
-    color: #e0e0e0;
-    border: 1px solid #444;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
+
 
 /* Toggle Button */
 .toggleButton {
     align-self: flex-end;
     padding: 8px 16px;
     margin-bottom: 10px;
-    background-color: #4CAF50;
+    background-color: #3498db;
     color: #ffffff;
     border: none;
     border-radius: 5px;
@@ -46,13 +41,23 @@
 }
 
 .toggleButton:hover {
-    background-color: #388E3C;
+    background-color: #2980b9;
 }
 
-.dark .toggleButton {
-    background-color: #388E3C;
+.updateButton{
+    align-self: center;
+    padding: 8px 16px;
+    margin-bottom: 10px;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
-
+.updateButton:hover{
+    background-color: #2980b9;
+}
 /* Avatar */
 .avatarContainer {
     margin-bottom: 20px;
@@ -66,9 +71,6 @@
     border: 1px solid #e0e0e0;
 }
 
-.dark .avatarImage {
-    border: 1px solid #444;
-}
 
 /* Title */
 .title {
@@ -95,19 +97,13 @@
     transition: color 0.3s, border-color 0.3s;
 }
 
-.dark .infoRow {
-    color: #e0e0e0; /* Koyu mod metin rengi */
-    border-bottom: 1px solid #555; /* Koyu mod kenarlık rengi */
-}
-/* Icon */
+
 .icon {
     margin-right: 8px;
     color: #4CAF50;
 }
 
-.dark .icon {
-    color: #A5D6A7;
-}
+
 
 /* Admin Message */
 .adminMessage {
@@ -116,6 +112,3 @@
     color: #777;
 }
 
-.dark .adminMessage {
-    color: #aaa;
-}

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import Layout from "../layouts/Layout";
-import "../styles/SoilMoistureMap.css"; // Yeni CSS dosyasını içe aktarıyoruz
+import "../styles/SoilMoistureMap.css";
+import LoadingScreen from "../components/LoadingScreen"; // Yeni CSS dosyasını içe aktarıyoruz
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -13,17 +14,30 @@ const SoilMoistureMap = () => {
     const [selectedSensor, setSelectedSensor] = useState(null);
     const [map, setMap] = useState(null);
     const [isListOpen, setIsListOpen] = useState(false);
+    const [loading, setLoading] = useState(true); // Yükleme durumu
 
     useEffect(() => {
-        fetch(`${API_URL}/api/soil-moisture-map`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => setSensorData(data.sensors))
-            .catch((error) => console.error("Nem haritası hatası:", error));
+        const fetchSensorData = async () => {
+            try {
+                setLoading(true); // Veri yüklenirken loading aktif
+                const response = await fetch(`${API_URL}/api/soil-moisture-map`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                const data = await response.json();
+                setSensorData(data.sensors); // Verileri state'e kaydet
+            } catch (error) {
+                console.error("Nem haritası hatası:", error);
+            } finally {
+                setLoading(false); // Yükleme tamamlandı
+            }
+        };
+
+        fetchSensorData();
     }, []);
+
+
 
     useEffect(() => {
         const script = document.createElement("script");
@@ -93,7 +107,9 @@ const SoilMoistureMap = () => {
 
         return null;
     };
-
+    if (loading) {
+        return <LoadingScreen />;
+    }
     const SensorList = ({ sensors }) => {
         return (
             <div className="soil-moisture-map-sensor-list">

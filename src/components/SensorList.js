@@ -315,16 +315,6 @@ export default function SensorList({
                                         >
                                             Güncelle
                                         </button>
-                                        <button
-                                            className={
-                                                sensor.isActive
-                                                    ? styles.deactivateButton
-                                                    : styles.activateButton
-                                            }
-                                            onClick={() => onToggleActive(sensor.id, !sensor.isActive)}
-                                        >
-                                            {sensor.isActive ? 'Pasif Yap' : 'Aktif Yap'}
-                                        </button>
 
                                     </>
                                 )}

@@ -5,6 +5,7 @@ import { FaEnvelope, FaPhone, FaBuilding } from 'react-icons/fa';
 import userIcon from '../assets/profile-icon.avif';
 import styles from '../styles/Profile.module.css';
 import UpdateModal from '../components/profileUpdateModal';
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function Profile() {
     const API_URL = process.env.REACT_APP_API_URL;
@@ -42,13 +43,18 @@ export default function Profile() {
         fetchProfileData();
     }, [token]);
 
-    if (loading) return <div>Yükleniyor...</div>;
+
+    if (loading) {
+        return <LoadingScreen />;
+    }
     if (error) return <div>{error}</div>;
+
 
     const isAdministrator = profileData.role === 'administrator';
 
     const openModal = () => setShowModal(true);
     const closeModal = () => setShowModal(false);
+
 
     return (
         <Layout>
