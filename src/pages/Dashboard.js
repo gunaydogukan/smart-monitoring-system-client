@@ -1,161 +1,246 @@
-// src/components/Dashboard.js
-import React, { useEffect, useState } from 'react';
-import { Line, Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js';
+import React, { useState, useEffect } from "react";
 import Layout from "../layouts/Layout";
-import styles from '../styles/Dashboard.module.css';
+import "../styles/Dashboard.css";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
+import SensorTable from "../components/SensorTable";
+import SensorChart from "../components/SensorChart";
+import UserDashboardDetails from "../components/UserDashboardDetails";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    ArcElement,
-    Title,
-    Tooltip,
-    Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export default function Dashboard() {
-    const [sensorAlerts, setSensorAlerts] = useState([]);
-    const [statistics, setStatistics] = useState({});
-    const [recentUpdates, setRecentUpdates] = useState([]);
+    const [data, setData] = useState(null);
+    const [userStats, setUserStats] = useState(null);
+    const [sensorTypes, setSensorTypes] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [companyStats, setCompanyStats] = useState(null); // Şirket bazlı istatistikler
+
+    const API_URL = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
-        // Örnek veriler - Backend entegrasyonu sağlanabilir
-        setSensorAlerts([
-            { id: 1, name: 'Sıcaklık Sensörü 1', message: 'Sıcaklık çok yüksek!', date: '2023-11-01' },
-            { id: 2, name: 'Nem Sensörü 2', message: 'Nem düşük seviyede', date: '2023-11-02' },
-        ]);
-        setStatistics({
-            totalSensors: 62,
-            activeUsers: 2,
-            totalInstitutions: 2
-        });
-        setRecentUpdates([
-            { id: 1, name: 'Sıcaklık Sensörü 1', lastUpdate: '2023-11-05' },
-            { id: 2, name: 'Nem Sensörü 2', lastUpdate: '2023-11-05' },
-        ]);
+        const fetchData = async () => {
+            try {
+                const sensorResponse = await fetch(`${API_URL}/api/dashboard/getSensors`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!sensorResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${sensorResponse.status}`);
+                }
+
+                const sensorData = await sensorResponse.json();
+                setData(sensorData);
+
+                const userResponse = await fetch(`${API_URL}/api/dashboard/getIsActive`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!userResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${userResponse.status}`);
+                }
+
+                const userData = await userResponse.json();
+                setUserStats(userData);
+
+                const sensorTypesResponse = await fetch(`${API_URL}/api/dashboard/getSensorTypeClass`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!sensorTypesResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${sensorTypesResponse.status}`);
+                }
+
+                const sensorTypesData = await sensorTypesResponse.json();
+                setSensorTypes(sensorTypesData);
+                // Şirket bazlı sensör istatistiklerini al
+                const companyStatsResponse = await fetch(`${API_URL}/api/dashboard/getCompanySensorStats`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!companyStatsResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${companyStatsResponse.status}`);
+                }
+
+                const companyStatsData = await companyStatsResponse.json();
+                setCompanyStats(companyStatsData);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
-    const lineData = {
-        labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran'],
+
+    if (loading) return <div className="loading">Yükleniyor...</div>;
+    if (error) return <div className="error">Hata: {error}</div>;
+
+    if (!data || !sensorTypes) {
+        return <div className="error">Veriler yüklenemedi!</div>;
+    }
+// Şirket bazlı sensör grafikleri için verileri hazırlama
+    const companyBarChartData = {
+        labels: Object.keys(companyStats.groupedLengths),
         datasets: [
             {
-                label: 'Sıcaklık (°C)',
-                data: [3, 6, 8, 12, 15, 18],
-                borderColor: '#FF6384',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                fill: true,
+                label: "Şirket Sensör Sayısı",
+                data: Object.values(companyStats.groupedLengths),
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
             },
-            {
-                label: 'Nem (%)',
-                data: [85, 80, 75, 70, 65, 60],
-                borderColor: '#36A2EB',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                fill: true,
-            }
-        ]
+        ],
     };
+    const typesMap = sensorTypes.types.reduce((acc, type) => {
+        acc[type.id] = type.type;
+        return acc;
+    }, {});
 
-    const barData = {
-        labels: ['Sıcaklık Sensörü', 'Nem Sensörü', 'Mesafe Sensörü', 'Yağış Sensörü'],
+    const sensorTypeCounts = Object.keys(sensorTypes.groupedLengths).map(typeId => {
+        const type = typesMap[typeId] || "Bilinmeyen";
+        const count = sensorTypes.groupedLengths[typeId];
+        return { type, count };
+    });
+
+    const barChartData = {
+        labels: sensorTypeCounts.map(({ type }) => type),
         datasets: [
             {
-                label: 'Sensör Sayısı',
-                data: [12, 8, 5, 7],
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-            }
-        ]
+                label: "Sensör Sayısı",
+                data: sensorTypeCounts.map(({ count }) => count),
+                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+            },
+        ],
     };
 
-    const pieData = {
-        labels: ['Kurum A', 'Kurum B', 'Kurum C', 'Kurum D'],
-        datasets: [
-            {
-                label: 'Sensör Dağılımı',
-                data: [20, 15, 10, 5],
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-            }
-        ]
-    };
-
-    const alertsData = {
-        labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran'],
-        datasets: [
-            {
-                label: 'Uyarı Sayısı',
-                data: [5, 3, 6, 2, 8, 4],
-                backgroundColor: '#FF6384'
-            }
-        ]
-    };
+    const colorPalette = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
 
     return (
         <Layout>
-            <div className={styles.dashboardContainer}>
-                <h1>Dashboard</h1>
-
-                {/* Genel İstatistikler */}
-                <div className={styles.statisticsContainer}>
-                    <div className={styles.statBox}>
-                        <h3>Toplam Sensör</h3>
-                        <p>{statistics.totalSensors}</p>
+            <div className="dashboardContainer">
+                <h1 className="dashboardHeader">Dashboard</h1>
+                <div className="summaryCards">
+                    <div className="summaryCard summaryCard--total">
+                        <h2>Toplam Sensör</h2>
+                        <p className="summaryValue">{data.totalSensors}</p>
                     </div>
-                    <div className={styles.statBox}>
-                        <h3>Aktif Kullanıcılar</h3>
-                        <p>{statistics.activeUsers}</p>
+                    <div className="summaryCard summaryCard--active">
+                        <h2>Aktif Sensörler</h2>
+                        <p className="summaryValue">{data.activeSensorsLen}</p>
                     </div>
-                    <div className={styles.statBox}>
-                        <h3>Toplam Kurum</h3>
-                        <p>{statistics.totalInstitutions}</p>
+                    <div className="summaryCard summaryCard--passive">
+                        <h2>Pasif Sensörler</h2>
+                        <p className="summaryValue">{data.passiveSensorsLen}</p>
                     </div>
                 </div>
 
-                {/* Grafikler */}
-                <div className={styles.chartContainer}>
-                    <div className={styles.chartItem}>
-                        <h3>Zamana Göre Sıcaklık ve Nem</h3>
-                        <Line data={lineData} options={{ responsive: true }} />
+                <div className="chartAndCardsContainer">
+                    <div className="chart-container">
+                        <h2 className="chart-header">Sensör Türlerine Göre Dağılım</h2>
+                        <Bar
+                            data={barChartData}
+                            options={{
+                                responsive: true,
+                                plugins: {
+                                    legend: {display: false},
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `${context.raw} sensör`;
+                                            },
+                                        },
+                                    },
+                                },
+                                scales: {
+                                    x: {title: {display: true, text: "Sensör Türleri"}},
+                                    y: {title: {display: true, text: "Sensör Sayısı"}, beginAtZero: true},
+                                },
+                            }}
+                        />
                     </div>
-                    <div className={styles.chartItem}>
-                        <h3>Sensör Tiplerine Göre Dağılım</h3>
-                        <Bar data={barData} options={{ responsive: true }} />
-                    </div>
-                    <div className={styles.chartItem}>
-                        <h3>Kurumlara Göre Sensör Dağılımı</h3>
-                        <Pie data={pieData} options={{ responsive: true }} />
-                    </div>
-                    <div className={styles.chartItem}>
-                        <h3>Aylık Uyarı Sayısı</h3>
-                        <Bar data={alertsData} options={{ responsive: true }} />
-                    </div>
-                </div>
-
-                {/* Son Sensör Uyarıları */}
-                <div className={styles.alertsContainer}>
-                    <h3>Son Sensör Uyarıları</h3>
-                    <ul>
-                        {sensorAlerts.map(alert => (
-                            <li key={alert.id}>
-                                <strong>{alert.name}:</strong> {alert.message} <em>({alert.date})</em>
-                            </li>
+                    <div className="sensorTypeCardsContainer">
+                        {sensorTypeCounts.map(({type, count}, index) => (
+                            <div key={index} className="sensorTypeCard">
+                                <h3 className="sensorTypeCount">{count}</h3>
+                                <p className="sensorTypeName">{type}</p>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
 
-                {/* Son Veri Güncellemeleri */}
-                <div className={styles.recentUpdatesContainer}>
-                    <h3>Son Veri Güncellemeleri</h3>
-                    <ul>
-                        {recentUpdates.map(update => (
-                            <li key={update.id}>
-                                {update.name} - Son Güncelleme: {update.lastUpdate}
-                            </li>
-                        ))}
-                    </ul>
+                <div className="companyStatsSection">
+                    <h2 className="companyStatsHeader">Şirket Bazlı Sensör İstatistikleri</h2>
+                    <div className="companyStatsContent">
+                        <div className="companyStatsChart">
+                            <Bar
+                                data={companyBarChartData}
+                                options={{
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {display: true},
+                                    },
+                                    scales: {
+                                        x: {title: {display: true, text: "Şirketler"}},
+                                        y: {title: {display: true, text: "Sensör Sayısı"}, beginAtZero: true},
+                                    },
+                                }}
+                            />
+                        </div>
+                        <div className="companyStatsTable">
+                            <h3 className="tableHeader">Şirket Sensör Detayları</h3>
+                            <table className="styledTable">
+                                <thead>
+                                <tr>
+                                    <th>Şirket Kodu</th>
+                                    <th>Sensör Sayısı</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
+                                    <tr key={company}>
+                                        <td>{company}</td>
+                                        <td>{count}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+
+                <div className="chartAndTableSection">
+                    <SensorChart active={data.activeSensorsLen} passive={data.passiveSensorsLen}/>
+                    <div className="tableContainer scrollableTable">
+                        <h2 className="sectionHeader">Sensör Detayları</h2>
+                        <SensorTable sensors={data.sensors}/>
+                    </div>
+                </div>
+
+                {userStats && (
+                    <div className="userStatsSection">
+                        <h2 className="userStatsHeader">Kullanıcı İstatistikleri</h2>
+                        <UserDashboardDetails userStats={userStats}/>
+                    </div>
+                )}
             </div>
         </Layout>
     );
