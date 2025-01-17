@@ -55,7 +55,7 @@ const SoilMoistureMap = () => {
 
         useEffect(() => {
             if (selectedSensor && mapInstance) {
-                mapInstance.flyTo([selectedSensor.lat, selectedSensor.lng], 12, {
+                mapInstance.flyTo([selectedSensor.lat, selectedSensor.lng], 14, {
                     animate: false,
                     duration: 1.2,
                 });
@@ -74,8 +74,8 @@ const SoilMoistureMap = () => {
                     radius: 20,
                     blur: 15,
                     maxZoom: 10,
-                    gradient: { 0.30: "red", 0.50: "lime", 1: "green" },
-                });
+                    gradient: { 0.4: "red", 0.6: "lime", 1: "green" },
+                })
 
                 heatLayer.addTo(mapInstance);
 
