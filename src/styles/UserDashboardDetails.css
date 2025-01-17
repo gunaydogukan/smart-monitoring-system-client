@@ -1,0 +1,392 @@
+/* Ana Kapsayıcı */
+.user-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-right: 4rem;
+    background-color: #f4f6f9;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Grafikler Yan Yana Düzenleme */
+.charts-section {
+    display: flex;
+    gap: 2rem; /* Grafikler arasındaki boşluğu azalt */
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* Grafik Konteyneri */
+.chart-container {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 300px;
+    max-width: 600px; /* Grafiklerin boyutunu büyütüyoruz */
+    text-align: center;
+
+}
+
+/* Grafik Başlık Stili */
+.chart-header {
+    font-size: 16px;
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: 1rem;
+}
+
+/* Son Eklenen Kullanıcılar Tablosu */
+.recent-users {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.recent-users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.recent-users-table th, .recent-users-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.recent-users-table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.recent-users-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Bilgi Kartları */
+.info-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Aktif Buton */
+.info-card--active {
+    flex: 1;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #00c52e, #345a85); /* Daha parlak renkler */
+    color: #ffffff;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Daha fazla gölge */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.info-card--active:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Pasif Buton */
+.info-card--passive {
+    flex: 1;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #da0028, #345a85); /* Parlak renkler */
+    color: #ffffff;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Daha fazla gölge */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.info-card--passive:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.info-card h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Grafik ve Kartlar Konteyneri */
+.chartAndCardsContainer {
+    display: flex;
+    flex-wrap: wrap; /* İçeriğin taşmasını engellemek ve mobilde düzgün sıralanması için wrap kullanıyoruz */
+    gap: 20px; /* Grafik ve kartlar arasındaki boşluk */
+    padding: 20px;
+    justify-content: space-between; /* Alanı eşit dağıtmak için */
+    margin-bottom: 30px; /* Grafik ve kartlar arasındaki boşluk */
+}
+
+/* Grafik Konteyneri */
+.chart-container {
+    flex: 1; /* Grafik genişliği esnek olacak */
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 450px;
+}
+
+/* Grafik ve Kartlar Konteyneri */
+.chartAndCardsContainer {
+    display: flex;
+    flex-wrap: wrap; /* İçeriğin taşmasını engellemek ve mobilde düzgün sıralanması için wrap kullanıyoruz */
+    gap: 20px; /* Grafik ve kartlar arasındaki boşluk */
+    padding: 20px;
+    justify-content: space-between; /* Alanı eşit dağıtmak için */
+    margin-bottom: 30px; /* Grafik ve kartlar arasındaki boşluk */
+}
+
+/* Grafik Konteyneri */
+.chart-container {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    min-width: 450px; /* Webde minimum genişlik */
+}
+
+/* Kartların Konteyneri */
+.sensorTypeCardsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2'li düzen, web için */
+    gap: 20px; /* Kartlar arasındaki boşluk */
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Her bir kartın görünümü */
+/* Kartların genel görünümü */
+.sensorTypeCard {
+    background: #ffffff; /* Beyaz arka plan */
+    border-radius: 12px; /* Yuvarlatılmış köşeler */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Gölge efekti */
+    text-align: center;
+    padding: 20px; /* İçeriği düzenli bir şekilde ayarla */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px; /* Varsayılan yazı tipi */
+    max-width: 380px; /* Kartın genişliği */
+    height: 160px; /* Sabit yükseklik */
+    margin: 0 auto;
+    border-bottom: 4px solid #6ba6d1; /* Mavi-yeşil alt çizgi */
+}
+
+/* Kartın üzerine hover yapılınca yapılan etki */
+.sensorTypeCard:hover {
+    transform: scale(1.05); /* Hover sırasında kartı biraz büyüt */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); /* Hover sırasında gölgeyi artır */
+}
+
+/* Kartın sayısı kısmı (Büyütülmüş ve ortalanmış) */
+.sensorTypeCount {
+    font-size: 48px; /* Sayıyı daha büyük yap */
+    font-weight: bold;
+    color: #173451; /* Dikkat çeken yeşil renk */
+    margin: 20px 0;
+    text-align: center; /* Ortalamak */
+    display: block;
+}
+
+/* Kartın adı kısmı (Yazıyı büyütüp ortalama) */
+.sensorTypeName {
+    font-size: 22px; /* Tür adını biraz büyüt */
+    color: #555; /* Koyu gri renk */
+    margin: 0;
+    font-weight: 500;
+    text-align: center; /* Ortalamak */
+}
+
+.companyStatsSection {
+    margin-top: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.companyStatsHeader {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.companyStatsContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 3rem;
+    flex-wrap: wrap; /* Mobil uyum */
+}
+
+.companyStatsChart {
+    flex: 1;
+    min-width: 400px; /* Minimum genişlik */
+    max-width: 600px; /* Maksimum genişlik */
+    height: 350px; /* Grafik yüksekliği */
+    margin: 0 auto; /* Ortalamak için */
+}
+
+.companyStatsTable {
+    flex: 1;
+    min-width: 800px; /* Minimum genişlik */
+    max-width: 1000px; /* Maksimum genişlik */
+    max-height: 600px;
+}
+
+/* Modern Tablo Tasarımı */
+.modernTable {
+    width: 100%; /* Tüm kapsayıcıyı kaplar */
+    max-width: 800px; /* Maksimum genişlik */
+    margin: 0 auto; /* Ortalamak için */
+    font-size: 1.1rem; /* Yazı büyüklüğünü artırır */
+    border-collapse: collapse;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.modernTable th,
+.modernTable td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modernTable th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.modernTable tr:nth-child(odd) {
+    background-color: #f4f6f9;
+}
+
+.modernTable tr:hover {
+    background-color: #e9ecef;
+    cursor: default;
+}
+
+.modernTable td {
+    color: #555;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Mobil Uyum */
+@media (max-width: 768px) {
+    .companyStatsContent {
+        flex-direction: column;
+    }
+
+    .companyStatsChart,
+    .companyStatsTable {
+        max-width: 100%;
+    }
+}
+
+/* Web ve Mobil Farklılıkları İçin Düzenleme */
+@media (max-width: 768px) {
+    .sensorTypeCardsContainer {
+        grid-template-columns: 1fr; /* Tüm kartlar tek sütun şeklinde sıralanacak */
+    }
+
+    .chartAndCardsContainer {
+        flex-direction: column; /* Grafik ve kartları dikey yerleştir */
+        gap: 15px; /* Grafik ve kartlar arasındaki boşluk */
+    }
+
+    .chart-container {
+        min-width: 100%; /* Grafik genişliği mobilde tam genişlik olacak */
+    }
+
+    .sensorTypeCard {
+        max-width: 100%; /* Kartlar mobilde tam genişlikte olacak */
+    }
+}
+
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    /* Grafikler alt alta sıralanacak */
+    .charts-section {
+        flex-direction: column;
+        gap: 1rem; /* Grafikler arasındaki boşluk */
+    }
+
+    /* Grafiklerin genişliği %100 olacak */
+    .chart-container {
+        width: 100%;
+        min-width: unset;
+        max-width: unset;
+    }
+
+    /* Son Eklenen Kullanıcılar Tablosu */
+    .recent-users {
+        width: 100%;
+        margin-top: 1rem;
+        padding-right: 2.3rem;
+    }
+
+    /* Tabloyu responsive yapmak için */
+    .recent-users-table {
+        font-size: 12px; /* Mobilde yazı boyutunu küçültüyoruz */
+
+    }
+
+    .recent-users-table th, .recent-users-table td {
+        padding: 10px;
+
+    }
+
+    /* Bilgi kartları da alt alta sıralanacak */
+    .info-cards {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* Bilgi Kartları Genişliği Ayarı */
+    .info-card {
+        width: 100%;
+    }
+
+    /* Bilgi kartlarının alt kısmındaki gap değeri */
+    .info-card--active, .info-card--passive {
+        padding-right: 2.33rem;
+    }
+}

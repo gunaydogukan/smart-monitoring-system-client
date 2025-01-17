@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import Layout from "../layouts/Layout";
 import "../styles/SoilMoistureMap.css";
 import LoadingScreen from "../components/LoadingScreen"; // Yeni CSS dosyasını içe aktarıyoruz
+import "leaflet/dist/leaflet.css";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
