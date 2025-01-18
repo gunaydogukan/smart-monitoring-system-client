@@ -68,13 +68,24 @@ const DisplayMap = () => {
     }, [map, sensors]); // Sensörler veya harita değiştiğinde markerları yeniden oluştur
 
     useEffect(() => {
-        if (selectedSensor) {
-            setMapCenter({
+        if (selectedSensor && map) {
+            const sensorPosition = {
                 lat: parseFloat(selectedSensor.lat),
                 lng: parseFloat(selectedSensor.lng),
-            });
+            };
+
+            // Sensöre zoom ve merkezleme işlemi
+            map.panTo(sensorPosition); // Yumuşak geçişle merkeze al
+            map.setZoom(15); // Daha yakın bir zoom seviyesi
         }
-    }, [selectedSensor]);
+    }, [selectedSensor, map]);
+
+
+
+
+
+
+
     const getMarkerIcon = (sensor) => {
         switch (sensor.type) {
             case 1:
@@ -186,6 +197,7 @@ const DisplayMap = () => {
         }, 300); // Sidebar geçiş animasyon süresine paralel
     };
 
+
     return (
         <div className={`display-map-container ${sidebarExpanded ? "sidebar-open" : "sidebar-closed"}`}>
             {/* Hamburger Menu Button */}
@@ -214,14 +226,15 @@ const DisplayMap = () => {
             <div className="display-map-map">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
-                    center={defaultCenter}
-                    zoom={10}
+                    center={mapCenter} // React state'ten alınan merkez konumu
+                    zoom={18} // Belirlediğiniz zoom seviyesi
                     onLoad={(mapInstance) => {
-                        setMap(mapInstance);
+                        setMap(mapInstance); // Harita referansını kaydet
                         mapRef.current = mapInstance;
                     }}
                 >
-                    {sensors.map((sensor) => (
+
+                {sensors.map((sensor) => (
                         <Marker
                             key={sensor.id}
                             position={{

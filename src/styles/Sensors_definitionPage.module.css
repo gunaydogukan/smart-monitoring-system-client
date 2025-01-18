@@ -205,9 +205,8 @@ html, body {
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
-
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 35%; /* Küçük ekranlarda genişlik kontrolü */
+    width: 200px; /* Küçük ekranlarda genişlik kontrolü */
     max-width: 400px; /* Maksimum genişlik */
 }
 
@@ -234,6 +233,16 @@ html, body {
 .select:hover {
     background-color: #f9fcff;
 }
+
+/* Mobil için düzenlemeler */
+@media (max-width: 768px) {
+    .select {
+        font-size: 1rem; /* Daha küçük yazı boyutu */
+        padding: 10px; /* Daha az iç boşluk */
+        min-width: 200px;
+    }
+}
+
 
 
 
@@ -559,7 +568,7 @@ html, body {
         grid-template-columns: 1fr; /* Küçük ekranlarda tek sütun */
     }
     .card {
-        max-width: 95%; /* Küçük ekranlarda genişlik kontrolü */
+        max-width: 73%; /* Küçük ekranlarda genişlik kontrolü */
     }
 }
 

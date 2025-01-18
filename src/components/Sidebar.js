@@ -94,10 +94,10 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             {userRole.role !== "personal" && (
                                 <>
                                     <li onClick={() => handleNavigation("/sensor-definition")}>
-                                        <FaRss className="dropdown-icon" /> Sensör Tanımlama
+                                        <FaRss className="dropdown-icon"/> Sensör Tanımlama
                                     </li>
                                     <li onClick={() => handleNavigation("/sensor-remove")}>
-                                        <FaRss className="dropdown-icon" /> Sensör Çıkart
+                                        <FaRss className="dropdown-icon"/> Sensör Çıkart
                                     </li>
                                 </>
                             )}
@@ -108,6 +108,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                         <FaTint className="menu-icon"/>
                         <span>Nem Haritası</span>
                     </div>
+
 
                     {!isPersonal && (
                         <>
@@ -173,6 +174,14 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                             )}
                         </>
                     )}
+                    <div className="menu" onClick={() => handleNavigation("/raporlama")}>
+                        <FaTint className="menu-icon"/>
+                        <span>Raporlama</span>
+                    </div>
+                    <div className="menu" onClick={() => handleNavigation("/loglar")}>
+                        <FaTint className="menu-icon"/>
+                        <span>Log Kayıtları</span>
+                    </div>
                     <div
                         className="logout menu" /* logout ve menu stillerini birleştir */
                         onClick={() => {

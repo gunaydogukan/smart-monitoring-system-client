@@ -116,6 +116,7 @@ body, html {
     overflow-y: auto; /* Dikey kaydırmayı etkinleştir */
     overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
     padding: 10px; /* İç boşluk */
+
 }
 /* Scroll Bar Stili */
 .tableContainer::-webkit-scrollbar {
@@ -158,13 +159,14 @@ body, html {
 }
 
 
-
 /* Tablo Hücreleri */
 .table td {
-    padding: 14px 16px;
+    padding: 12px 8px;
     border-bottom: 1px solid #ddd;
     text-align: center;
     vertical-align: middle;
+    min-width: 120px; /* Minimum genişlik eklendi */
+    word-wrap: break-word; /* Uzun içerikleri sarmala */
 }
 
 /* Alternatif Satır Renkleri */
@@ -180,19 +182,6 @@ body, html {
 }
 
 
-
-/* Responsive Tasarım */
-@media (max-width: 768px) {
-    .tableContainer {
-        max-height: 50vh; /* Mobil cihazlarda daha küçük yükseklik */
-    }
-
-    .table th,
-    .table td {
-        font-size: 0.9rem;
-        padding: 10px;
-    }
-}
 /* Durum Stilleri */
 .statusActive,
 .statusInactive {
@@ -216,7 +205,8 @@ body, html {
 /* Butonlar */
 .buttonContainer {
     display: flex;
-    gap: 10px; /* Butonlar arası boşluk */
+    gap: 5px; /* Butonlar arasındaki boşluk azaltıldı */
+    flex-wrap: wrap; /* Butonlar mobilde alt alta dizilir */
 }
 
 .actionButtonUsers{
@@ -628,10 +618,29 @@ body, html {
         width: 100%; /* Ekran genişliğine yayılır */
     }
 
-    .table th,
-    .table td {
-        font-size: 0.85rem;
-        padding: 10px;
+    .tableContainer {
+        overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
+        -webkit-overflow-scrolling: touch; /* Mobilde daha iyi kaydırma deneyimi */
+        border: none; /* Gereksiz kenarlık kaldırıldı */
+    }
+
+    .table {
+        width: 100%; /* Tablonun genişliği */
+        min-width: 800px; /* Mobilde tablo için minimum genişlik */
+    }
+
+    .table th, .table td {
+        font-size: 0.8rem; /* Yazı boyutu küçültüldü */
+        padding: 6px 4px; /* Hücre iç boşlukları azaltıldı */
+        text-align: center;
+    }
+
+    .actionButtonUsers {
+        font-size: 12px; /* Buton yazı boyutu bir tık artırıldı */
+        padding: 8px 10px; /* Daha fazla iç boşluk */
+        min-width: 140px; /* Minimum genişlik artırıldı */
+        white-space: nowrap; /* Tek satırda yazı kalmasını sağlar */
+        text-align: center; /* Yazıyı tam ortalar */
     }
     .notificationModal {
         padding: 20px;

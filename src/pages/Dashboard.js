@@ -7,6 +7,7 @@ import SensorTable from "../components/SensorTable";
 import SensorChart from "../components/SensorChart";
 import UserDashboardDetails from "../components/UserDashboardDetails";
 import {useAuth} from "../contexts/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -99,26 +100,98 @@ export default function Dashboard() {
     }, []);
 
 
-    if (loading) return <div className="loading">Yükleniyor...</div>;
+    if (loading) {
+        return <LoadingScreen />;
+    }
     if (error) return <div className="error">Hata: {error}</div>;
 
     if (!data || !sensorTypes) {
         return <div className="error">Veriler yüklenemedi!</div>;
     }
     let companyBarChartData;
-    if(userRole.role ==="administrator"){
+
+    if (userRole.role === "administrator") {
         // Şirket bazlı sensör grafikleri için verileri hazırlama
-        companyBarChartData= {
+        companyBarChartData = {
             labels: Object.keys(companyStats.groupedLengths),
             datasets: [
                 {
-                    label: "Şirket Sensör Sayısı",
+                    label: "Şirket Sensör Dağılımı",
                     data: Object.values(companyStats.groupedLengths),
-                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+                    backgroundColor: ["#FF5733", "#33C3FF", "#8D33FF"], // Canlı renkler
                 },
             ],
         };
     }
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    generateLabels: (chart) => {
+                        const dataset = chart.data.datasets[0];
+                        return [
+                            {
+                                text: dataset.label,
+                                fillStyle: "#2d6bb3", // Etiket solundaki dikdörtgenin rengi
+                                strokeStyle: "#3498DB", // Çizgi rengi
+                                lineWidth: 0,
+                                hidden: !chart.isDatasetVisible(0), // Görünürlük durumu
+                                datasetIndex: 0,
+                            },
+                        ];
+                    },
+                    color: "#2C3E50", // Yazı rengi
+                    font: {
+                        size: 14,
+                        family: "Arial, sans-serif",
+                    },
+                },
+                onClick: (e, legendItem, legend) => {
+                    const index = legendItem.datasetIndex;
+                    const ci = legend.chart;
+                    const meta = ci.getDatasetMeta(index);
+
+                    // Görünürlüğü değiştirme
+                    meta.hidden = meta.hidden === null ? !ci.isDatasetVisible(index) : null;
+                    ci.update();
+                },
+            },
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: "Şirketler",
+                    color: "#2C3E50",
+                    font: {
+                        size: 14,
+                        weight: "bold",
+                    },
+                },
+                ticks: {
+                    color: "#2C3E50",
+                },
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Sensör Sayısı",
+                    color: "#2C3E50",
+                    font: {
+                        size: 14,
+                        weight: "bold",
+                    },
+                },
+                ticks: {
+                    color: "#2C3E50",
+                },
+                beginAtZero: true,
+            },
+        },
+    };
+
+
 
     const typesMap = sensorTypes.types.reduce((acc, type) => {
         acc[type.id] = type.type;
@@ -142,12 +215,11 @@ export default function Dashboard() {
         ],
     };
 
-    const colorPalette = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
 
     return (
         <Layout>
             <div className="dashboardContainer">
-                <h1 className="dashboardHeader">Dashboard</h1>
+                <h1 className="dashboardHeader">Gösterge Paneli</h1>
                 <div className="summaryCards">
                     <div className="summaryCard summaryCard--total">
                         <h2>Toplam Sensör</h2>
@@ -197,48 +269,35 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="companyStatsSection">
-                    {userRole === "administrator" && (
-                        <>
-                            <h2 className="companyStatsHeader">Şirket Bazlı Sensör İstatistikleri</h2>
-                            <div className="companyStatsContent">
-                                <div className="companyStatsChart">
-                                    <Bar
-                                        data={companyBarChartData}
-                                        options={{
-                                            responsive: true,
-                                            plugins: {
-                                                legend: {display: true},
-                                            },
-                                            scales: {
-                                                x: {title: {display: true, text: "Şirketler"}},
-                                                y: {title: {display: true, text: "Sensör Sayısı"}, beginAtZero: true},
-                                            },
-                                        }}
-                                    />
-                                </div>
-                                <div className="companyStatsTable">
-                                    <h3 className="tableHeader">Şirket Sensör Detayları</h3>
-                                    <table className="styledTable">
-                                        <thead>
-                                        <tr>
-                                            <th>Şirket Kodu</th>
-                                            <th>Sensör Sayısı</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
-                                            <tr key={company}>
-                                                <td>{company}</td>
-                                                <td>{count}</td>
-                                            </tr>
-                                        ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </>
-                    )}
+                <h2 className="uniqueSectionHeader">Şirket Bazlı Sensör İstatistikleri</h2>
+
+                <div className="uniqueChartAndTableSection">
+                    <div className="uniqueContentContainer">
+                        {/* Grafik Alanı */}
+                        <div className="uniqueChartContainer">
+                            <Bar data={companyBarChartData} options={chartOptions}/>
+                        </div>
+
+                        {/* Tablo Alanı */}
+                        <div className="uniqueTableContainer">
+                            <table className="uniqueStyledTable">
+                                <thead>
+                                <tr>
+                                    <th>Şirket Kodu</th>
+                                    <th>Sensör Sayısı</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
+                                    <tr key={company}>
+                                        <td>{company}</td>
+                                        <td>{count}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -253,7 +312,7 @@ export default function Dashboard() {
                 {userRole.role !== "personal" && userStats && (
                     <div className="userStatsSection">
                         <h2 className="userStatsHeader">Kullanıcı İstatistikleri</h2>
-                        <UserDashboardDetails userStats={userStats} />
+                        <UserDashboardDetails userStats={userStats}/>
                     </div>
                 )}
             </div>
