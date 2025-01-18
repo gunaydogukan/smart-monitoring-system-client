@@ -530,13 +530,13 @@ export default function Users() {
                                     <td>
                                         <div className={styles.buttonContainer}>
                                             <button
-                                                className={`${styles.actionButton} ${styles.updateButton}`}
+                                                className={`${styles.updateButton}`}
                                                 onClick={() => handleUpdateClick(person)}
                                             >
                                                 Güncelle
                                             </button>
                                             <button
-                                                className={`${styles.actionButton} ${
+                                                className={`${
                                                     person.isActive ? styles.deleteButton : styles.activateButton
                                                 }`}
                                                 onClick={() =>
@@ -547,7 +547,6 @@ export default function Users() {
                                             </button>
                                             {type === "personals" && (
                                                 <button
-                                                    className={`${styles.actionButton} ${styles.changeManagerButton}`}
                                                     onClick={() => openChangeManagerModal(person)}
                                                 >
                                                     Yönetici Değiştir

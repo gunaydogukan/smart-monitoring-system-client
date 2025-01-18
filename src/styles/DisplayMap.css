@@ -165,7 +165,7 @@
 }
 /* Scroll Bar Stili */
 .display-map-modal-content::-webkit-scrollbar {
-    width: 8px; /* Scroll bar genişliği */
+    width: 6px; /* Scroll bar genişliği */
 }
 
 .display-map-modal-content::-webkit-scrollbar-thumb {
@@ -342,7 +342,7 @@
 /* Mobil Scroll Bar */
 @media (max-width: 768px) {
     .display-map-modal-content::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
     }
 
     .display-map-modal-content::-webkit-scrollbar-thumb {
@@ -363,10 +363,16 @@
         flex: 1 1 100%; /* Tek kolon düzeni */
         max-width: 100%;
     }
+    .display-map-modal-content::-webkit-scrollbar {
+        width: 4px;
+    }
 }
 
 @media (max-width: 1199px) {
     .display-map-modal-header .close-button_veri {
         font-size: 2em; /* Daha küçük font boyutu */
+    }
+    .display-map-modal-content::-webkit-scrollbar {
+        width: 4px;
     }
 }

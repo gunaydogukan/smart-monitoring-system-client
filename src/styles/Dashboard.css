@@ -10,7 +10,7 @@
 
 .dashboardHeader {
     text-align: center;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: bold;
     color: #2c3e50; /* Koyu mavi/siyah ton */
     margin-bottom: 1rem;
@@ -223,7 +223,7 @@ th, td {
 }
 
 th {
-    background-color: #34495e; /* Koyu mavi başlık */
+    background-color: #173451; /* Koyu mavi başlık */
     color: white;
     font-weight: bold;
 }
@@ -371,5 +371,158 @@ td {
 
     table {
         font-size: 0.8rem;
+    }
+}
+/* Chart and Table Section */
+.uniqueChartAndTableSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Tüm başlığı kapsayan divi ortala */
+
+}
+/* Section Header */
+.uniqueSectionHeader {
+    text-align: center; /* Ortala */
+    font-size: 1.8rem; /* Daha büyük bir yazı boyutu */
+    font-weight: bold;
+    color: #2c3e50; /* Sidebar uyumu */
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eaeaea; /* Alt çizgi */
+    padding-bottom: 0.5rem;
+    width: 100%; /* Tüm genişliği kapsa */
+    display: block; /* Inline elementi blok yap */
+
+}
+
+
+/* Chart Container */
+.uniqueChartContainer {
+    position: relative;
+    width: 350px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ecf0f1, #ffffff); /* Hafif beyaz gradient */
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    text-align: center;
+}
+
+/* Content Container */
+.uniqueContentContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+/* Table Container */
+.uniqueTableContainer {
+    flex: 2;
+    overflow-x: auto;
+    max-height: 400px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+}
+
+/* Table */
+.uniqueStyledTable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+.uniqueStyledTable th,
+.uniqueStyledTable td {
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.uniqueStyledTable th {
+    background-color: #2d6bb3; /* Koyu mavi başlık */
+    color: white;
+    font-weight: bold;
+}
+
+.uniqueStyledTable tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.uniqueStyledTable tr:hover {
+    background-color: #ecf0f1;
+}
+
+.uniqueStyledTable td {
+    color: #2c3e50; /* Koyu yazı */
+}
+
+/* Scroll için yatay çubuk */
+.uniqueTableContainer::-webkit-scrollbar {
+    height: 8px;
+}
+
+.uniqueTableContainer::-webkit-scrollbar-track {
+    background: #ecf0f1;
+    border-radius: 10px;
+}
+
+.uniqueTableContainer::-webkit-scrollbar-thumb {
+    background: #34495e;
+    border-radius: 10px;
+}
+
+.uniqueTableContainer::-webkit-scrollbar-thumb:hover {
+    background: #2c3e50;
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .uniqueChartAndTableSection{
+        width: 89%;
+    }
+    .uniqueContentContainer {
+        flex-direction: column; /* Mobilde alt alta sıralama */
+        gap: 1rem;
+
+    }
+
+    .uniqueTableContainer {
+        max-width: 98%;
+        padding: 1rem;
+        margin: 0;
+    }
+
+    .uniqueChartContainer {
+        height: 250px;
+        width: 98%;
+        margin: 0;
+    }
+
+    .uniqueStyledTable th,
+    .uniqueStyledTable td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+
+    .uniqueChartTitle {
+        font-size: 1.5rem;
     }
 }

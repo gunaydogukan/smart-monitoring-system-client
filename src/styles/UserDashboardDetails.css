@@ -227,44 +227,95 @@
     text-align: center; /* Ortalamak */
 }
 
-.companyStatsSection {
-    margin-top: 2rem;
+/* Genel Alan */
+.sensorStatisticsSection {
+    margin-top: 1.5rem;
     background: white;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
 }
 
-.companyStatsHeader {
-    font-size: 2rem;
+.sensorStatisticsHeader {
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #333;
-    margin-bottom: 2rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
     text-align: center;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 0.5rem;
 }
 
-.companyStatsContent {
+/* İçerik Düzeni */
+.sensorStatisticsContent {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 3rem;
-    flex-wrap: wrap; /* Mobil uyum */
+    flex-direction: column; /* Mobilde dikey düzen */
+    gap: 1.5rem;
 }
 
-.companyStatsChart {
+/* Grafik Alanı */
+.sensorStatisticsChart {
     flex: 1;
-    min-width: 400px; /* Minimum genişlik */
-    max-width: 600px; /* Maksimum genişlik */
-    height: 350px; /* Grafik yüksekliği */
+    min-width: 200px;
+    max-width: 100%; /* Mobilde tam genişlik */
+    height: auto; /* Dinamik yükseklik */
     margin: 0 auto; /* Ortalamak için */
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
+    overflow-y: hidden;
 }
 
-.companyStatsTable {
+/* Tablo Alanı */
+.sensorStatisticsTable {
     flex: 1;
-    min-width: 800px; /* Minimum genişlik */
-    max-width: 1000px; /* Maksimum genişlik */
-    max-height: 600px;
+    border-radius: 12px;
+    overflow-x: auto; /* Yatay kaydırmayı etkinleştir */
+    background: #f9f9f9;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin: 0 auto;
+    max-width: 100%; /* Mobil uyumluluk */
 }
+
+/* Tablo Başlık */
+.tableHeader {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding: 0.8rem;
+    border-bottom: 2px solid #dcdcdc;
+}
+
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .sensorStatisticsContent {
+        gap: 1rem;
+    }
+
+    .sensorStatisticsChart {
+        max-width: 100%;
+        padding: 0.5rem;
+    }
+
+    .sensorStatisticsTable {
+        padding: 0.5rem;
+    }
+
+    .customTable th,
+    .customTable td {
+        font-size: 0.85rem;
+        padding: 10px;
+    }
+}
+
 
 /* Modern Tablo Tasarımı */
 .modernTable {
@@ -309,16 +360,7 @@
 }
 
 /* Mobil Uyum */
-@media (max-width: 768px) {
-    .companyStatsContent {
-        flex-direction: column;
-    }
 
-    .companyStatsChart,
-    .companyStatsTable {
-        max-width: 100%;
-    }
-}
 
 /* Web ve Mobil Farklılıkları İçin Düzenleme */
 @media (max-width: 768px) {
