@@ -1,0 +1,133 @@
+.raporlama-container {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.raporlama-title {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    color: #2c3e50;
+}
+
+.raporlama-error {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 18px;
+}
+
+.raporlama-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Masaüstünde 3 sütun */
+    gap: 30px;
+    justify-items: center;
+    width: 100%;
+}
+
+.raporlama-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.raporlama-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.raporlama-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #3498db, #8e44ad);
+    z-index: 1;
+}
+
+.raporlama-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #34495e;
+    z-index: 2;
+    position: relative;
+}
+
+.raporlama-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    margin: 15px 10px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 2;
+    position: relative;
+}
+
+.raporlama-button:hover {
+    background-color: #2980b9;
+    transform: scale(1.1);
+}
+
+.raporlama-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.raporlama-button:disabled:hover {
+    transform: none;
+}
+
+/* Mobil düzen (768px ve altı cihazlar) */
+@media (max-width: 768px) {
+    .raporlama-grid {
+        grid-template-columns: 1fr; /* Kartlar tekli alt alta sıralanır */
+        gap: 20px;
+    }
+
+    .raporlama-card {
+        width: 90%; /* Daha küçük genişlik */
+        padding: 20px; /* Daha küçük padding */
+    }
+
+    .raporlama-card-title {
+        font-size: 20px; /* Başlık boyutu küçültüldü */
+    }
+
+    .raporlama-button {
+        font-size: 14px; /* Düğmelerin yazı boyutu küçültüldü */
+        padding: 10px 20px; /* Düğme iç boşluğu küçültüldü */
+    }
+}
+
+/* Tablet düzen (1024px ve altı cihazlar) */
+@media (max-width: 1024px) {
+    .raporlama-grid {
+        grid-template-columns: 1fr; /* Kartlar tekli alt alta sıralanır */
+        gap: 25px;
+    }
+
+    .raporlama-card {
+        width: 100%;
+    }
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaRss, FaTag, FaTint
+    FaPlus, FaSignOutAlt, FaRss, FaTag, FaTint, FaChartBar, FaClipboardList,
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -175,12 +175,13 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                         </>
                     )}
                     <div className="menu" onClick={() => handleNavigation("/raporlama")}>
-                        <FaTint className="menu-icon"/>
+                        <FaChartBar className="menu-icon"/>
                         <span>Raporlama</span>
                     </div>
+
                     <div className="menu" onClick={() => handleNavigation("/loglar")}>
-                        <FaTint className="menu-icon"/>
-                        <span>Log Kayıtları</span>
+                        <FaClipboardList className="menu-icon"/>
+                        <span>Kayıtlar</span>
                     </div>
                     <div
                         className="logout menu" /* logout ve menu stillerini birleştir */
