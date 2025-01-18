@@ -1,0 +1,186 @@
+.loglar-container {
+    padding: 20px;
+    max-width: 1400px; /* Daha geniş bir tablo için */
+    margin: 0 auto;
+}
+
+.loglar-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Tablo Wrapper */
+.loglar-table-wrapper {
+    overflow-x: auto; /* Yatay kaydırma */
+    border: 2px solid #ddd; /* Çerçeve */
+    border-radius: 12px;
+    background-color: #fff; /* Arka plan beyaz */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Hafif gölge */
+    max-height: 800px; /* Yükseklik için daha geniş alan */
+    overflow-y: auto; /* Dikey kaydırma */
+    margin-bottom: 30px;
+}
+
+/* Tablo Stilleri */
+.loglar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Kolonlara otomatik genişlik */
+    min-width: 1200px; /* Yatay scroll için minimum genişlik */
+    font-size: 14px;
+}
+
+.loglar-table th,
+.loglar-table td {
+    padding: 20px;
+    text-align: left;
+    border: 1px solid #ddd; /* Hücre kenarlıkları */
+    font-size: 16px;
+    word-wrap: break-word;
+}
+
+/* Tablo Başlık Stili */
+.loglar-table thead th {
+    background-color: #333; /* Başlık koyu gri */
+    color: #fff; /* Başlık yazı rengi beyaz */
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 3px solid #555; /* Alt çizgi */
+    text-align: center;
+}
+
+/* Alternatif Satır Renkleri */
+.loglar-table tbody tr:nth-child(odd) td {
+    background-color: #f9f9f9; /* Açık gri */
+}
+
+.loglar-table tbody tr:nth-child(even) td {
+    background-color: #f3f2f2; /* Daha koyu gri */
+}
+
+/* Hücrelerin Hover Efekti */
+.loglar-table tbody tr:hover td {
+    background-color: #d6d6d6; /* Hover sırasında hafif koyu gri */
+    color: #000; /* Yazı rengi siyah */
+    font-weight: bold; /* Hover sırasında yazılar kalınlaşır */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Yumuşak geçiş */
+}
+
+/* Hücreler Arasında Ayrım */
+.loglar-table tbody td {
+    border-bottom: 1px solid #bdbdbd; /* Hücreler arası gri çizgi */
+}
+
+/* Tablo Başlık Stili */
+.loglar-table thead th {
+    background-color: #333; /* Başlık koyu gri */
+    color: #fff; /* Başlık yazı rengi beyaz */
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 3px solid #555; /* Alt çizgi */
+    text-align: center;
+}
+
+/* Daha Fazla Kontrast İçin */
+.loglar-table {
+    border: 1px solid #333; /* Tablo kenarlığı koyu gri */
+    background-color: #f5f5f5; /* Tablo arka planı hafif açık gri */
+}
+
+/* Daha Geniş Hücreler */
+.loglar-table th,
+.loglar-table td {
+    min-width: 150px;
+    padding: 15px;
+    text-align: left;
+}
+
+
+
+
+/* Scroll Bar Renk ve Stil */
+.loglar-table-wrapper::-webkit-scrollbar {
+    width: 12px; /* Dikey scrollbar genişliği */
+    height: 12px; /* Yatay scrollbar yüksekliği */
+}
+
+.loglar-table-wrapper::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Scroll barın arka planı */
+    border-radius: 10px;
+}
+
+.loglar-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: #555; /* Scroll barın rengi */
+    border-radius: 10px;
+    border: 2px solid #f0f0f0; /* İç boşluk */
+}
+
+.loglar-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #333; /* Hover sırasında scroll barın rengi */
+}
+
+/* Mobil ve Küçük Ekranlar İçin */
+@media (max-width: 768px) {
+    .loglar-table-wrapper {
+        max-height: 500px;
+    }
+
+    .loglar-table {
+        font-size: 12px;
+    }
+
+    .loglar-container {
+        padding: 15px;
+    }
+
+    .loglar-table th,
+    .loglar-table td {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .loglar-table-wrapper {
+        border: none;
+        box-shadow: none;
+    }
+
+    .loglar-title {
+        font-size: 20px;
+    }
+
+    .loglar-table {
+        font-size: 11px;
+    }
+
+    .loglar-table th,
+    .loglar-table td {
+        padding: 8px;
+    }
+}
+.loglar-info {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background-color: #eef5ff; /* Hafif mavi ton */
+    color: #0056b3; /* Koyu mavi yazı */
+    padding: 10px 15px;
+    border: 1px solid #0056b3; /* Çerçeve */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    font-size: 16px;
+}
+
+.loglar-info span {
+    margin-left: 10px; /* İkon ile metin arasına boşluk */
+    font-weight: 500;
+}
+
+.loglar-info-icon {
+    font-size: 20px;
+    color: #0056b3; /* İkon rengi */
+}
+
