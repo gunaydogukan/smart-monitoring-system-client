@@ -6,10 +6,12 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Lege
 import SensorTable from "../components/SensorTable";
 import SensorChart from "../components/SensorChart";
 import UserDashboardDetails from "../components/UserDashboardDetails";
+import {useAuth} from "../contexts/AuthContext";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export default function Dashboard() {
+    const { user,userRole } = useAuth(); // Kullanıcı bilgilerini al
     const [data, setData] = useState(null);
     const [userStats, setUserStats] = useState(null);
     const [sensorTypes, setSensorTypes] = useState(null);
@@ -36,21 +38,23 @@ export default function Dashboard() {
 
                 const sensorData = await sensorResponse.json();
                 setData(sensorData);
+                console.log(userRole.role);
+                if(userRole.role!=="personal"){
+                    const userResponse = await fetch(`${API_URL}/api/dashboard/getIsActive`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
 
-                const userResponse = await fetch(`${API_URL}/api/dashboard/getIsActive`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
+                    if (!userResponse.ok) {
+                        throw new Error(`HTTP error! Status: ${userResponse.status}`);
+                    }
 
-                if (!userResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${userResponse.status}`);
+                    const userData = await userResponse.json();
+                    setUserStats(userData);
                 }
-
-                const userData = await userResponse.json();
-                setUserStats(userData);
 
                 const sensorTypesResponse = await fetch(`${API_URL}/api/dashboard/getSensorTypeClass`, {
                     method: "GET",
@@ -66,21 +70,24 @@ export default function Dashboard() {
 
                 const sensorTypesData = await sensorTypesResponse.json();
                 setSensorTypes(sensorTypesData);
-                // Şirket bazlı sensör istatistiklerini al
-                const companyStatsResponse = await fetch(`${API_URL}/api/dashboard/getCompanySensorStats`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
+                if(userRole.role==="administrator"){
+                    // Şirket bazlı sensör istatistiklerini al
+                    const companyStatsResponse = await fetch(`${API_URL}/api/dashboard/getCompanySensorStats`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
 
-                if (!companyStatsResponse.ok) {
-                    throw new Error(`HTTP error! Status: ${companyStatsResponse.status}`);
+                    if (!companyStatsResponse.ok) {
+                        throw new Error(`HTTP error! Status: ${companyStatsResponse.status}`);
+                    }
+
+                    const companyStatsData = await companyStatsResponse.json();
+                    setCompanyStats(companyStatsData);
                 }
 
-                const companyStatsData = await companyStatsResponse.json();
-                setCompanyStats(companyStatsData);
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -98,17 +105,21 @@ export default function Dashboard() {
     if (!data || !sensorTypes) {
         return <div className="error">Veriler yüklenemedi!</div>;
     }
-// Şirket bazlı sensör grafikleri için verileri hazırlama
-    const companyBarChartData = {
-        labels: Object.keys(companyStats.groupedLengths),
-        datasets: [
-            {
-                label: "Şirket Sensör Sayısı",
-                data: Object.values(companyStats.groupedLengths),
-                backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
-            },
-        ],
-    };
+    let companyBarChartData;
+    if(userRole.role ==="administrator"){
+        // Şirket bazlı sensör grafikleri için verileri hazırlama
+        companyBarChartData= {
+            labels: Object.keys(companyStats.groupedLengths),
+            datasets: [
+                {
+                    label: "Şirket Sensör Sayısı",
+                    data: Object.values(companyStats.groupedLengths),
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"],
+                },
+            ],
+        };
+    }
+
     const typesMap = sensorTypes.types.reduce((acc, type) => {
         acc[type.id] = type.type;
         return acc;
@@ -187,43 +198,47 @@ export default function Dashboard() {
                 </div>
 
                 <div className="companyStatsSection">
-                    <h2 className="companyStatsHeader">Şirket Bazlı Sensör İstatistikleri</h2>
-                    <div className="companyStatsContent">
-                        <div className="companyStatsChart">
-                            <Bar
-                                data={companyBarChartData}
-                                options={{
-                                    responsive: true,
-                                    plugins: {
-                                        legend: {display: true},
-                                    },
-                                    scales: {
-                                        x: {title: {display: true, text: "Şirketler"}},
-                                        y: {title: {display: true, text: "Sensör Sayısı"}, beginAtZero: true},
-                                    },
-                                }}
-                            />
-                        </div>
-                        <div className="companyStatsTable">
-                            <h3 className="tableHeader">Şirket Sensör Detayları</h3>
-                            <table className="styledTable">
-                                <thead>
-                                <tr>
-                                    <th>Şirket Kodu</th>
-                                    <th>Sensör Sayısı</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
-                                    <tr key={company}>
-                                        <td>{company}</td>
-                                        <td>{count}</td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    {userRole === "administrator" && (
+                        <>
+                            <h2 className="companyStatsHeader">Şirket Bazlı Sensör İstatistikleri</h2>
+                            <div className="companyStatsContent">
+                                <div className="companyStatsChart">
+                                    <Bar
+                                        data={companyBarChartData}
+                                        options={{
+                                            responsive: true,
+                                            plugins: {
+                                                legend: {display: true},
+                                            },
+                                            scales: {
+                                                x: {title: {display: true, text: "Şirketler"}},
+                                                y: {title: {display: true, text: "Sensör Sayısı"}, beginAtZero: true},
+                                            },
+                                        }}
+                                    />
+                                </div>
+                                <div className="companyStatsTable">
+                                    <h3 className="tableHeader">Şirket Sensör Detayları</h3>
+                                    <table className="styledTable">
+                                        <thead>
+                                        <tr>
+                                            <th>Şirket Kodu</th>
+                                            <th>Sensör Sayısı</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
+                                            <tr key={company}>
+                                                <td>{company}</td>
+                                                <td>{count}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
 
@@ -235,10 +250,10 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {userStats && (
+                {userRole.role !== "personal" && userStats && (
                     <div className="userStatsSection">
                         <h2 className="userStatsHeader">Kullanıcı İstatistikleri</h2>
-                        <UserDashboardDetails userStats={userStats}/>
+                        <UserDashboardDetails userStats={userStats} />
                     </div>
                 )}
             </div>
