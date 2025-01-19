@@ -24,6 +24,7 @@ import SensorsDefination from "./pages/Sensors_definitionPage";
 import SoilMoistureMap from "./pages/SoilMoistureMap";
 import Raporlama from "./pages/Raporlama";
 import Loglar from "./pages/Loglar";
+import UserLogs from "./pages/UserLogs";
 import SensorsRemovalPage from "./pages/sensorRemovePage";
 
 export default function App() {
@@ -66,6 +67,8 @@ export default function App() {
                         <Route path="/sensorControl/kurulum" element={<SensorControl />} />
                         <Route path="/add-sensor-type" element={<AddType />} />
                         <Route path="/add-company" element={<CompanyAdd />} />
+                        <Route path="/loglar" element={<Loglar/>} />
+                        <Route path="/user-logs" element={<UserLogs/>} />
                     </>
                 )}
 
@@ -89,8 +92,8 @@ export default function App() {
                 <Route path="/sensorControl/data" element={<SensorDataControllPage />} />
                 <Route path="*" element={<Navigate to="/dashboard" />} />
                 <Route path="/soilmoisturemap" element={<SoilMoistureMap />} />
-               <Route path="/raporlama" element={<Raporlama/>} />
-                <Route path="/loglar" element={<Loglar/>} />
+                <Route path="/raporlama" element={<Raporlama/>} />
+
 
             </>
         );

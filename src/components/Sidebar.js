@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
     FaHome, FaMicrochip, FaUser, FaBuilding,
-    FaPlus, FaSignOutAlt, FaRss, FaTag, FaTint, FaChartBar, FaClipboardList,
+    FaPlus, FaSignOutAlt, FaRss, FaTag, FaTint, FaChartBar, FaClipboardList,FaIdBadge,FaClipboard
 } from "react-icons/fa";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isSensorControlOpen, setIsSensorControlOpen] = useState(false);
     const [isSensorMenuOpen, setSensorMenuOpen] = useState(false);
+    const [isLogsOpen, setIsLogsOpen] = useState(false);
 
     useEffect(() => {
         if (!user) navigate('/login');
@@ -178,11 +179,25 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }) {
                         <FaChartBar className="menu-icon"/>
                         <span>Raporlama</span>
                     </div>
-
-                    <div className="menu" onClick={() => handleNavigation("/loglar")}>
-                        <FaClipboardList className="menu-icon"/>
-                        <span>Kayıtlar</span>
-                    </div>
+                    {userRole.role === "administrator" && (
+                        <>
+                            <div className={`menu ${isLogsOpen ? 'open' : ''}`}
+                                 onClick={() => setIsLogsOpen(!isLogsOpen)}>
+                                <FaClipboardList className="menu-icon"/>
+                                <span>Kayıtlar</span>
+                            </div>
+                            {isLogsOpen && (
+                                <ul className="dropdown">
+                                    <li onClick={() => handleNavigation('/loglar',{role: userRole.role})}>
+                                        <FaClipboard className="dropdown-icon"/> Sensör Kayıtları
+                                    </li>
+                                    <li onClick={() => handleNavigation('/user-logs',{role: userRole.role})}>
+                                        <FaIdBadge className="dropdown-icon"/> Kullanıcı Kayıtları
+                                    </li>
+                                </ul>
+                            )}
+                        </>
+                    )}
                     <div
                         className="logout menu" /* logout ve menu stillerini birleştir */
                         onClick={() => {

@@ -46,7 +46,7 @@ export default function CompanyAdd() {
                 }
                 break;
             case 'code':
-                if (!/^[A-Z0-9]{3,10}$/.test(value)) {
+                if (!/^[A-Za-z0-9]{3,10}$/.test(value)) {
                     error = 'Kurum kodu 3-10 karakter uzunluğunda, harf ve rakamlardan oluşmalıdır.';
                 }
                 break;
