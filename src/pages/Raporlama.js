@@ -110,28 +110,29 @@ export default function Raporlama() {
                         </button>
                     </div>
 
-                    {/* Aktif ve Pasif Kullanıcılar Raporu */}
-                    <div className="raporlama-card">
-                        <h3 className="raporlama-card-title">Aktif ve Pasif Kullanıcılar Raporu</h3>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.isActive}
-                            onClick={() =>
-                                downloadReport("getIsActive", "pdf", "isActive")
-                            }
-                        >
-                            {loading.isActive ? "PDF İndiriliyor..." : "PDF İndir"}
-                        </button>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.isActive}
-                            onClick={() =>
-                                downloadReport("getIsActive", "excel", "isActive")
-                            }
-                        >
-                            {loading.isActive ? "Excel İndiriliyor..." : "Excel İndir"}
-                        </button>
-                    </div>
+                    {userRole.role!=="personal" && (
+                        <div className="raporlama-card">
+                            <h3 className="raporlama-card-title">Aktif ve Pasif Kullanıcılar Raporu</h3>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.isActive}
+                                onClick={() =>
+                                    downloadReport("getIsActive", "pdf", "isActive")
+                                }
+                            >
+                                {loading.isActive ? "PDF İndiriliyor..." : "PDF İndir"}
+                            </button>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.isActive}
+                                onClick={() =>
+                                    downloadReport("getIsActive", "excel", "isActive")
+                                }
+                            >
+                                {loading.isActive ? "Excel İndiriliyor..." : "Excel İndir"}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Şirketler Raporu */}
                     {userRole.role==="administrator" && (
