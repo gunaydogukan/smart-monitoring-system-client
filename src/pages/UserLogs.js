@@ -6,7 +6,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import { FaInfoCircle } from "react-icons/fa";
 
 export default function UserLogs() {
-    const [userLogs, setUserLogs] = useState([]);
+    const [userLogs, setUserLogs] = useState({});
     const [summary, setSummary] = useState({});
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,9 +22,10 @@ export default function UserLogs() {
                     },
                 });
 
-                // API'den gelen yanıtı işleyerek state'e kaydet
-                setSummary(response.data.summary);
-                setUserLogs(response.data.logs);
+                console.log("API Response:", response.data);
+
+                setSummary(response.data.summary || {});
+                setUserLogs(response.data.logs || {});
             } catch (err) {
                 setError("Loglar yüklenirken bir hata oluştu.");
                 console.error(err);
@@ -37,31 +38,35 @@ export default function UserLogs() {
     }, [API_URL]);
 
     const highlightChanges = (differences) => {
-        if (!differences) return <span>Veri yok</span>;
+        if (!differences || typeof differences !== "object") return <span>Veri yok</span>;
 
         return Object.entries(differences).map(([key, value]) => {
             if (key === "user") {
-                // Kullanıcı bilgilerini özel olarak işle
                 return (
                     <div key={key}>
-                        <strong>Kullanıcı:</strong> {value.name} {value.lastname}
+                        <strong>Kullanıcı:</strong> {value?.name || ""} {value?.lastname || ""}
                     </div>
                 );
             } else if (key === "isActive") {
-                // isActive özel durumunu Aktif/Pasif olarak göster
                 return (
                     <div key={key}>
                     <span style={{ color: "red", fontWeight: "bold" }}>
-                        {key}: {value.oldValue ? "Aktif" : "Pasif"} → {value.newValue ? "Aktif" : "Pasif"}
+                        {key}: {value?.oldValue ? "Aktif" : "Pasif"} → {value?.newValue ? "Aktif" : "Pasif"}
                     </span>
                     </div>
                 );
+            } else if (typeof value === "object" && value !== null) {
+                // Eğer value bir nesne ise, JSON.stringify ile formatla
+                return (
+                    <div key={key}>
+                        <strong>{key}:</strong> {JSON.stringify(value)}
+                    </div>
+                );
             } else {
-                // Diğer değişiklikleri işle
                 return (
                     <div key={key}>
                     <span style={{ color: "red", fontWeight: "bold" }}>
-                        {key}: {value.oldValue !== undefined ? value.oldValue : " "} → {value.newValue}
+                        {key}: {value?.oldValue ?? " "} → {value?.newValue ?? " "}
                     </span>
                     </div>
                 );
@@ -117,14 +122,24 @@ export default function UserLogs() {
                         </tr>
                         </thead>
                         <tbody>
-                        {Object.entries(userLogs).map(([action, logEntries]) =>
-                            logEntries.logs.map((log, index) => (
-                                <tr key={`${action}-${log.id || index}`}>
-                                    <td>{log.action}</td>
-                                    <td>{new Date(log.timestamp).toLocaleString("tr-TR")}</td>
-                                    <td>{highlightChanges(log.differences)}</td>
+                        {Object.entries(userLogs).map(([action, logGroup]) =>
+                            Array.isArray(logGroup.logs) && logGroup.logs.length > 0 ? (
+                                logGroup.logs.map((log, index) => (
+                                    <tr key={`${action}-${log?.id || index}`}>
+                                        <td>{log?.action || "Bilinmiyor"}</td>
+                                        <td>
+                                            {log?.timestamp
+                                                ? new Date(log.timestamp).toLocaleString("tr-TR")
+                                                : "Tarih yok"}
+                                        </td>
+                                        <td>{highlightChanges(log?.differences)}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr key={action}>
+                                    <td colSpan="3">Bu aksiyon için log bulunamadı.</td>
                                 </tr>
-                            ))
+                            )
                         )}
                         </tbody>
                     </table>
