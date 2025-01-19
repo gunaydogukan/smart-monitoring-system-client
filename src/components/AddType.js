@@ -52,10 +52,13 @@ export default function AddSensorType() {
     const handleDataNameChange = (e, index) => {
         const { value } = e.target;
         const error = validateField("dataName", value);
+
+        // Hata mesajını göster ama inputu güncellemeyi engelleme
         if (error) {
             toast.error(error);
-            return;
         }
+
+        // Her koşulda input state'ini güncelle
         const newDataNames = [...sensorType.dataNames];
         newDataNames[index] = value;
         setSensorType((prev) => ({ ...prev, dataNames: newDataNames }));

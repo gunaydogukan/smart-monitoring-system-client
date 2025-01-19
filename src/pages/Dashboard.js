@@ -86,6 +86,7 @@ export default function Dashboard() {
                     }
 
                     const companyStatsData = await companyStatsResponse.json();
+                    console.log(companyStatsData);
                     setCompanyStats(companyStatsData);
                 }
 
@@ -269,36 +270,39 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <h2 className="uniqueSectionHeader">Şirket Bazlı Sensör İstatistikleri</h2>
+                {userRole.role==="administrator" && (
+                    <h2 className="uniqueSectionHeader">Sensörü Olan Şirket İstatistikleri</h2>
+                )}
+                {userRole.role === "administartor" && (
+                    <div className="uniqueChartAndTableSection">
+                        <div className="uniqueContentContainer">
+                            {/* Grafik Alanı */}
+                            <div className="uniqueChartContainer">
+                                <Bar data={companyBarChartData} options={chartOptions}/>
+                            </div>
 
-                <div className="uniqueChartAndTableSection">
-                    <div className="uniqueContentContainer">
-                        {/* Grafik Alanı */}
-                        <div className="uniqueChartContainer">
-                            <Bar data={companyBarChartData} options={chartOptions}/>
-                        </div>
-
-                        {/* Tablo Alanı */}
-                        <div className="uniqueTableContainer">
-                            <table className="uniqueStyledTable">
-                                <thead>
-                                <tr>
-                                    <th>Şirket Kodu</th>
-                                    <th>Sensör Sayısı</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
-                                    <tr key={company}>
-                                        <td>{company}</td>
-                                        <td>{count}</td>
+                            {/* Tablo Alanı */}
+                            <div className="uniqueTableContainer">
+                                <table className="uniqueStyledTable">
+                                    <thead>
+                                    <tr>
+                                        <th>Şirket Kodu</th>
+                                        <th>Sensör Sayısı</th>
                                     </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    {Object.entries(companyStats.groupedLengths).map(([company, count]) => (
+                                        <tr key={company}>
+                                            <td>{company}</td>
+                                            <td>{count}</td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
 
                 <div className="chartAndTableSection">
@@ -309,7 +313,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {userRole.role !== "personal" && userStats && (
+                {userRole.role === "administrator"  && userStats && (
                     <div className="userStatsSection">
                         <h2 className="userStatsHeader">Kullanıcı İstatistikleri</h2>
                         <UserDashboardDetails userStats={userStats}/>

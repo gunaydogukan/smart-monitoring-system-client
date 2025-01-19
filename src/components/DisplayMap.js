@@ -227,7 +227,7 @@ const DisplayMap = () => {
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={mapCenter} // React state'ten alınan merkez konumu
-                    zoom={18} // Belirlediğiniz zoom seviyesi
+                    zoom={14} // Belirlediğiniz zoom seviyesi
                     onLoad={(mapInstance) => {
                         setMap(mapInstance); // Harita referansını kaydet
                         mapRef.current = mapInstance;

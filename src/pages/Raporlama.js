@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import Layout from "../layouts/Layout";
 import "../styles/Raporlama.css";
+import {useAuth} from "../contexts/AuthContext";
 
 export default function Raporlama() {
+    const { user,userRole } = useAuth(); // Kullanıcı bilgilerini al
     const [loading, setLoading] = useState({
         sensors: false,
         isActive: false,
@@ -132,27 +134,30 @@ export default function Raporlama() {
                     </div>
 
                     {/* Şirketler Raporu */}
-                    <div className="raporlama-card">
-                        <h3 className="raporlama-card-title">Tüm Şirketler Raporu</h3>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.companies}
-                            onClick={() =>
-                                downloadReport("getAllCompanies", "pdf", "companies")
-                            }
-                        >
-                            {loading.companies ? "PDF İndiriliyor..." : "PDF İndir"}
-                        </button>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.companies}
-                            onClick={() =>
-                                downloadReport("getAllCompanies", "excel", "companies")
-                            }
-                        >
-                            {loading.companies ? "Excel İndiriliyor..." : "Excel İndir"}
-                        </button>
-                    </div>
+                    {userRole.role==="administartor" && (
+                        <div className="raporlama-card">
+                            <h3 className="raporlama-card-title">Tüm Şirketler Raporu</h3>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.companies}
+                                onClick={() =>
+                                    downloadReport("getAllCompanies", "pdf", "companies")
+                                }
+                            >
+                                {loading.companies ? "PDF İndiriliyor..." : "PDF İndir"}
+                            </button>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.companies}
+                                onClick={() =>
+                                    downloadReport("getAllCompanies", "excel", "companies")
+                                }
+                            >
+                                {loading.companies ? "Excel İndiriliyor..." : "Excel İndir"}
+                            </button>
+                        </div>
+                    )}
+
 
                     {/* Sensör Tipleri Raporu */}
                     <div className="raporlama-card">
@@ -178,50 +183,56 @@ export default function Raporlama() {
                     </div>
 
                     {/* Şirketlere Göre Sensör Raporu */}
-                    <div className="raporlama-card">
-                        <h3 className="raporlama-card-title">Şirketlere Göre Sensör Raporu</h3>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.companyStats}
-                            onClick={() =>
-                                downloadReport("getCompanySensorStats", "pdf", "companyStats")
-                            }
-                        >
-                            {loading.companyStats ? "PDF İndiriliyor..." : "PDF İndir"}
-                        </button>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.companyStats}
-                            onClick={() =>
-                                downloadReport("getCompanySensorStats", "excel", "companyStats")
-                            }
-                        >
-                            {loading.companyStats ? "Excel İndiriliyor..." : "Excel İndir"}
-                        </button>
-                    </div>
+                    {userRole.role==="administartor" && (
+                        <div className="raporlama-card">
+                            <h3 className="raporlama-card-title">Şirketlere Göre Sensör Raporu</h3>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.companyStats}
+                                onClick={() =>
+                                    downloadReport("getCompanySensorStats", "pdf", "companyStats")
+                                }
+                            >
+                                {loading.companyStats ? "PDF İndiriliyor..." : "PDF İndir"}
+                            </button>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.companyStats}
+                                onClick={() =>
+                                    downloadReport("getCompanySensorStats", "excel", "companyStats")
+                                }
+                            >
+                                {loading.companyStats ? "Excel İndiriliyor..." : "Excel İndir"}
+                            </button>
+                        </div>
+                    )}
+
 
                     {/* Sensör Logları Raporu */}
-                    <div className="raporlama-card">
-                        <h3 className="raporlama-card-title">Sensör Logları Raporu</h3>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.sensorLogs}
-                            onClick={() =>
-                                downloadReport("getSensorLogs", "pdf", "sensorLogs")
-                            }
-                        >
-                            {loading.sensorLogs ? "PDF İndiriliyor..." : "PDF İndir"}
-                        </button>
-                        <button
-                            className="raporlama-button"
-                            disabled={loading.sensorLogs}
-                            onClick={() =>
-                                downloadReport("getSensorLogs", "excel", "sensorLogs")
-                            }
-                        >
-                            {loading.sensorLogs ? "Excel İndiriliyor..." : "Excel İndir"}
-                        </button>
-                    </div>
+                    {userRole.role ==="administrator" && (
+                        <div className="raporlama-card">
+                            <h3 className="raporlama-card-title">Sensör Logları Raporu</h3>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.sensorLogs}
+                                onClick={() =>
+                                    downloadReport("getSensorLogs", "pdf", "sensorLogs")
+                                }
+                            >
+                                {loading.sensorLogs ? "PDF İndiriliyor..." : "PDF İndir"}
+                            </button>
+                            <button
+                                className="raporlama-button"
+                                disabled={loading.sensorLogs}
+                                onClick={() =>
+                                    downloadReport("getSensorLogs", "excel", "sensorLogs")
+                                }
+                            >
+                                {loading.sensorLogs ? "Excel İndiriliyor..." : "Excel İndir"}
+                            </button>
+                        </div>
+                    )}
+
                 </div>
             </div>
         </Layout>
