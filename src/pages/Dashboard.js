@@ -235,6 +235,13 @@ export default function Dashboard() {
                         <p className="summaryValue">{data.passiveSensorsLen}</p>
                     </div>
                 </div>
+                <div className="chartAndTableSection">
+                    <SensorChart active={data.activeSensorsLen} passive={data.passiveSensorsLen}/>
+                    <div className="tableContainer scrollableTable">
+                        <h2 className="sectionHeader">Sensör Detayları</h2>
+                        <SensorTable sensors={data.sensors}/>
+                    </div>
+                </div>
 
                 <div className="chartAndCardsContainer">
                     <div className="chart-container">
@@ -270,10 +277,10 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {userRole.role==="administrator" && (
+                {userRole.role === "administrator" && (
                     <h2 className="uniqueSectionHeader">Sensörü Olan Şirket İstatistikleri</h2>
                 )}
-                {userRole.role === "administartor" && (
+                {userRole.role === "administrator" && (
                     <div className="uniqueChartAndTableSection">
                         <div className="uniqueContentContainer">
                             {/* Grafik Alanı */}
@@ -305,15 +312,7 @@ export default function Dashboard() {
                 )}
 
 
-                <div className="chartAndTableSection">
-                    <SensorChart active={data.activeSensorsLen} passive={data.passiveSensorsLen}/>
-                    <div className="tableContainer scrollableTable">
-                        <h2 className="sectionHeader">Sensör Detayları</h2>
-                        <SensorTable sensors={data.sensors}/>
-                    </div>
-                </div>
-
-                {userRole.role === "administrator"  && userStats && (
+                {userRole.role === "administrator" && userStats && (
                     <div className="userStatsSection">
                         <h2 className="userStatsHeader">Kullanıcı İstatistikleri</h2>
                         <UserDashboardDetails userStats={userStats}/>

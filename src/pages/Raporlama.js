@@ -134,7 +134,7 @@ export default function Raporlama() {
                     </div>
 
                     {/* Şirketler Raporu */}
-                    {userRole.role==="administartor" && (
+                    {userRole.role==="administrator" && (
                         <div className="raporlama-card">
                             <h3 className="raporlama-card-title">Tüm Şirketler Raporu</h3>
                             <button
@@ -183,7 +183,7 @@ export default function Raporlama() {
                     </div>
 
                     {/* Şirketlere Göre Sensör Raporu */}
-                    {userRole.role==="administartor" && (
+                    {userRole.role==="administrator" && (
                         <div className="raporlama-card">
                             <h3 className="raporlama-card-title">Şirketlere Göre Sensör Raporu</h3>
                             <button
